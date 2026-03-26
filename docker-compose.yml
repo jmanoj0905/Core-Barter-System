@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: barter_postgres
+    environment:
+      POSTGRES_USER: barter
+      POSTGRES_PASSWORD: barter
+      POSTGRES_DB: barter_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - barter_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U barter -d barter_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: ./backend/.env
+    restart: on-failure
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+  audio_pipeline:
+    build:
+      context: ./audio_pipeline
+    ports:
+      - "8001:8001"
+    restart: on-failure
+    command: uvicorn main:app --host 0.0.0.0 --port 8001
+
+  semantic_analysis:
+    build:
+      context: ./semantic_analysis
+    ports:
+      - "8002:8002"
+    restart: on-failure
+    command: uvicorn main:app --host 0.0.0.0 --port 8002
+
+  warning_engine:
+    build:
+      context: ./warning_engine
+    ports:
+      - "8003:8003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+    command: uvicorn main:app --host 0.0.0.0 --port 8003
+
+volumes:
+  barter_pgdata:

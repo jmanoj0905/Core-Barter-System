@@ -1,0 +1,23 @@
+On backend startup
+- Nudenet model starts
+    - if this model doesnt start, skips it and then goes next
+
+Audio Pipeline
+-- starts CTranslate2
+- gets raw audio separately every 5 seconds
+- convert it to wav
+- does this 3 times, while concatenating the chunks
+- then sends this 15 wav to whisper.
+  - toxicity check
+  - stores in db for transcript
+  - semantic forwarding -> sent for topic analysis 
+
+
+Semantic Analyzer
+- embeddings for teacher. for every 30 seconds
+- for learner we do engagement scoring. (no topic analysis)
+
+    - Window processing
+      - text combined
+            - buffered segments are concatenated
+      - filler words stripped
