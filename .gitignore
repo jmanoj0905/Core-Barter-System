@@ -22,5 +22,11 @@ build/
 .DS_Store
 Thumbs.db
 
-# Docs
-*.md
+# Frontend build output
+apps/frontend/dist/
+apps/frontend/node_modules/
+
+# Local tooling
+.bg-shell/
+.opencode/
+.gstack/

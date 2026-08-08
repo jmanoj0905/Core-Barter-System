@@ -83,8 +83,8 @@ async def backend_client():
         async with test_session_factory() as db:
             from app.models import User
 
-            db.add(User(id=1, username="alice", trust_score=0.30))
-            db.add(User(id=2, username="bob", trust_score=0.30))
+            db.add(User(id=1, username="alice", trust_score=1.0))
+            db.add(User(id=2, username="bob", trust_score=1.0))
             await db.commit()
 
         transport = ASGITransport(app=app)
@@ -101,6 +101,7 @@ async def backend_client():
 # Warning Engine: test client (in-memory, no external calls)
 # ---------------------------------------------------------------------------
 
+
 @pytest_asyncio.fixture
 async def warning_client():
     """Async test client for the warning engine, with backend calls mocked."""
@@ -109,6 +110,7 @@ async def warning_client():
         sys.path.insert(0, we_path)
 
     import importlib.util
+
     spec = importlib.util.spec_from_file_location(
         "warning_engine_main", ROOT / "warning_engine" / "main.py"
     )
@@ -138,6 +140,7 @@ async def warning_client():
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def create_session_payload():

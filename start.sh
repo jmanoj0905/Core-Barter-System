@@ -99,8 +99,8 @@ ok "Database barter_db ready"
 
 # Run migrations
 info "Running migrations..."
-cd "$ROOT/backend"
-MIGRATION_DIR="$ROOT/backend/migrations"
+cd "$ROOT/apps/backend"
+MIGRATION_DIR="$ROOT/apps/backend/migrations"
 for f in "$MIGRATION_DIR"/*.sql; do
   psql "postgresql://barter:barter@localhost:5432/barter_db" -f "$f" -q 2>/dev/null || true
 done
@@ -126,15 +126,15 @@ setup_venv() {
   cd "$ROOT"
 }
 
-setup_venv backend           "Backend"
-setup_venv audio_pipeline    "Audio Pipeline"
-setup_venv semantic_analysis "Semantic Analysis"
-setup_venv warning_engine    "Warning Engine"
+setup_venv apps/backend           "Backend"
+setup_venv apps/audio_pipeline    "Audio Pipeline"
+setup_venv apps/semantic_analysis "Semantic Analysis"
+setup_venv apps/warning_engine    "Warning Engine"
 
 # ── 5. Frontend node_modules ────────────────────────────────────────────────
 step "Checking frontend..."
 
-cd "$ROOT/frontend"
+cd "$ROOT/apps/frontend"
 if [[ ! -d node_modules ]]; then
   info "Installing npm packages..."
   npm install --silent
@@ -157,10 +157,10 @@ launch() {
   cd "$ROOT"
 }
 
-launch "backend " backend           app.main:app 8000
-launch "audio   " audio_pipeline    main:app     8001
-launch "semantic" semantic_analysis main:app     8002
-launch "warning " warning_engine    main:app     8003
+launch "backend " apps/backend           app.main:app 8000
+launch "audio   " apps/audio_pipeline    main:app     8001
+launch "semantic" apps/semantic_analysis main:app     8002
+launch "warning " apps/warning_engine    main:app     8003
 
 # Wait for services to be up
 info "Waiting for services to start..."
@@ -175,7 +175,7 @@ for port in 8000 8001 8002 8003; do
 done
 
 # ── 7. Frontend dev server ───────────────────────────────────────────────────
-cd "$ROOT/frontend"
+cd "$ROOT/apps/frontend"
 npm run dev --silent 2>&1 | sed 's/^/  [frontend] /' &
 PIDS+=($!)
 cd "$ROOT"

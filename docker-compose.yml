@@ -1,59 +1,66 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: barter_postgres
-    environment:
-      POSTGRES_USER: barter
-      POSTGRES_PASSWORD: barter
-      POSTGRES_DB: barter_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - barter_pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U barter -d barter_db"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
 
   backend:
     build:
-      context: ./backend
-    ports:
-      - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    env_file: ./backend/.env
+      context: ./apps/backend
+    volumes:
+      - db_data:/data
+    environment:
+      DATABASE_URL: sqlite+aiosqlite:////data/barter.db
+      SEMANTIC_URL: http://semantic_analysis:8002
+      AUDIO_URL: http://audio_pipeline:8001
+      WARNING_URL: http://warning_engine:8003
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
     restart: on-failure
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    depends_on:
+      - semantic_analysis
+      - warning_engine
 
   audio_pipeline:
     build:
-      context: ./audio_pipeline
-    ports:
-      - "8001:8001"
+      context: ./apps/audio_pipeline
+    volumes:
+      - model_cache:/root/.cache
+    environment:
+      BACKEND_URL: http://backend:8000
+      SEMANTIC_URL: http://semantic_analysis:8002
+      WARNING_ENGINE_URL: http://warning_engine:8003
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_REGION: ${AWS_REGION:-ap-south-1}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-core-barter-audio-tmp}
+      STT_BACKEND: ${STT_BACKEND:-aws}
     restart: on-failure
-    command: uvicorn main:app --host 0.0.0.0 --port 8001
 
   semantic_analysis:
     build:
-      context: ./semantic_analysis
-    ports:
-      - "8002:8002"
+      context: ./apps/semantic_analysis
+    volumes:
+      - model_cache:/root/.cache
+    environment:
+      WARNING_ENGINE_URL: http://warning_engine:8003
+      BACKEND_URL: http://backend:8000
     restart: on-failure
-    command: uvicorn main:app --host 0.0.0.0 --port 8002
 
   warning_engine:
     build:
-      context: ./warning_engine
-    ports:
-      - "8003:8003"
-    depends_on:
-      postgres:
-        condition: service_healthy
+      context: ./apps/warning_engine
+    environment:
+      BACKEND_URL: http://backend:8000
     restart: on-failure
-    command: uvicorn main:app --host 0.0.0.0 --port 8003
+
+  frontend:
+    build:
+      context: ./apps/frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    restart: on-failure
 
 volumes:
-  barter_pgdata:
+  db_data:
+  model_cache:
