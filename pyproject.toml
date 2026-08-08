@@ -1,0 +1,15 @@
+[tool.workspace]
+members = [
+    "apps/backend",
+    "apps/audio_pipeline",
+    "apps/semantic_analysis",
+    "apps/warning_engine",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.uv]
+name = "core-barter-system"
+version = "0.1.0"
+description = "Core Barter System - Real-time audio conversation monitoring platform"

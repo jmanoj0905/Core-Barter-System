@@ -1,7 +1,0 @@
-fastapi
-uvicorn[standard]
-faster-whisper
-httpx
-openai
-python-dotenv
-
