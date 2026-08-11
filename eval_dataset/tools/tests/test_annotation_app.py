@@ -60,3 +60,27 @@ def test_post_annotation_saves_file(tmp_path, monkeypatch):
     assert response.json() == {"status": "saved"}
     saved = json.loads((ann_dir / "sess_A01_bob.json").read_text())
     assert saved == [{"window_index": 0, "label": "correct"}]
+
+
+def test_get_windows_rejects_invalid_session_id(tmp_path, monkeypatch):
+    main_module, _ = _write_test_fixtures(tmp_path, monkeypatch)
+    client = TestClient(main_module.app)
+
+    response = client.get("/sessions/%2e%2e/windows")
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "invalid session_id"}
+
+
+def test_post_annotation_rejects_invalid_label(tmp_path, monkeypatch):
+    main_module, ann_dir = _write_test_fixtures(tmp_path, monkeypatch)
+    client = TestClient(main_module.app)
+
+    response = client.post(
+        "/sessions/sess_A01/annotate?annotator=bob",
+        json=[{"window_index": 0, "label": "totally_wrong"}],
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "invalid label"}
+    assert not (ann_dir / "sess_A01_bob.json").exists()
