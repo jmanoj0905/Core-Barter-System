@@ -45,6 +45,12 @@ def parse_script(path: str) -> Script:
         speaker, text = line.split(":", 1)
         turns.append(Turn(speaker=speaker.strip(), text=text.strip()))
 
+    if not turns:
+        raise ValueError(
+            "script has no dialogue turns — check for a missing blank line "
+            "between the header and the first turn"
+        )
+
     return Script(
         topic=header["TOPIC"],
         teacher=header["TEACHER"],

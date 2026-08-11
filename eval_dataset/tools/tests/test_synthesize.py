@@ -35,3 +35,23 @@ def test_synthesize_script_calls_polly_per_turn_with_correct_voice(tmp_path):
     assert len(timing) == 2
     assert timing[0]["speaker"] == "A"
     assert timing[1]["start"] > timing[0]["start"]
+
+
+def test_synthesize_script_rejects_unknown_speaker_before_calling_polly(tmp_path):
+    # A typo'd speaker token should fail validation for the whole script up
+    # front, before any Polly calls are made (and billed) for earlier turns.
+    script = Script(
+        topic="Python", teacher="A", learner="B", category="clean",
+        turns=[Turn(speaker="A", text="Hello there."), Turn(speaker="C", text="Huh?")],
+    )
+    mock_client = MagicMock()
+    mock_client.synthesize_speech.return_value = {"AudioStream": io.BytesIO(_fake_wav_bytes())}
+
+    wav_path = tmp_path / "out.wav"
+    timing_path = tmp_path / "timing.json"
+
+    import pytest
+    with pytest.raises(ValueError, match="unknown speaker 'C'"):
+        synthesize_script(script, mock_client, str(wav_path), str(timing_path))
+
+    mock_client.synthesize_speech.assert_not_called()

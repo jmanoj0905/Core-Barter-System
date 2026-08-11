@@ -18,6 +18,12 @@ def synthesize_turn(polly_client, text: str, voice_id: str) -> bytes:
 
 
 def synthesize_script(script: Script, polly_client, output_wav_path: str, timing_json_path: str) -> None:
+    for turn in script.turns:
+        if turn.speaker not in VOICE_MAP:
+            raise ValueError(
+                f"unknown speaker {turn.speaker!r}, expected one of {sorted(VOICE_MAP)}"
+            )
+
     pcm_chunks = []
     timing = []
     cursor = 0.0
