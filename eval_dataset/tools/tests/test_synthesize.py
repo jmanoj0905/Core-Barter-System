@@ -1,5 +1,4 @@
 import json
-import wave
 from unittest.mock import MagicMock
 import io
 
@@ -8,14 +7,7 @@ from eval_dataset.tools.synthesize import synthesize_script, VOICE_MAP
 
 
 def _fake_wav_bytes(duration_seconds=0.5, framerate=8000):
-    buf = io.BytesIO()
-    with wave.open(buf, "wb") as f:
-        f.set_nchannels_or_defaults = None
-        f.setnchannels(1)
-        f.setsampwidth(2)
-        f.setframerate(framerate)
-        f.writeframes(b"\x00\x00" * int(framerate * duration_seconds))
-    return buf.getvalue()
+    return b"\x00\x00" * int(framerate * duration_seconds)
 
 
 def test_synthesize_script_calls_polly_per_turn_with_correct_voice(tmp_path):
@@ -36,6 +28,7 @@ def test_synthesize_script_calls_polly_per_turn_with_correct_voice(tmp_path):
     assert calls[1].kwargs["VoiceId"] == VOICE_MAP["B"]
     assert calls[1].kwargs["Text"] == "Hi!"
     assert calls[0].kwargs["OutputFormat"] == "pcm"
+    assert calls[0].kwargs["SampleRate"] == "8000"
 
     assert wav_path.exists()
     timing = json.loads(timing_path.read_text())
