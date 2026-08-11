@@ -12,6 +12,7 @@ SAMPLE_RATE = 8000  # Polly "pcm" output format is 16-bit signed LE, 8kHz or 16k
 def synthesize_turn(polly_client, text: str, voice_id: str) -> bytes:
     response = polly_client.synthesize_speech(
         Text=text, VoiceId=voice_id, OutputFormat="pcm", Engine="neural",
+        SampleRate=str(SAMPLE_RATE),
     )
     return response["AudioStream"].read()
 
