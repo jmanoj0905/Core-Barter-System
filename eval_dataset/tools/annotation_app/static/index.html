@@ -49,7 +49,15 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }).then(() => alert("Saved."));
+        }).then(response => {
+          if (response.ok) {
+            alert("Saved.");
+          } else {
+            alert("Failed to save: " + response.status);
+          }
+        }).catch(err => {
+          alert("Failed to save: " + err.message);
+        });
       }
 
       if (!annotator) {
