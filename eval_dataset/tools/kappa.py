@@ -11,6 +11,8 @@ def cohens_kappa(labels_a: list[str], labels_b: list[str]) -> float:
     count_b = Counter(labels_b)
     chance_agreement = sum((count_a[l] / n) * (count_b[l] / n) for l in LABELS)
 
+    if observed_agreement == 1.0:
+        return 1.0
     if chance_agreement >= 1.0:
         return 0.0
     return (observed_agreement - chance_agreement) / (1 - chance_agreement)
