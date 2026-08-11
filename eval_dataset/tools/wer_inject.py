@@ -32,12 +32,12 @@ def _substitute(word: str, rng: random.Random) -> str:
     return CONFUSION_PAIRS.get(word.lower(), rng.choice(FALLBACK_VOCAB))
 
 
-def inject_wer(transcript: dict, target_wer: float, seed: int = 0) -> dict:
-    rng = random.Random(seed)
-    words = list(transcript["words"])
-    if target_wer <= 0 or not words:
-        return {"words": [dict(w) for w in words]}
+_MAX_ATTEMPTS = 50
+_TOLERANCE = 0.02
 
+
+def _generate_candidate(words: list[dict], target_wer: float, seed: int) -> list[dict]:
+    rng = random.Random(seed)
     n = len(words)
     num_errors = max(1, round(target_wer * n)) if target_wer > 0 else 0
     error_indices = rng.sample(range(n), min(num_errors, n))
@@ -59,4 +59,24 @@ def inject_wer(transcript: dict, target_wer: float, seed: int = 0) -> dict:
             filler_start = w["end"]
             result.append({"text": rng.choice(FILLER_WORDS), "start": filler_start, "end": filler_start + 0.2})
 
-    return {"words": result}
+    return result
+
+
+def inject_wer(transcript: dict, target_wer: float, seed: int = 0) -> dict:
+    words = list(transcript["words"])
+    if target_wer <= 0 or not words:
+        return {"words": [dict(w) for w in words]}
+
+    original_words = [w["text"] for w in words]
+
+    for attempt in range(_MAX_ATTEMPTS):
+        candidate = _generate_candidate(words, target_wer, seed + attempt)
+        candidate_words = [w["text"] for w in candidate]
+        wer = compute_wer(original_words, candidate_words)
+        if abs(wer - target_wer) <= _TOLERANCE:
+            return {"words": candidate}
+
+    raise RuntimeError(
+        f"inject_wer: failed to reach target_wer={target_wer} within "
+        f"±{_TOLERANCE} after {_MAX_ATTEMPTS} attempts (seed={seed})"
+    )
