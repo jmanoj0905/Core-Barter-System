@@ -21,7 +21,10 @@ def _reshape_transcript(aws_payload: dict) -> dict:
     return {"words": words}
 
 
-def transcribe_audio(s3_client, transcribe_client, wav_path: str, bucket: str, job_name: str) -> dict:
+def transcribe_audio(
+    s3_client, transcribe_client, wav_path: str, bucket: str, job_name: str,
+    max_polls: int = 120,
+) -> dict:
     s3_key = f"{job_name}.wav"
     s3_client.upload_file(wav_path, bucket, s3_key)
 
@@ -32,22 +35,27 @@ def transcribe_audio(s3_client, transcribe_client, wav_path: str, bucket: str, j
         LanguageCode="en-US",
     )
 
-    while True:
-        response = transcribe_client.get_transcription_job(TranscriptionJobName=job_name)
-        status = response["TranscriptionJob"]["TranscriptionJobStatus"]
-        if status in ("COMPLETED", "FAILED"):
-            break
-        time.sleep(5)
+    try:
+        status = None
+        for _ in range(max_polls):
+            response = transcribe_client.get_transcription_job(TranscriptionJobName=job_name)
+            status = response["TranscriptionJob"]["TranscriptionJobStatus"]
+            if status in ("COMPLETED", "FAILED"):
+                break
+            time.sleep(5)
+        else:
+            raise TimeoutError(
+                f"Transcribe job {job_name} did not finish within {max_polls} polls"
+            )
 
-    if status == "FAILED":
+        if status == "FAILED":
+            raise RuntimeError(f"Transcribe job {job_name} failed")
+
+        uri = response["TranscriptionJob"]["Transcript"]["TranscriptFileUri"]
+        aws_payload = _download_json(uri)
+        return _reshape_transcript(aws_payload)
+    finally:
         s3_client.delete_object(Bucket=bucket, Key=s3_key)
-        raise RuntimeError(f"Transcribe job {job_name} failed")
-
-    uri = response["TranscriptionJob"]["Transcript"]["TranscriptFileUri"]
-    aws_payload = _download_json(uri)
-    s3_client.delete_object(Bucket=bucket, Key=s3_key)
-
-    return _reshape_transcript(aws_payload)
 
 
 if __name__ == "__main__":
@@ -56,10 +64,13 @@ if __name__ == "__main__":
     import os
 
     wav_path = sys.argv[1]
-    job_name = wav_path.split("/")[-1].removesuffix(".wav")
+    base_name = wav_path.split("/")[-1].removesuffix(".wav")
+    # append a timestamp so re-running after a failure doesn't collide with
+    # the previous (failed) Transcribe job name (ConflictException).
+    job_name = f"{base_name}-{int(time.time())}"
     bucket = os.environ.get("AWS_S3_BUCKET", "core-barter-audio-tmp")
     s3 = boto3.client("s3")
     transcribe = boto3.client("transcribe")
     result = transcribe_audio(s3, transcribe, wav_path, bucket, job_name)
-    with open(f"eval_dataset/transcripts/raw/{job_name}_wer0.json", "w") as f:
+    with open(f"eval_dataset/transcripts/raw/{base_name}_wer0.json", "w") as f:
         json.dump(result, f, indent=2)
