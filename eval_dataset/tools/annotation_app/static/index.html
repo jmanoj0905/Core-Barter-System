@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Eval Dataset Annotation</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; }
+    .window-row { display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid #ddd; }
+    .window-text { flex: 1; }
+    button { cursor: pointer; }
+    button.selected { font-weight: bold; outline: 2px solid #333; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const LABELS = ["correct", "weakly_correct", "incorrect"];
+
+    function App() {
+      const [annotator, setAnnotator] = useState("");
+      const [sessions, setSessions] = useState([]);
+      const [sessionId, setSessionId] = useState(null);
+      const [windows, setWindows] = useState([]);
+      const [labels, setLabels] = useState({});
+
+      useEffect(() => {
+        fetch("/sessions").then(r => r.json()).then(setSessions);
+      }, []);
+
+      useEffect(() => {
+        if (!sessionId) return;
+        fetch(`/sessions/${sessionId}/windows`).then(r => r.json()).then(ws => {
+          setWindows(ws);
+          setLabels({});
+        });
+      }, [sessionId]);
+
+      function setLabel(index, label) {
+        setLabels(prev => ({ ...prev, [index]: label }));
+      }
+
+      function submit() {
+        const payload = windows.map(w => ({ window_index: w.index, label: labels[w.index] || null }));
+        fetch(`/sessions/${sessionId}/annotate?annotator=${encodeURIComponent(annotator)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }).then(() => alert("Saved."));
+      }
+
+      if (!annotator) {
+        return (
+          <div>
+            <h2>Enter your name</h2>
+            <input onKeyDown={e => e.key === "Enter" && setAnnotator(e.target.value)} placeholder="e.g. bob" />
+          </div>
+        );
+      }
+
+      if (!sessionId) {
+        return (
+          <div>
+            <h2>Sessions</h2>
+            <ul>
+              {sessions.map(s => (
+                <li key={s.session_id}>
+                  <button onClick={() => setSessionId(s.session_id)}>{s.session_id}</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <h2>{sessionId} — annotator: {annotator}</h2>
+          <audio controls src={`/audio/${sessionId}.wav`} style={{ width: "100%" }} />
+          {windows.map(w => (
+            <div className="window-row" key={w.index}>
+              <span>{w.start.toFixed(1)}s–{w.end.toFixed(1)}s</span>
+              <span className="window-text">{w.text}</span>
+              {LABELS.map(l => (
+                <button
+                  key={l}
+                  className={labels[w.index] === l ? "selected" : ""}
+                  onClick={() => setLabel(w.index, l)}
+                >{l}</button>
+              ))}
+            </div>
+          ))}
+          <button onClick={submit}>Submit annotations</button>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
