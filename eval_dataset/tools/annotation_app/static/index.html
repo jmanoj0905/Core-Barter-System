@@ -44,7 +44,12 @@
       }
 
       function submit() {
-        const payload = windows.map(w => ({ window_index: w.index, label: labels[w.index] || null }));
+        const unlabeled = windows.filter(w => !labels[w.index]).map(w => w.index);
+        if (unlabeled.length > 0) {
+          alert(`Please label all windows before submitting. Missing: window index(es) ${unlabeled.join(", ")}.`);
+          return;
+        }
+        const payload = windows.map(w => ({ window_index: w.index, label: labels[w.index] }));
         fetch(`/sessions/${sessionId}/annotate?annotator=${encodeURIComponent(annotator)}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

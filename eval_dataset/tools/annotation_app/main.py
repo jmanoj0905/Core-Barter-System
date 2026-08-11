@@ -15,6 +15,11 @@ ANNOTATIONS_DIR = "eval_dataset/annotations"
 ALLOWED_LABELS = {"correct", "weakly_correct", "incorrect"}
 
 _SAFE_TOKEN_RE = re.compile(r"^[A-Za-z0-9_-]+$")
+# annotator names must not contain "_" — compute_kappa.py recovers
+# session_id/annotator from "{session_id}_{annotator}.json" via a single
+# rsplit("_", 1), so an underscore in the annotator name would corrupt
+# that parse (e.g. "sess_A01_amy_smith.json" -> session "sess_A01_amy").
+_SAFE_ANNOTATOR_RE = re.compile(r"^[A-Za-z0-9-]+$")
 
 app = FastAPI()
 
@@ -22,6 +27,11 @@ app = FastAPI()
 def _validate_token(value: str, field_name: str) -> None:
     if not _SAFE_TOKEN_RE.fullmatch(value):
         raise HTTPException(status_code=400, detail=f"invalid {field_name}")
+
+
+def _validate_annotator(value: str) -> None:
+    if not _SAFE_ANNOTATOR_RE.fullmatch(value):
+        raise HTTPException(status_code=400, detail="invalid annotator")
 
 
 @app.get("/sessions")
@@ -43,14 +53,16 @@ def get_windows(session_id: str):
 @app.post("/sessions/{session_id}/annotate")
 def save_annotation(session_id: str, annotator: str, labels: list[dict]):
     _validate_token(session_id, "session_id")
-    _validate_token(annotator, "annotator")
+    _validate_annotator(annotator)
     for entry in labels:
         if entry.get("label") not in ALLOWED_LABELS:
             raise HTTPException(status_code=400, detail="invalid label")
     os.makedirs(ANNOTATIONS_DIR, exist_ok=True)
     out_path = os.path.join(ANNOTATIONS_DIR, f"{session_id}_{annotator}.json")
-    with open(out_path, "w") as f:
+    tmp_path = out_path + ".tmp"
+    with open(tmp_path, "w") as f:
         json.dump(labels, f, indent=2)
+    os.replace(tmp_path, out_path)
     return {"status": "saved"}
 
 

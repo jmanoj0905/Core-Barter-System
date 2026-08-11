@@ -84,3 +84,19 @@ def test_post_annotation_rejects_invalid_label(tmp_path, monkeypatch):
     assert response.status_code == 400
     assert response.json() == {"detail": "invalid label"}
     assert not (ann_dir / "sess_A01_bob.json").exists()
+
+
+def test_post_annotation_rejects_annotator_with_underscore(tmp_path, monkeypatch):
+    # An underscore in the annotator name would corrupt compute_kappa.py's
+    # "{session_id}_{annotator}.json" -> session_id recovery (rsplit on "_").
+    main_module, ann_dir = _write_test_fixtures(tmp_path, monkeypatch)
+    client = TestClient(main_module.app)
+
+    response = client.post(
+        "/sessions/sess_A01/annotate?annotator=amy_smith",
+        json=[{"window_index": 0, "label": "correct"}],
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "invalid annotator"}
+    assert not (ann_dir / "sess_A01_amy_smith.json").exists()
