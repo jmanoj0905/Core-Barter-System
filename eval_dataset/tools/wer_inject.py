@@ -80,3 +80,20 @@ def inject_wer(transcript: dict, target_wer: float, seed: int = 0) -> dict:
         f"inject_wer: failed to reach target_wer={target_wer} within "
         f"±{_TOLERANCE} after {_MAX_ATTEMPTS} attempts (seed={seed})"
     )
+
+
+if __name__ == "__main__":
+    import json
+    import sys
+
+    wer0_path = sys.argv[1]
+    session_id = wer0_path.split("/")[-1].removesuffix("_wer0.json")
+
+    with open(wer0_path) as f:
+        transcript = json.load(f)
+
+    for target_wer, pct in ((0.10, 10), (0.20, 20), (0.30, 30)):
+        corrupted = inject_wer(transcript, target_wer=target_wer, seed=0)
+        out_path = f"eval_dataset/transcripts/synthetic/{session_id}_wer{pct}.json"
+        with open(out_path, "w") as f:
+            json.dump(corrupted, f, indent=2)
