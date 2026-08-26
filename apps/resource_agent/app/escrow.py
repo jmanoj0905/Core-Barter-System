@@ -285,6 +285,50 @@ async def hold(db: AsyncSession, session_id: int, reason: str) -> dict:
     return {"session_id": session_id, "held": True, "reason": reason}
 
 
+async def resolve_hold(db: AsyncSession, session_id: int, resolved_by: str) -> dict:
+    """Transition escrows back from HELD to RESERVED — the inverse edge of
+    `hold()`, journaled and locked the same way.
+
+    This is the doorway a dispute resolution walks through before delegating
+    to settle()/void(): without the lock and the state guard here, any rows
+    that come back from an unlocked read get rewritten to RESERVED regardless
+    of what state they were actually in, and a race with a concurrent
+    settle/void/hold on the same session is not caught at all.
+    """
+    escrows = await _escrows_for(db, session_id, for_update=True)
+    if not escrows:
+        raise EscrowStateError(session_id, "MISSING", "resolve_hold")
+
+    states = {e.state for e in escrows}
+    if states != {"HELD"}:
+        raise EscrowStateError(session_id, ", ".join(sorted(states)), "resolve_hold")
+
+    # Zero-movement entry, same shape as hold()'s: an empty line list sums to
+    # zero and satisfies post_entry's balanced-entry invariant, giving this
+    # edge an audit record and unique-index-backed idempotency instead of an
+    # unlocked state check. The key is "unhold:{session_id}" -- the semantic
+    # inverse of "hold:{session_id}" -- which cannot collide with settle:,
+    # void:, or hold: (different prefixes), nor with the reserved-but-unused
+    # dispute_resolve:{session_id} (reusing that key here would risk exactly
+    # the double-journaling it was reserved to prevent: the delegated
+    # settle/void call journals the actual money movement under its own key,
+    # and this entry only records the state edge that unblocks it).
+    await post_entry(
+        db,
+        idempotency_key=f"unhold:{session_id}",
+        entry_type="escrow_resolve_hold",
+        session_id=session_id,
+        payload={"resolved_by": resolved_by},
+        lines=[],
+    )
+
+    for escrow in escrows:
+        escrow.state = "RESERVED"
+    await db.flush()
+
+    return {"session_id": session_id, "resolved": True}
+
+
 def _escrow_dict(escrow: Escrow) -> dict:
     return {
         "session_id": escrow.session_id,

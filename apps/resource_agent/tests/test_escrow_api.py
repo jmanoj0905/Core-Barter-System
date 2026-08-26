@@ -357,3 +357,34 @@ async def test_settle_racing_void_has_exactly_one_winner(client, session_factory
 
     account_1 = (await client.get("/resource/accounts/1")).json()
     assert account_1["locked"] == 0
+
+
+@pytest.mark.asyncio
+async def test_resolve_dispute_rejects_when_escrows_are_not_held(client):
+    """resolve_dispute must not silently rewrite escrow state back to
+    RESERVED regardless of what state the rows are actually in.
+
+    Holding a session opens a Dispute row and moves its escrows to HELD.
+    Voiding that same session directly (a state void()'s own check already
+    permits, since HELD is one of the active states it accepts) moves the
+    escrows to VOIDED but leaves the Dispute row OPEN -- orphaned. Resolving
+    that dispute must be rejected with ESCROW_STATE rather than flipping the
+    (already-VOIDED) escrows back to RESERVED and paying out a settlement on
+    money that was already returned.
+    """
+    await _open_accounts(client)
+    await client.post("/resource/escrow/reserve", json=RESERVE_BODY)
+    await client.post("/resource/escrow/100/hold", json={"reason": "flagged"})
+    await client.post("/resource/escrow/void", json={"session_id": 100, "reason": "abandoned"})
+
+    res = await client.post(
+        "/resource/disputes/100/resolve",
+        json={"resolution": "settle"},
+    )
+
+    assert res.status_code == 409
+    assert res.json()["detail"]["code"] == "ESCROW_STATE"
+
+    # And the escrows are untouched by the rejected resolution attempt.
+    escrows = (await client.get("/resource/escrow/100")).json()
+    assert {e["state"] for e in escrows["escrows"]} == {"VOIDED"}

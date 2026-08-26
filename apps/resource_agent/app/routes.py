@@ -170,12 +170,9 @@ async def resolve_dispute(
     if not dispute:
         raise HTTPException(status_code=404, detail="No open dispute for this session")
 
-    escrows = await escrow_service._escrows_for(db, session_id)
-    for item in escrows:
-        item.state = "RESERVED"
-    await db.flush()
-
     try:
+        await escrow_service.resolve_hold(db, session_id, req.resolved_by)
+
         if req.resolution == "settle":
             result = await escrow_service.settle(
                 db, session_id, req.verdict_type, req.qa_score, {}, cfg
