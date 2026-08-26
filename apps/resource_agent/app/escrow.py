@@ -39,8 +39,12 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-async def _escrows_for(db: AsyncSession, session_id: int) -> list[Escrow]:
+async def _escrows_for(
+    db: AsyncSession, session_id: int, *, for_update: bool = False
+) -> list[Escrow]:
     stmt = select(Escrow).where(Escrow.session_id == session_id).order_by(Escrow.user_id)
+    if for_update:
+        stmt = stmt.with_for_update().execution_options(populate_existing=True)
     return list((await db.execute(stmt)).scalars().all())
 
 
@@ -49,9 +53,20 @@ async def reserve(
 ) -> dict:
     """Lock every participant's stake in one transaction, or lock nothing.
 
-    Accounts are locked in user_id order so concurrent sessions cannot deadlock.
+    Both the lock acquired by `materialize()` (to post owed regen/floor
+    top-up) and the sufficiency pre-check below must lock `user_available`
+    accounts in ascending account_id order — the same canonical order
+    `post_entry` uses — not ascending user_id order. Those two orders only
+    coincide by accident, since accounts are created lazily whenever an
+    account is first opened; locking by user_id here would let a concurrent
+    reserve and settle/void on the same two accounts acquire them in
+    opposite orders and deadlock. `materialize` itself is unmodified (it
+    always locks its one account); only the *order in which this function
+    calls it across participants* is canonicalised here, alongside the
+    pre-check's own lock. Stake computation and movement building stay in
+    user_id order — only lock acquisition order is canonicalised.
     """
-    existing = await _escrows_for(db, session_id)
+    existing = await _escrows_for(db, session_id, for_update=True)
     if existing:
         return {
             "session_id": session_id,
@@ -61,18 +76,27 @@ async def reserve(
 
     ordered = sorted(participants, key=lambda p: p["user_id"])
 
+    # Resolve accounts and compute stakes in user_id order first — this
+    # doesn't lock anything: ensure_accounts's initial grant is idempotent
+    # per user and short-circuits via post_entry's replay path once already
+    # granted, and get_or_create_account is a plain, non-locking select.
     stakes: dict[int, int] = {}
+    trust_by_user: dict[int, float] = {}
+    accounts_by_user: dict[int, Account] = {}
     for participant in ordered:
         user_id = participant["user_id"]
         await ensure_accounts(db, user_id, cfg)
-        await materialize(db, user_id, participant["trust_score"], cfg)
         stakes[user_id] = calculate_escrow(participant["trust_score"], cfg)
+        trust_by_user[user_id] = participant["trust_score"]
+        accounts_by_user[user_id] = await get_or_create_account(db, "user_available", user_id)
 
-    # Check every participant before moving any credits. Accounts are fetched
-    # FOR UPDATE in user_id order, which is what makes concurrent sessions
-    # deadlock-free.
-    for user_id, stake in stakes.items():
-        account = await get_or_create_account(db, "user_available", user_id)
+    # Now materialize owed credits and check sufficiency in ascending
+    # account_id order — canonical, independent of user_id — which is what
+    # makes concurrent reserve/settle/void deadlock-free.
+    for user_id in sorted(stakes, key=lambda uid: accounts_by_user[uid].id):
+        await materialize(db, user_id, trust_by_user[user_id], cfg)
+        stake = stakes[user_id]
+        account = accounts_by_user[user_id]
         locked_account = (
             await db.execute(
                 select(Account)

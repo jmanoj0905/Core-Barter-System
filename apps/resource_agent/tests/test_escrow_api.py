@@ -1,9 +1,14 @@
+import asyncio
+
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
+from app import escrow as escrow_service
+from app.accounts import ensure_accounts
 from app.database import get_db
 from app.main import app
+from app.models import Account
 from app.policy import PolicyConfig
 
 CFG = PolicyConfig()
@@ -200,3 +205,106 @@ async def test_ledger_lists_entries_for_a_user(client):
 
     assert res.status_code == 200
     assert res.json()["entries"][0]["entry_type"] == "grant"
+
+
+def _is_account_lock(stmt) -> bool:
+    """True for a SELECT ... FOR UPDATE against the accounts table."""
+    return (
+        getattr(stmt, "_for_update_arg", None) is not None
+        and bool(getattr(stmt, "column_descriptions", None))
+        and stmt.column_descriptions[0]["type"] is Account
+    )
+
+
+def _pause_after_first_account_lock(session, delay: float = 0.2):
+    """Instrument `session.execute` so it sleeps briefly right after this
+    session acquires its FIRST account row lock (and only that one).
+
+    This is a bounded delay, not a rendezvous: it cannot hang a session that
+    never reaches an account lock (e.g. one that blocks *inside* its own
+    FOR UPDATE select waiting on the other session, as happens once both
+    sides canonicalise on the same first account). It only widens the window
+    in which two concurrent transactions can genuinely interleave their lock
+    acquisition, which real network-speed local Postgres queries otherwise
+    complete too fast to reproduce reliably.
+    """
+    orig_execute = session.execute
+    paused = False
+
+    async def patched_execute(stmt, *a, **kw):
+        nonlocal paused
+        result = await orig_execute(stmt, *a, **kw)
+        if not paused and _is_account_lock(stmt):
+            paused = True
+            await asyncio.sleep(delay)
+        return result
+
+    session.execute = patched_execute
+
+
+@pytest.mark.asyncio
+async def test_reserve_locks_accounts_in_the_same_canonical_order_as_settle(
+    db, session_factory
+):
+    """A concurrent reserve and settle touching the same two users' accounts
+    must not deadlock, even when account ids run opposite to user ids.
+
+    post_entry (used by settle/void/reserve's own movement-posting) locks by
+    ascending account_id. Before this fix, reserve's *sufficiency* pre-check
+    locked by ascending user_id instead — a different, uncoordinated order.
+    Those two orders only coincide when accounts happen to have been created
+    in user_id order, which nothing guarantees: accounts come into existence
+    lazily, whenever `POST /resource/accounts` first runs for that user.
+
+    To make the two orders provably disagree, accounts are created here in
+    *reverse* user_id order (user 2 before user 1), so account_id(2) <
+    account_id(1) while user_id(1) < user_id(2). A concurrent settle
+    (session A, already reserved) and reserve (session B, brand new) then
+    touch the same two users' `user_available` accounts. Under the old
+    user_id-ordered pre-check, reserve locks user 1's account first while
+    settle's (correctly canonical) post_entry lock ends up requesting user
+    1's account only after already holding user 2's — the classic opposite-
+    order deadlock this whole fix family exists to remove, just relocated
+    to a different boundary.
+    """
+    await ensure_accounts(db, 2, CFG)  # created first -> smaller account_id
+    await ensure_accounts(db, 1, CFG)  # created second -> larger account_id
+    await db.commit()
+
+    participants = [
+        {"user_id": 1, "trust_score": 0.3},
+        {"user_id": 2, "trust_score": 0.3},
+    ]
+
+    async with session_factory() as setup:
+        await escrow_service.reserve(setup, 500, participants, CFG)
+        await setup.commit()
+
+    async def do_settle():
+        async with session_factory() as session:
+            _pause_after_first_account_lock(session)
+            result = await escrow_service.settle(
+                session, 500, "SUCCESSFUL", 0.9,
+                {
+                    1: {"quality": 0.5, "engagement": 0.5, "no_show": False},
+                    2: {"quality": 0.5, "engagement": 0.5, "no_show": False},
+                },
+                CFG,
+            )
+            await session.commit()
+            return result
+
+    async def do_reserve():
+        async with session_factory() as session:
+            _pause_after_first_account_lock(session)
+            result = await escrow_service.reserve(session, 501, participants, CFG)
+            await session.commit()
+            return result
+
+    results = await asyncio.wait_for(
+        asyncio.gather(do_settle(), do_reserve()), timeout=10
+    )
+
+    settle_result, reserve_result = results
+    assert settle_result["mode"] == "FULL_RELEASE"
+    assert reserve_result["created"] is True
