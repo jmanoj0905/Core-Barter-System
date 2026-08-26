@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -137,6 +138,44 @@ async def test_materialize_is_idempotent_for_the_same_instant(db):
 
     assert account.balance == balance_after_first
     assert account.last_regen_at == last_regen_after_first
+
+    entries = (
+        await db.execute(
+            select(JournalEntry).where(JournalEntry.entry_type == "regen")
+        )
+    ).scalars().all()
+    assert len(entries) == 1
+
+
+@pytest.mark.asyncio
+async def test_materialize_is_race_safe_across_concurrent_calls(db, session_factory):
+    """Two independent sessions calling materialize for the same user, with
+    regen genuinely owed, concurrently. The row lock in materialize must
+    serialize the read-decide-post sequence so the loser's decision is made
+    from the winner's already-posted state, not a stale pre-lock copy —
+    otherwise the loser can recompute the same day's regen as still owed and
+    post it again (or, more insidiously, a different amount) after the
+    winner already covered it.
+    """
+    await ensure_accounts(db, 1, CFG)
+    account = await get_or_create_account(db, "user_available", 1)
+    mint = await get_or_create_account(db, "platform_mint", None)
+    await post_entry(
+        db, idempotency_key="spend:6", entry_type="penalty", session_id=None,
+        payload={}, lines=[(account.id, -90), (mint.id, 90)],
+    )
+    account.last_regen_at = NOW - timedelta(days=1)
+    await db.commit()
+
+    async def attempt():
+        async with session_factory() as session:
+            await materialize(session, 1, trust_score=0.5, cfg=CFG, now=NOW)
+            await session.commit()
+
+    await asyncio.gather(attempt(), attempt())
+
+    await db.refresh(account)
+    assert account.balance == 15  # 10 remaining + exactly one day's regen (5)
 
     entries = (
         await db.execute(

@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ledger import get_or_create_account, post_entry
-from app.models import Account, Escrow
+from app.models import Escrow
 from app.policy import PolicyConfig, floor_topup_amount, regen_amount, regen_rate
 
 ACTIVE_ESCROW_STATES = ("RESERVED", "HELD")
@@ -61,11 +61,16 @@ async def materialize(
     # under two different day-scoped idempotency keys (e.g. straddling UTC
     # midnight). Acquire the lock before anything below could autoflush a
     # pending insert against this row — same ordering rule as app.ledger.
-    available = (
-        await db.execute(
-            select(Account).where(Account.id == available.id).with_for_update()
-        )
-    ).scalar_one()
+    #
+    # A plain re-`select(...).with_for_update()` is not enough here: since
+    # `available` is already in the session's identity map from
+    # `get_or_create_account`, SQLAlchemy returns that same cached object
+    # without overwriting its attributes from the freshly-locked row, so the
+    # lock would serialize the write but the decision below would still be
+    # made from stale data. `Session.refresh(..., with_for_update=...)`
+    # re-fetches under the lock *and* repopulates the instance in place,
+    # which is what makes the post-lock values actually visible here.
+    await db.refresh(available, with_for_update=True)
     mint = await get_or_create_account(db, "platform_mint", None)
 
     owed = regen_amount(
