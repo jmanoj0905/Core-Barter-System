@@ -151,7 +151,7 @@ async def settle(
     per_user: dict[int, dict],
     cfg: PolicyConfig,
 ) -> dict:
-    escrows = await _escrows_for(db, session_id)
+    escrows = await _escrows_for(db, session_id, for_update=True)
     if not escrows:
         raise EscrowStateError(session_id, "MISSING", "settle")
 
@@ -210,14 +210,14 @@ async def settle(
 
 
 async def void(db: AsyncSession, session_id: int, reason: str) -> dict:
-    escrows = await _escrows_for(db, session_id)
+    escrows = await _escrows_for(db, session_id, for_update=True)
     if not escrows:
         raise EscrowStateError(session_id, "MISSING", "void")
 
     states = {e.state for e in escrows}
     if states == {"VOIDED"}:
         return {"session_id": session_id, "voided": False, "reason": reason}
-    if not states <= {"RESERVED", "HELD"}:
+    if not states <= set(ACTIVE_STATES):
         raise EscrowStateError(session_id, ", ".join(sorted(states)), "void")
 
     movements: list[Movement] = []
@@ -246,7 +246,12 @@ async def void(db: AsyncSession, session_id: int, reason: str) -> dict:
 
 
 async def hold(db: AsyncSession, session_id: int, reason: str) -> dict:
-    escrows = await _escrows_for(db, session_id)
+    # Lock the escrow rows before anything below could autoflush a pending
+    # insert (the Dispute row) that references this session, and before any
+    # of the state checks — this is what makes a concurrent hold/settle/void
+    # on the same session serialize instead of racing on an unlocked read of
+    # `.state`.
+    escrows = await _escrows_for(db, session_id, for_update=True)
     if not escrows:
         raise EscrowStateError(session_id, "MISSING", "hold")
 
@@ -255,6 +260,21 @@ async def hold(db: AsyncSession, session_id: int, reason: str) -> dict:
         return {"session_id": session_id, "held": False, "reason": reason}
     if not states <= {"RESERVED"}:
         raise EscrowStateError(session_id, ", ".join(sorted(states)), "hold")
+
+    # hold moves no credits, but every state edge still gets a journal entry:
+    # a zero-movement entry satisfies post_entry's balanced-entry invariant
+    # (an empty line list sums to zero) and gives this transition the same
+    # unique-index-backed idempotency as reserve/settle/void, instead of
+    # relying on the (now-locked, but previously unlocked) state column as a
+    # second, ad hoc idempotency mechanism.
+    await post_entry(
+        db,
+        idempotency_key=f"hold:{session_id}",
+        entry_type="escrow_hold",
+        session_id=session_id,
+        payload={"reason": reason},
+        lines=[],
+    )
 
     for escrow in escrows:
         escrow.state = "HELD"

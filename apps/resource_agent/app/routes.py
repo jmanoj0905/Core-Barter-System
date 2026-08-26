@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -160,8 +162,6 @@ async def get_ledger(
 async def resolve_dispute(
     session_id: int, req: DisputeResolveRequest, db: AsyncSession = Depends(get_db)
 ):
-    from datetime import datetime, timezone
-
     dispute = (
         await db.execute(
             select(Dispute).where(Dispute.session_id == session_id, Dispute.state == "OPEN")
@@ -175,14 +175,21 @@ async def resolve_dispute(
         item.state = "RESERVED"
     await db.flush()
 
-    if req.resolution == "settle":
-        result = await escrow_service.settle(
-            db, session_id, req.verdict_type, req.qa_score, {}, cfg
+    try:
+        if req.resolution == "settle":
+            result = await escrow_service.settle(
+                db, session_id, req.verdict_type, req.qa_score, {}, cfg
+            )
+        elif req.resolution == "void":
+            result = await escrow_service.void(db, session_id, f"dispute: {req.note}")
+        else:
+            raise HTTPException(status_code=400, detail="resolution must be 'settle' or 'void'")
+    except escrow_service.EscrowStateError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail={"code": "ESCROW_STATE", "state": exc.state, "action": exc.action},
         )
-    elif req.resolution == "void":
-        result = await escrow_service.void(db, session_id, f"dispute: {req.note}")
-    else:
-        raise HTTPException(status_code=400, detail="resolution must be 'settle' or 'void'")
 
     dispute.state = "RESOLVED"
     dispute.resolution = req.resolution

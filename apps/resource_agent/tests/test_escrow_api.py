@@ -308,3 +308,52 @@ async def test_reserve_locks_accounts_in_the_same_canonical_order_as_settle(
     settle_result, reserve_result = results
     assert settle_result["mode"] == "FULL_RELEASE"
     assert reserve_result["created"] is True
+
+
+@pytest.mark.asyncio
+async def test_settle_racing_void_has_exactly_one_winner(client, session_factory):
+    """A settle and a void racing on the same session must not both succeed:
+    the loser has to see the winner's committed state and be rejected.
+
+    Before locking the Escrow rows, both could read `states == {"RESERVED"}`
+    concurrently (before either commits) and both proceed — one returning
+    the locked funds, the other paying out a settlement, for the same stake.
+    """
+    await _open_accounts(client)
+    await client.post("/resource/escrow/reserve", json=RESERVE_BODY)
+
+    async def do_settle():
+        async with session_factory() as session:
+            try:
+                await escrow_service.settle(
+                    session, 100, "SUCCESSFUL", 0.9,
+                    {
+                        1: {"quality": 0.5, "engagement": 0.5, "no_show": False},
+                        2: {"quality": 0.5, "engagement": 0.5, "no_show": False},
+                    },
+                    CFG,
+                )
+                await session.commit()
+                return "ok"
+            except escrow_service.EscrowStateError:
+                await session.rollback()
+                return "rejected"
+
+    async def do_void():
+        async with session_factory() as session:
+            try:
+                await escrow_service.void(session, 100, "toxicity")
+                await session.commit()
+                return "ok"
+            except escrow_service.EscrowStateError:
+                await session.rollback()
+                return "rejected"
+
+    outcomes = await asyncio.wait_for(
+        asyncio.gather(do_settle(), do_void()), timeout=10
+    )
+
+    assert sorted(outcomes) == ["ok", "rejected"]
+
+    account_1 = (await client.get("/resource/accounts/1")).json()
+    assert account_1["locked"] == 0
