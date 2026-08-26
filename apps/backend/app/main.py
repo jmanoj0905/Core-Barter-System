@@ -41,6 +41,15 @@ async def lifespan(app: FastAPI):
 
     _ok("Database ready — tables created, users seeded")
 
+    from app.clients.resource import ResourceUnavailable, resource_client
+
+    for uid in (1, 2):
+        try:
+            await resource_client.ensure_account(uid)
+        except ResourceUnavailable as exc:
+            _warn(f"Resource Agent unreachable, account {uid} not provisioned ({exc})")
+    _ok("Resource accounts provisioned")
+
     from app.safety import init_detector
     try:
         init_detector()

@@ -10,11 +10,13 @@ services:
       SEMANTIC_URL: http://semantic_analysis:8002
       AUDIO_URL: http://audio_pipeline:8001
       WARNING_URL: http://warning_engine:8003
+      RESOURCE_URL: http://resource_agent:8004
       MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
     restart: on-failure
     depends_on:
       - semantic_analysis
       - warning_engine
+      - resource_agent
 
   audio_pipeline:
     build:

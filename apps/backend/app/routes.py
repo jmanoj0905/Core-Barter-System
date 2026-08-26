@@ -77,10 +77,8 @@ from app.models import (
 from app.schemas import (
     ConfirmRequest,
     DriftSummaryRequest,
-    EscrowReleaseRequest,
     FrameCheckRequest,
     SessionCreateRequest,
-    SettlementRequest,
     TerminateRequest,
     TranscriptSegmentRequest,
     WarningLogRequest,
@@ -179,8 +177,11 @@ async def create_session(req: SessionCreateRequest, db: AsyncSession = Depends(g
 
 @router.post("/session/{barter_id}/start")
 async def start_session(barter_id: int, db: AsyncSession = Depends(get_db)):
-    from app.escrow import lock_escrow
-    from app.schemas import EscrowResponse
+    from app.clients.resource import (
+        InsufficientCredits,
+        ResourceUnavailable,
+        resource_client,
+    )
 
     result = await db.execute(select(BarterSession).where(BarterSession.id == barter_id))
     session = result.scalar_one_or_none()
@@ -203,46 +204,54 @@ async def start_session(barter_id: int, db: AsyncSession = Depends(get_db)):
     if not contract:
         raise HTTPException(status_code=404, detail="Session contract not found")
 
-    teacher_escrow = await lock_escrow(db, barter_id, contract.teacher_user_id)
-    if not teacher_escrow:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Insufficient balance for escrow: user {contract.teacher_user_id}",
-        )
+    user_ids = [contract.teacher_user_id, contract.learner_user_id]
+    users = (
+        await db.execute(select(User).where(User.id.in_(user_ids)))
+    ).scalars().all()
+    trust_by_id = {u.id: u.trust_score for u in users}
 
-    learner_escrow = await lock_escrow(db, barter_id, contract.learner_user_id)
-    if not learner_escrow:
-        # roll back teacher escrow already locked in this flush
-        await db.rollback()
+    participants = [
+        {"user_id": uid, "trust_score": float(trust_by_id.get(uid, 0.5))}
+        for uid in user_ids
+    ]
+
+    try:
+        reservation = await resource_client.reserve(barter_id, participants)
+    except InsufficientCredits as exc:
         raise HTTPException(
             status_code=400,
-            detail=f"Insufficient balance for escrow: user {contract.learner_user_id}",
+            detail=(
+                f"Insufficient credits: user {exc.user_id} needs {exc.required} "
+                f"but has {exc.available} (short by {exc.shortfall})"
+            ),
+        )
+    except ResourceUnavailable as exc:
+        raise HTTPException(
+            status_code=503, detail=f"Resource Agent unavailable: {exc}"
         )
 
     session.status = "active"
     session.started_at = datetime.now(timezone.utc)
     await db.commit()
 
-    t_amt = teacher_escrow.amount
-    l_amt = learner_escrow.amount
-    _ok(f"Session {session.id} started — escrow locked  teacher={t_amt}cr  learner={l_amt}cr")
+    stakes = {e["user_id"]: e["amount"] for e in reservation["escrows"]}
+    _ok(
+        f"Session {session.id} started — escrow locked  "
+        f"teacher={stakes.get(contract.teacher_user_id)}cr  "
+        f"learner={stakes.get(contract.learner_user_id)}cr"
+    )
 
     return {
         "barter_id": session.id,
         "started_at": session.started_at.isoformat(),
         "status": session.status,
-        "teacher_escrow": EscrowResponse.model_validate(teacher_escrow).model_dump()
-        if teacher_escrow
-        else None,
-        "learner_escrow": EscrowResponse.model_validate(learner_escrow).model_dump()
-        if learner_escrow
-        else None,
+        "escrows": reservation["escrows"],
     }
 
 
 @router.post("/session/{barter_id}/confirm")
 async def confirm_session(barter_id: int, req: ConfirmRequest, db: AsyncSession = Depends(get_db)):
-    from app.escrow import apply_settlement
+    from app.clients.resource import ResourceUnavailable, resource_client
 
     result = await db.execute(select(BarterSession).where(BarterSession.id == barter_id))
     session = result.scalar_one_or_none()
@@ -306,7 +315,29 @@ async def confirm_session(barter_id: int, req: ConfirmRequest, db: AsyncSession 
             if verdict and verdict.verdict_type == "PARTIAL"
             else 0.0
         )
-        settlement_result = await apply_settlement(db, barter_id, qa_score)
+        verdict_type = verdict.verdict_type if verdict else "DISPUTE"
+
+        engagement = 0.0
+        if verdict and verdict.drift_summary:
+            try:
+                engagement = float(
+                    json.loads(verdict.drift_summary).get("engagement", {}).get("score", 0.0)
+                )
+            except (ValueError, AttributeError):
+                engagement = 0.0
+
+        quality = (verdict.on_topic_percentage or 0.0) / 100.0 if verdict else 0.0
+        per_user = {
+            uid: {"quality": quality, "engagement": engagement, "no_show": False}
+            for uid in confirmed_users
+        }
+
+        try:
+            settlement_result = await resource_client.settle(
+                barter_id, verdict_type, qa_score, per_user
+            )
+        except ResourceUnavailable as exc:
+            settlement_result = {"error": f"Resource Agent unavailable: {exc}"}
 
     await db.commit()
 
@@ -778,119 +809,34 @@ async def check_video_frame(req: FrameCheckRequest):
 
 @router.get("/wallet/{user_id}")
 async def get_wallet(user_id: int, db: AsyncSession = Depends(get_db)):
-    from app.escrow import get_or_create_wallet
-    from app.models import User
+    from app.clients.resource import ResourceUnavailable, resource_client
 
-    wallet = await get_or_create_wallet(db, user_id)
-    user_result = await db.execute(select(User).where(User.id == user_id))
-    user = user_result.scalar_one_or_none()
-    trust_score = user.trust_score if user else 1.0
-    await db.commit()
-
-    return {
-        "id": wallet.id,
-        "user_id": wallet.user_id,
-        "available_balance": wallet.available_balance,
-        "locked_balance": wallet.locked_balance,
-        "total_earned": wallet.total_earned,
-        "total_spent": wallet.total_spent,
-        "trust_score": trust_score,
-    }
-
-
-@router.post("/escrow/lock")
-async def lock_escrow_endpoint(barter_id: int, db: AsyncSession = Depends(get_db)):
-    from app.escrow import lock_escrow, get_or_create_wallet
-    from app.schemas import EscrowResponse
-
-    session_result = await db.execute(select(BarterSession).where(BarterSession.id == barter_id))
-    session = session_result.scalar_one_or_none()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-
-    teacher_escrow = await lock_escrow(db, barter_id, session.user1_id)
-    learner_escrow = await lock_escrow(db, barter_id, session.user2_id)
-
-    await db.commit()
-
-    return {
-        "teacher_escrow": EscrowResponse.model_validate(teacher_escrow).model_dump()
-        if teacher_escrow
-        else None,
-        "learner_escrow": EscrowResponse.model_validate(learner_escrow).model_dump()
-        if learner_escrow
-        else None,
-    }
+    user = (await db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+    trust = float(user.trust_score) if user else 0.5
+    try:
+        return await resource_client.get_account(user_id, trust)
+    except ResourceUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
 
 
 @router.get("/escrow/{barter_id}")
-async def get_session_escrows(barter_id: int, db: AsyncSession = Depends(get_db)):
-    from app.escrow import get_escrows_by_session
-    from app.schemas import EscrowResponse
+async def get_escrow(barter_id: int):
+    from app.clients.resource import ResourceUnavailable, resource_client
 
-    escrows = await get_escrows_by_session(db, barter_id)
-    return [EscrowResponse.model_validate(e).model_dump() for e in escrows]
-
-
-@router.post("/escrow/release")
-async def release_escrow_endpoint(req: EscrowReleaseRequest, db: AsyncSession = Depends(get_db)):
-    from app.escrow import release_escrow
-    from app.schemas import EscrowResponse
-
-    escrow = await release_escrow(db, req.escrow_id, req.release_type, req.penalty_amount)
-    await db.commit()
-
-    if not escrow:
-        raise HTTPException(status_code=404, detail="Escrow not found or already released")
-
-    return EscrowResponse.model_validate(escrow).model_dump()
+    try:
+        return await resource_client.get_escrow(barter_id)
+    except ResourceUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
 
 
-@router.post("/settlement/{barter_id}")
-async def settle_session(
-    barter_id: int, req: SettlementRequest, db: AsyncSession = Depends(get_db)
-):
-    from app.escrow import apply_settlement
-    from app.schemas import SettlementResponse
-    from app.models import User
+@router.get("/transactions/{user_id}")
+async def get_transactions(user_id: int):
+    from app.clients.resource import ResourceUnavailable, resource_client
 
-    result = await apply_settlement(db, barter_id, req.qa_score)
-
-    if "error" in result:
-        raise HTTPException(status_code=400, detail=result["error"])
-
-    contract_result = await db.execute(
-        select(SessionContract).where(SessionContract.barter_session_id == barter_id)
-    )
-    contract = contract_result.scalar_one_or_none()
-
-    if contract:
-        teacher_result = await db.execute(select(User).where(User.id == contract.teacher_user_id))
-        teacher = teacher_result.scalar_one_or_none()
-        learner_result = await db.execute(select(User).where(User.id == contract.learner_user_id))
-        learner = learner_result.scalar_one_or_none()
-
-        if teacher:
-            teacher.trust_score = max(
-                0.0, min(1.0, teacher.trust_score + result["teacher_trust_delta"])
-            )
-        if learner:
-            learner.trust_score = max(
-                0.0, min(1.0, learner.trust_score + result["learner_trust_delta"])
-            )
-
-    await db.commit()
-
-    return SettlementResponse(
-        provider_escrow_released=result["teacher_escrow_released"],
-        learner_escrow_released=result["learner_escrow_released"],
-        provider_bonus=result["teacher_bonus"],
-        learner_refund=result["learner_escrow_released"]
-        if result["release_type"] == "penalty"
-        else 0,
-        provider_trust_delta=result["teacher_trust_delta"],
-        learner_trust_delta=result["learner_trust_delta"],
-    )
+    try:
+        return await resource_client.get_ledger(user_id)
+    except ResourceUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
 
 
 @router.get("/users")
@@ -903,10 +849,3 @@ async def get_users(db: AsyncSession = Depends(get_db)):
     ]
 
 
-@router.get("/transactions/{user_id}")
-async def get_user_transactions(user_id: int, db: AsyncSession = Depends(get_db)):
-    from app.escrow import get_transactions_by_user
-    from app.schemas import CreditTransactionResponse
-
-    transactions = await get_transactions_by_user(db, user_id)
-    return [CreditTransactionResponse.model_validate(t).model_dump() for t in transactions]

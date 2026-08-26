@@ -66,13 +66,54 @@ async def override_get_db():
         yield session
 
 
+async def _default_fake_reserve(self, session_id, participants):
+    """Default resource_agent stand-in: reserve 5cr per participant.
+
+    The e2e suite runs without a live resource_agent (in-memory SQLite,
+    ASGI transport, no Docker services). Individual tests that need to
+    assert on the delegation itself (e.g. test_session_start_locks_real_escrow)
+    override this via monkeypatch.setattr after the fixture has set it up.
+    """
+    return {
+        "session_id": session_id,
+        "escrows": [
+            {"user_id": p["user_id"], "amount": 5, "state": "RESERVED"}
+            for p in participants
+        ],
+        "created": True,
+    }
+
+
+async def _default_fake_settle(self, session_id, verdict_type, qa_score, per_user):
+    return {
+        "session_id": session_id,
+        "mode": verdict_type,
+        "breakdown": {str(uid): {"released": 5, "bonus": 0} for uid in per_user},
+        "entry_id": 1,
+    }
+
+
+async def _default_fake_ensure_account(self, user_id):
+    return {"user_id": user_id, "available": 100, "locked": 0}
+
+
 @pytest_asyncio.fixture
-async def backend_client():
+async def backend_client(monkeypatch):
     """Async test client for the backend FastAPI app, backed by in-memory SQLite."""
     # Patch safety init to avoid loading NudeNet
     with patch("app.safety.init_detector", lambda: None):
         from app.main import app
         from app.database import get_db
+        from app.clients.resource import ResourceClient
+
+        # resource_agent isn't running in the e2e suite; stub it with sane
+        # defaults so tests exercising the ordinary session flow don't need
+        # a live service. Tests asserting delegation behavior itself
+        # (e.g. test_session_start_locks_real_escrow) re-patch these via
+        # their own monkeypatch calls, which take precedence.
+        monkeypatch.setattr(ResourceClient, "reserve", _default_fake_reserve)
+        monkeypatch.setattr(ResourceClient, "settle", _default_fake_settle)
+        monkeypatch.setattr(ResourceClient, "ensure_account", _default_fake_ensure_account)
 
         app.dependency_overrides[get_db] = override_get_db
 

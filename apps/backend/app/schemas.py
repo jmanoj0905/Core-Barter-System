@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 
 class SessionCreateRequest(BaseModel):
@@ -64,75 +64,3 @@ class DriftSummaryRequest(BaseModel):
     terminated_early: bool = False
 
 
-class WalletResponse(BaseModel):
-    id: int
-    user_id: int
-    available_balance: int
-    locked_balance: int
-    total_earned: int
-    total_spent: int
-    trust_score: float = 1.0
-
-    class Config:
-        from_attributes = True
-
-
-class EscrowResponse(BaseModel):
-    id: int
-    barter_session_id: int
-    user_id: int
-    amount: int
-    status: str
-    locked_at: str
-    released_at: str | None = None
-    release_type: str | None = None
-
-    class Config:
-        from_attributes = True
-
-    @field_validator("locked_at", "released_at", mode="before")
-    @classmethod
-    def parse_datetime(cls, v):
-        if v is None:
-            return None
-        if hasattr(v, "isoformat"):
-            return v.isoformat()
-        return str(v)
-
-
-class EscrowLockRequest(BaseModel):
-    barter_session_id: int
-    user_id: int
-
-
-class EscrowReleaseRequest(BaseModel):
-    escrow_id: int
-    release_type: str
-    penalty_amount: int = 0
-
-
-class SettlementRequest(BaseModel):
-    barter_session_id: int
-    qa_score: float
-
-
-class SettlementResponse(BaseModel):
-    provider_escrow_released: int
-    learner_escrow_released: int
-    provider_bonus: int
-    learner_refund: int
-    provider_trust_delta: float
-    learner_trust_delta: float
-
-
-class CreditTransactionResponse(BaseModel):
-    id: int
-    user_id: int
-    barter_session_id: int | None
-    transaction_type: str
-    amount: int
-    balance_after: int
-    description: str
-
-    class Config:
-        from_attributes = True
