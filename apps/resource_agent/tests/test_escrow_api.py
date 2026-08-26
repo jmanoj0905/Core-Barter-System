@@ -98,15 +98,52 @@ async def test_reserve_is_all_or_nothing_when_one_user_is_short(client):
     res = await client.post("/resource/escrow/reserve", json=body(902))
 
     assert res.status_code == 409
-    assert res.json()["detail"]["code"] == "INSUFFICIENT_CREDITS"
-    assert res.json()["detail"]["required"] == 40
-    assert res.json()["detail"]["available"] == 20
+    detail = res.json()["detail"]
+    assert detail["code"] == "INSUFFICIENT_CREDITS"
+    assert detail["required"] == 40
+    assert detail["available"] == 20
+    assert detail["shortfall"] == 20
+
+    # trust_score 0.0 -> regen_rate 5/day; shortfall 20 closes in 4 whole days.
+    regen_eta = detail["regen_eta"]
+    assert regen_eta["coverable"] is True
+    assert regen_eta["regen_rate_per_day"] == 5
+    assert regen_eta["days_until_covered"] == 4
+    assert regen_eta["eta"] is not None
 
     # Neither user may be touched by the failed reservation.
     for user_id in (1, 2):
         account = (await client.get(f"/resource/accounts/{user_id}")).json()
         assert account["locked"] == 80
         assert account["available"] == 20
+
+
+@pytest.mark.asyncio
+async def test_reserve_insufficient_credits_uncoverable_by_regen(db):
+    """When the stake itself exceeds the regen cap, no amount of waiting for
+    passive regeneration closes the gap -- the estimate must say so rather
+    than returning a day count that never arrives."""
+    cfg = PolicyConfig(
+        initial_grant=20,
+        regen_cap=30,
+        base_escrow=40,
+        min_escrow=5,
+        max_escrow=40,
+    )
+    await ensure_accounts(db, 1, cfg)
+
+    with pytest.raises(escrow_service.InsufficientCredits) as exc_info:
+        await escrow_service.reserve(
+            db, 999, [{"user_id": 1, "trust_score": 0.0}], cfg
+        )
+
+    exc = exc_info.value
+    assert exc.required == 40
+    assert exc.available == 20
+    regen_eta = exc.regen_eta
+    assert regen_eta["coverable"] is False
+    assert regen_eta["days_until_covered"] is None
+    assert regen_eta["eta"] is None
 
 
 @pytest.mark.asyncio

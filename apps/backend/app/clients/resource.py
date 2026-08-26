@@ -16,12 +16,25 @@ class ResourceUnavailable(Exception):
 
 
 class InsufficientCredits(Exception):
-    def __init__(self, user_id: int, required: int, available: int, shortfall: int):
+    def __init__(
+        self,
+        user_id: int,
+        required: int,
+        available: int,
+        shortfall: int,
+        regen_eta: dict | None = None,
+    ):
         self.user_id = user_id
         self.required = required
         self.available = available
         self.shortfall = shortfall
+        self.regen_eta = regen_eta
         super().__init__(f"user {user_id} short by {shortfall} credits")
+
+
+class ResourceProtocolError(Exception):
+    """resource_agent returned an error response backend doesn't understand
+    the shape of (e.g. a 409 missing the keys this client expects)."""
 
 
 class ResourceClient:
@@ -36,14 +49,23 @@ class ResourceClient:
             raise ResourceUnavailable(str(exc)) from exc
 
         if res.status_code == 409:
-            detail = res.json().get("detail", {})
+            try:
+                detail = res.json().get("detail", {})
+            except ValueError:
+                detail = {}
             if detail.get("code") == "INSUFFICIENT_CREDITS":
-                raise InsufficientCredits(
-                    detail["user_id"],
-                    detail["required"],
-                    detail["available"],
-                    detail["shortfall"],
-                )
+                required_keys = ("user_id", "required", "available", "shortfall")
+                if all(k in detail for k in required_keys):
+                    raise InsufficientCredits(
+                        detail["user_id"],
+                        detail["required"],
+                        detail["available"],
+                        detail["shortfall"],
+                        detail.get("regen_eta"),
+                    )
+            raise ResourceProtocolError(
+                f"resource_agent returned 409 with an unrecognized body: {detail!r}"
+            )
         res.raise_for_status()
         return res.json()
 

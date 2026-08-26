@@ -179,6 +179,7 @@ async def create_session(req: SessionCreateRequest, db: AsyncSession = Depends(g
 async def start_session(barter_id: int, db: AsyncSession = Depends(get_db)):
     from app.clients.resource import (
         InsufficientCredits,
+        ResourceProtocolError,
         ResourceUnavailable,
         resource_client,
     )
@@ -218,16 +219,27 @@ async def start_session(barter_id: int, db: AsyncSession = Depends(get_db)):
     try:
         reservation = await resource_client.reserve(barter_id, participants)
     except InsufficientCredits as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                f"Insufficient credits: user {exc.user_id} needs {exc.required} "
-                f"but has {exc.available} (short by {exc.shortfall})"
-            ),
+        message = (
+            f"Insufficient credits: user {exc.user_id} needs {exc.required} "
+            f"but has {exc.available} (short by {exc.shortfall})"
         )
+        eta = exc.regen_eta or {}
+        if eta.get("coverable"):
+            message += (
+                f" — regenerates at {eta['regen_rate_per_day']}/day, "
+                f"covered in {eta['days_until_covered']} day(s) "
+                f"(by {eta['eta']})"
+            )
+        elif eta:
+            message += " — this amount exceeds the regeneration cap and will never be covered by waiting alone"
+        raise HTTPException(status_code=400, detail=message)
     except ResourceUnavailable as exc:
         raise HTTPException(
             status_code=503, detail=f"Resource Agent unavailable: {exc}"
+        )
+    except ResourceProtocolError as exc:
+        raise HTTPException(
+            status_code=502, detail=f"Resource Agent returned an unexpected response: {exc}"
         )
 
     session.status = "active"

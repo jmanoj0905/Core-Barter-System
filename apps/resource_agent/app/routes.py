@@ -56,6 +56,7 @@ async def reserve_escrow(req: ReserveRequest, db: AsyncSession = Depends(get_db)
                 "required": exc.required,
                 "available": exc.available,
                 "shortfall": exc.shortfall,
+                "regen_eta": exc.regen_eta,
             },
         )
     await db.commit()

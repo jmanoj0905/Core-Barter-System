@@ -181,3 +181,111 @@ async def test_session_start_locks_real_escrow(backend_client, monkeypatch):
     assert calls["session_id"] == barter_id
     assert {p["user_id"] for p in calls["participants"]} == {1, 2}
     assert all("trust_score" in p for p in calls["participants"])
+
+
+@pytest.mark.asyncio
+async def test_session_start_insufficient_credits_names_regen_wait(
+    backend_client, create_session_payload, monkeypatch
+):
+    """A 400 from a failed reserve must name who is short and how long
+    regeneration takes to cover the gap."""
+    from app.clients.resource import InsufficientCredits, ResourceClient
+
+    async def fake_reserve(self, session_id, participants):
+        raise InsufficientCredits(
+            user_id=1,
+            required=40,
+            available=20,
+            shortfall=20,
+            regen_eta={
+                "coverable": True,
+                "regen_rate_per_day": 5,
+                "days_until_covered": 4,
+                "eta": "2026-08-30T00:00:00+00:00",
+            },
+        )
+
+    monkeypatch.setattr(ResourceClient, "reserve", fake_reserve)
+
+    create = await backend_client.post("/session/create", json=create_session_payload)
+    barter_id = create.json()["barter_id"]
+
+    res = await backend_client.post(f"/session/{barter_id}/start")
+
+    assert res.status_code == 400
+    detail = res.json()["detail"]
+    assert "user 1" in detail
+    assert "short by 20" in detail
+    assert "4 day" in detail
+
+
+@pytest.mark.asyncio
+async def test_session_start_insufficient_credits_uncoverable_by_regen(
+    backend_client, create_session_payload, monkeypatch
+):
+    """When regeneration alone can never close the gap, say so instead of
+    fabricating a day count."""
+    from app.clients.resource import InsufficientCredits, ResourceClient
+
+    async def fake_reserve(self, session_id, participants):
+        raise InsufficientCredits(
+            user_id=1,
+            required=120,
+            available=20,
+            shortfall=100,
+            regen_eta={
+                "coverable": False,
+                "regen_rate_per_day": 20,
+                "days_until_covered": None,
+                "eta": None,
+            },
+        )
+
+    monkeypatch.setattr(ResourceClient, "reserve", fake_reserve)
+
+    create = await backend_client.post("/session/create", json=create_session_payload)
+    barter_id = create.json()["barter_id"]
+
+    res = await backend_client.post(f"/session/{barter_id}/start")
+
+    assert res.status_code == 400
+    detail = res.json()["detail"]
+    assert "never" in detail.lower()
+
+
+@pytest.mark.asyncio
+async def test_resource_client_post_degrades_on_malformed_409(monkeypatch):
+    """A 409 body resource_agent sends that this client doesn't recognize
+    (missing the INSUFFICIENT_CREDITS keys, or a different code entirely)
+    must raise a handled ResourceProtocolError, not fall through to
+    `raise_for_status()` and blow up as an unhandled httpx.HTTPStatusError.
+
+    `backend_client`'s conftest stubs ResourceClient.reserve/settle wholesale
+    for the rest of this suite, which bypasses `_post` entirely -- so this
+    hits `_post` directly instead of going through a route.
+    """
+    import httpx
+
+    from app.clients.resource import ResourceClient, ResourceProtocolError
+
+    class FakeAsyncClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        async def post(self, url, json=None):
+            request = httpx.Request("POST", url)
+            return httpx.Response(
+                409, json={"detail": {"code": "SOMETHING_ELSE"}}, request=request
+            )
+
+    monkeypatch.setattr(httpx, "AsyncClient", FakeAsyncClient)
+
+    client = ResourceClient(base_url="http://resource-agent")
+    with pytest.raises(ResourceProtocolError):
+        await client._post("/resource/escrow/reserve", {"session_id": 1, "participants": []})

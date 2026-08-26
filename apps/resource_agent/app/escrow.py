@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,17 +11,55 @@ from app.policy import (
     PolicyConfig,
     calculate_escrow,
     plan_settlement,
+    regen_rate,
 )
 
 ACTIVE_STATES = ("RESERVED", "HELD")
 
 
+def _regen_eta(required: int, available: int, trust_score: float, cfg: PolicyConfig) -> dict:
+    """How long until passive regeneration alone closes the shortfall.
+
+    Regeneration only ever pushes a balance up to `cfg.regen_cap` (see
+    `policy.regen_amount`), so if `required` exceeds that cap, no amount of
+    waiting closes the gap — we say so explicitly (`coverable: False`)
+    instead of returning a day count that never arrives. Otherwise the
+    shortfall closes after `ceil(shortfall / rate)` whole days, since regen
+    only accrues on whole elapsed days.
+    """
+    shortfall = required - available
+    rate = regen_rate(trust_score, cfg)
+    if required > cfg.regen_cap:
+        return {
+            "coverable": False,
+            "regen_rate_per_day": rate,
+            "days_until_covered": None,
+            "eta": None,
+        }
+
+    days = -(-shortfall // rate)  # ceil division, rate is always > 0
+    eta = datetime.now(timezone.utc) + timedelta(days=days)
+    return {
+        "coverable": True,
+        "regen_rate_per_day": rate,
+        "days_until_covered": days,
+        "eta": eta.isoformat(),
+    }
+
+
 class InsufficientCredits(Exception):
-    def __init__(self, user_id: int, required: int, available: int):
+    def __init__(
+        self,
+        user_id: int,
+        required: int,
+        available: int,
+        regen_eta: dict | None = None,
+    ):
         self.user_id = user_id
         self.required = required
         self.available = available
         self.shortfall = required - available
+        self.regen_eta = regen_eta
         super().__init__(
             f"user {user_id} needs {required} credits, has {available}"
         )
@@ -106,7 +144,10 @@ async def reserve(
             )
         ).scalar_one()
         if locked_account.balance < stake:
-            raise InsufficientCredits(user_id, stake, locked_account.balance)
+            regen_eta = _regen_eta(
+                stake, locked_account.balance, trust_by_user[user_id], cfg
+            )
+            raise InsufficientCredits(user_id, stake, locked_account.balance, regen_eta)
 
     movements: list[Movement] = []
     for user_id, stake in stakes.items():
