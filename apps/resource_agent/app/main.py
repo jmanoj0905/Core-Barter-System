@@ -13,10 +13,13 @@ logger = logging.getLogger("resource-agent")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import asyncio
+
     logger.info("Resource Agent · Port 8004 · PostgreSQL")
 
     from app.database import async_session, init_db
     from app.ledger import SYSTEM_KINDS, get_or_create_account
+    from app.reconciler import reconciler_loop
 
     await init_db()
 
@@ -26,7 +29,13 @@ async def lifespan(app: FastAPI):
         await db.commit()
 
     logger.info("Database ready — tables created, system accounts seeded")
-    yield
+
+    task = asyncio.create_task(reconciler_loop())
+    logger.info("Reconciler started (every 300s)")
+    try:
+        yield
+    finally:
+        task.cancel()
 
 
 app = FastAPI(title="Resource Agent", lifespan=lifespan)
@@ -44,4 +53,11 @@ app.include_router(router)
 
 @app.get("/resource/health")
 async def health():
-    return {"service": "resource-agent", "status": "ok"}
+    from app.reconciler import LAST_REPORT
+
+    healthy = not LAST_REPORT["balance_drift"] and not LAST_REPORT["unbalanced_entries"]
+    return {
+        "service": "resource-agent",
+        "status": "ok" if healthy else "degraded",
+        "last_reconcile": LAST_REPORT,
+    }
