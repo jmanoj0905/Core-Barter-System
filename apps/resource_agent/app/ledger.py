@@ -110,8 +110,25 @@ async def post_entry(
         return existing, False
 
     for account_id, amount in lines:
+        # Lock the account row with an explicit SELECT ... FOR UPDATE before
+        # touching it, and before inserting the referencing LedgerLine. Two
+        # reasons this shape matters:
+        #  1. `db.get(Account, account_id, with_for_update=True)` depends on
+        #     SQLAlchemy's internal `for_update_arg is None` check to decide
+        #     whether to bypass the identity map; an explicit statement makes
+        #     the lock unconditional and doesn't rely on that internal detail.
+        #  2. Locking the row *before* adding the LedgerLine matters: the
+        #     LedgerLine insert's FK reference takes a shared lock on the
+        #     account row, and if two concurrent transactions both insert
+        #     their LedgerLine first, they can each hold that shared lock and
+        #     then deadlock trying to upgrade to the exclusive FOR UPDATE
+        #     lock. Taking the exclusive lock first avoids that.
+        account = (
+            await db.execute(
+                select(Account).where(Account.id == account_id).with_for_update()
+            )
+        ).scalar_one()
         db.add(LedgerLine(entry_id=entry.id, account_id=account_id, amount=amount))
-        account = await db.get(Account, account_id, with_for_update=True)
         account.balance += amount
 
     await db.flush()

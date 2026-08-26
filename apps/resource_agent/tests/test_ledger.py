@@ -113,3 +113,35 @@ async def test_concurrent_replay_posts_exactly_one_entry(db, session_factory):
 
     assert sorted(results) == [False, True]
     assert await balance_of(db, dst_id) == 10
+
+
+@pytest.mark.asyncio
+async def test_concurrent_distinct_entries_on_same_account_lose_no_update(db, session_factory):
+    src, dst = await _two_accounts(db)
+    await db.commit()
+    src_id, dst_id = src.id, dst.id
+
+    async def attempt(key):
+        async with session_factory() as session:
+            # Load the accounts into this session's identity map first, the
+            # same way resolve_movements()/get_or_create_account() would
+            # before handing lines to post_entry on the same session. This is
+            # the path that must still take a real row lock, not an
+            # identity-map hit that skips FOR UPDATE.
+            await get_or_create_account(session, "platform_mint", None)
+            await get_or_create_account(session, "user_available", 1)
+            _, created = await post_entry(
+                session, idempotency_key=key, entry_type="grant",
+                session_id=None, payload={}, lines=[(src_id, -10), (dst_id, 10)],
+            )
+            await session.commit()
+            return created
+
+    keys = [f"grant:concurrent:{i}" for i in range(10)]
+    results = await asyncio.gather(*(attempt(key) for key in keys))
+
+    assert results == [True] * len(keys)
+    await db.refresh(dst)
+    expected = 10 * len(keys)
+    assert await balance_of(db, dst_id) == expected
+    assert dst.balance == expected
