@@ -8,14 +8,15 @@ Core Barter System — a real-time audio conversation monitoring platform that e
 
 ## Architecture
 
-Monorepo with 5 Docker services + React frontend (nginx):
+Monorepo with 6 Docker services + React frontend (nginx):
 
 ```
 apps/
 ├── backend/           # Port 8000 - FastAPI + SQLite
 ├── audio_pipeline/    # Port 8001 - AWS Transcribe STT
-├── semantic_analysis/  # Port 8002 - Sentence-BERT
+├── semantic_analysis/ # Port 8002 - Sentence-BERT
 ├── warning_engine/    # Port 8003 - Escalation logic
+├── resource_agent/    # Port 8004 - Credits, escrow, ledger (PostgreSQL)
 └── frontend/          # nginx (ports 80→443 redirect, 443 for SPA+proxies)
 ```
 
@@ -34,9 +35,18 @@ apps/
 - **Trust scores**: updated post-session based on verdict
 - **Escrow**: credits locked on session start, released based on QA score
 
-## Database
+## Databases
 
-SQLite with 9 tables: Users, Barter Sessions, Session Contracts, Window Results, Warnings Log, Verdicts, Confirmations, Wallets, Escrows, Credit Transactions.
+Two databases, split by ownership:
+
+- **backend** — SQLite (`barter.db`): users, sessions, contracts, transcripts,
+  window results, warnings, verdicts, confirmations.
+- **resource_agent** — PostgreSQL (`resource_db`): accounts, journal entries,
+  ledger lines, escrows, disputes. Escrow reservation needs row-level locking
+  and multi-row atomicity, which SQLite's single writer cannot provide without
+  serializing the whole application.
+
+Backend holds no credit tables. All credit state is reached over HTTP.
 
 ## Running the Services
 
@@ -60,6 +70,7 @@ Docker Compose DNS resolves service names:
 - `audio_pipeline` → port 8001
 - `semantic_analysis` → port 8002
 - `warning_engine` → port 8003
+- `resource_agent` → port 8004
 
 ## Frontend Routing (nginx.conf)
 
@@ -70,6 +81,7 @@ Frontend nginx proxies:
 | `/audio/` | audio_pipeline:8001 (WebSocket) |
 | `/ws/` | backend:8000 (WebSocket) |
 | `/stt/` | audio_pipeline:8001 |
+| `/resource/` | resource_agent:8004 |
 | `/session/*`, `/trust/*`, `/wallet/*`, etc. | backend:8000 |
 | `/` | React SPA |
 
@@ -87,6 +99,6 @@ Set via `.env` file or docker-compose.yml environment section.
 
 ## Service Layout
 
-Each service under `apps/` is self-contained with `main.py`, `requirements.txt`, and `Dockerfile`.
-- `backend/` entry point: `app.main:app`
+Each service under `apps/` is self-contained with `requirements.txt` and `Dockerfile`.
+- `backend/` and `resource_agent/` entry point: `app.main:app`
 - Other services: `main:app`
