@@ -36,6 +36,10 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(title="Resource Agent", lifespan=lifespan)
@@ -53,11 +57,10 @@ app.include_router(router)
 
 @app.get("/resource/health")
 async def health():
-    from app.reconciler import LAST_REPORT
+    from app.reconciler import LAST_REPORT, is_healthy
 
-    healthy = not LAST_REPORT["balance_drift"] and not LAST_REPORT["unbalanced_entries"]
     return {
         "service": "resource-agent",
-        "status": "ok" if healthy else "degraded",
+        "status": "ok" if is_healthy(LAST_REPORT) else "degraded",
         "last_reconcile": LAST_REPORT,
     }
