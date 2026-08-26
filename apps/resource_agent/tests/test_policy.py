@@ -1,4 +1,6 @@
+import math
 from datetime import datetime, timedelta, timezone
+from decimal import ROUND_HALF_UP, Decimal
 
 import pytest
 from hypothesis import given, settings as hyp_settings
@@ -16,6 +18,18 @@ from app.policy import (
 
 CFG = PolicyConfig()
 NOW = datetime(2026, 8, 26, 12, 0, tzinfo=timezone.utc)
+
+
+def _round_half_up(value: float) -> int:
+    """Independent reimplementation of the policy's rounding rule, so tests
+    that check *what* is rounded don't also have to trust *how* it's rounded."""
+    return int(Decimal(str(value)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
+
+def _expected_fee(pool: int, cfg: PolicyConfig) -> int:
+    if pool <= 0:
+        return 0
+    return max(cfg.platform_fee_min, _round_half_up(pool * cfg.platform_fee_pct))
 
 
 # ── escrow sizing ───────────────────────────────────────────────────────────
@@ -153,6 +167,26 @@ def test_low_qa_score_overrides_a_successful_verdict():
     assert plan.mode == "PENALTY"
 
 
+@pytest.mark.parametrize(
+    "qa,expected_mode",
+    [
+        (CFG.partial_release_qa, "PARTIAL_RELEASE"),  # exactly at the penalty floor
+        (
+            math.nextafter(CFG.partial_release_qa, -math.inf),
+            "PENALTY",
+        ),  # the smallest float strictly below the penalty floor
+        (CFG.full_release_qa, "FULL_RELEASE"),  # exactly at the full-release ceiling
+        (
+            math.nextafter(CFG.full_release_qa, -math.inf),
+            "PARTIAL_RELEASE",
+        ),  # the smallest float strictly below the full-release ceiling
+    ],
+)
+def test_mode_boundaries_are_pinned_at_the_config_thresholds(qa, expected_mode):
+    plan = plan_settlement("SUCCESSFUL", qa, _participants(), CFG)
+    assert plan.mode == expected_mode
+
+
 def test_no_show_forfeits_the_stake_to_the_counterparty():
     participants = [
         ParticipantOutcome(user_id=1, stake=28, quality=0.0, engagement=0.0, no_show=True),
@@ -209,13 +243,14 @@ def test_settlement_movements_always_balance():
     quality=st.floats(min_value=0.0, max_value=1.0),
     engagement=st.floats(min_value=0.0, max_value=1.0),
     no_show_a=st.booleans(),
+    no_show_b=st.booleans(),
 )
 def test_property_every_plan_balances_and_uses_integers(
-    verdict, qa, stake_a, stake_b, quality, engagement, no_show_a
+    verdict, qa, stake_a, stake_b, quality, engagement, no_show_a, no_show_b
 ):
     participants = [
         ParticipantOutcome(1, stake_a, quality, engagement, no_show_a),
-        ParticipantOutcome(2, stake_b, quality, engagement, False),
+        ParticipantOutcome(2, stake_b, quality, engagement, no_show_b),
     ]
     plan = plan_settlement(verdict, qa, participants, CFG)
 
@@ -224,6 +259,38 @@ def test_property_every_plan_balances_and_uses_integers(
     for row in plan.breakdown.values():
         assert all(isinstance(value, int) for value in row.values())
 
+    # The residual-to-platform_revenue line makes the zero-sum assertion above
+    # true by construction for *any* per-participant numbers, so it cannot
+    # catch a wrong bonus, fee, or compensation split. Reconcile each
+    # participant's breakdown row against the movements it actually produced,
+    # computed independently of the row itself, to close that gap.
+    credited = {p.user_id: 0 for p in participants}
+    for movement in plan.movements:
+        if movement.account.startswith("user_available:"):
+            user_id = int(movement.account.split(":", 1)[1])
+            credited[user_id] += movement.amount
+
+    for participant in participants:
+        row = plan.breakdown[participant.user_id]
+        expected_credit = (
+            row["stake_returned"]
+            + row["teaching_bonus"]
+            + row["engagement_bonus"]
+            + row["compensation"]
+            - row["fee_share"]
+        )
+        assert credited[participant.user_id] == expected_credit
+        assert row["net"] == expected_credit - row["stake"]
+
+    # The platform fee is policy, not an incidental byproduct of the residual:
+    # pin it to an independently computed expectation, per mode.
+    pool = stake_a + stake_b
+    total_fee_share = sum(row["fee_share"] for row in plan.breakdown.values())
+    if plan.mode in ("FULL_RELEASE", "PARTIAL_RELEASE"):
+        assert total_fee_share == _expected_fee(pool, CFG)
+    else:
+        assert total_fee_share == 0
+
 
 @hyp_settings(max_examples=200)
 @given(
@@ -231,12 +298,16 @@ def test_property_every_plan_balances_and_uses_integers(
     qa=st.floats(min_value=0.0, max_value=1.0),
     stake_a=st.integers(min_value=5, max_value=40),
     stake_b=st.integers(min_value=5, max_value=40),
+    no_show_a=st.booleans(),
+    no_show_b=st.booleans(),
 )
-def test_property_locked_accounts_are_fully_drained(verdict, qa, stake_a, stake_b):
+def test_property_locked_accounts_are_fully_drained(
+    verdict, qa, stake_a, stake_b, no_show_a, no_show_b
+):
     """Settlement must empty both locked accounts — no credits stranded."""
     participants = [
-        ParticipantOutcome(1, stake_a, 0.8, 0.7, False),
-        ParticipantOutcome(2, stake_b, 0.8, 0.7, False),
+        ParticipantOutcome(1, stake_a, 0.8, 0.7, no_show_a),
+        ParticipantOutcome(2, stake_b, 0.8, 0.7, no_show_b),
     ]
     plan = plan_settlement(verdict, qa, participants, CFG)
 
