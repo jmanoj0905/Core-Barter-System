@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { getEscrow } from '../api/resource'
+import SettlementBreakdown from '../components/SettlementBreakdown'
 
 const API = ''
 
@@ -22,7 +24,7 @@ const severityBg = {
   severe: 'bg-error-container',
 }
 
-export default function PostSession({ barterId, onReset }) {
+export default function PostSession({ barterId, onReset, settlement }) {
   const [verdict, setVerdict]     = useState(null)
   const [transcript, setTranscript] = useState([])
   const [windows, setWindows]     = useState([])
@@ -43,7 +45,11 @@ export default function PostSession({ barterId, onReset }) {
         fetch(`${API}/verdict/${barterId}`),
         fetch(`${API}/session/${barterId}/transcript`),
         fetch(`${API}/session/${barterId}/windows`),
-        fetch(`${API}/escrow/${barterId}`),
+        // resource_agent's GET /resource/escrow/{id} returns
+        // { session_id, escrows: [...] }, not a bare array like the old
+        // backend /escrow endpoint did -- unwrap it here so the array-typed
+        // consumers below (`escrows.find`/`.reduce`/`.length`) keep working.
+        getEscrow(barterId).then(d => ({ ok: true, json: async () => d.escrows })),
       ])
       if (!vRes.ok) throw new Error(await vRes.text())
       setVerdict(await vRes.json())
@@ -236,12 +242,12 @@ export default function PostSession({ barterId, onReset }) {
                 <div className="flex justify-between items-center py-2 border-b border-on-background/20">
                   <span className="text-xs font-bold uppercase">Alice (Teacher)</span>
                   <span className={`text-xs font-bold uppercase px-2 py-1 border border-on-background ${
-                    teacherEscrow.status === 'released' ? 'bg-tertiary-container text-tertiary' :
-                    teacherEscrow.status === 'penalized' ? 'bg-error-container text-error' :
-                    teacherEscrow.status === 'refunded' ? 'bg-primary-container text-primary' :
+                    teacherEscrow.state === 'SETTLED' ? 'bg-tertiary-container text-tertiary' :
+                    teacherEscrow.state === 'VOIDED' ? 'bg-primary-container text-primary' :
+                    teacherEscrow.state === 'HELD' ? 'bg-error-container text-error' :
                     'bg-surface-container text-outline'
                   }`}>
-                    {teacherEscrow.status} · {teacherEscrow.amount} cr
+                    {teacherEscrow.state} · {teacherEscrow.amount} cr
                   </span>
                 </div>
               )}
@@ -249,12 +255,12 @@ export default function PostSession({ barterId, onReset }) {
                 <div className="flex justify-between items-center py-2">
                   <span className="text-xs font-bold uppercase">Bob (Learner)</span>
                   <span className={`text-xs font-bold uppercase px-2 py-1 border border-on-background ${
-                    learnerEscrow.status === 'released' ? 'bg-tertiary-container text-tertiary' :
-                    learnerEscrow.status === 'penalized' ? 'bg-error-container text-error' :
-                    learnerEscrow.status === 'refunded' ? 'bg-primary-container text-primary' :
+                    learnerEscrow.state === 'SETTLED' ? 'bg-tertiary-container text-tertiary' :
+                    learnerEscrow.state === 'VOIDED' ? 'bg-primary-container text-primary' :
+                    learnerEscrow.state === 'HELD' ? 'bg-error-container text-error' :
                     'bg-surface-container text-outline'
                   }`}>
-                    {learnerEscrow.status} · {learnerEscrow.amount} cr
+                    {learnerEscrow.state} · {learnerEscrow.amount} cr
                   </span>
                 </div>
               )}
@@ -263,6 +269,16 @@ export default function PostSession({ barterId, onReset }) {
               )}
             </div>
           </div>
+
+          {/* Settlement breakdown */}
+          {settlement && settlement.breakdown && (
+            <div className="md:col-span-12">
+              <SettlementBreakdown
+                settlement={settlement}
+                names={{ 1: 'Alice (Teacher)', 2: 'Bob (Learner)' }}
+              />
+            </div>
+          )}
 
           {/* Warning log */}
           {drift?.warnings?.length > 0 && (

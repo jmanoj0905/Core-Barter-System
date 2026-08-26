@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { getAccount } from '../api/resource'
 
 const API = ''
 
@@ -19,10 +20,21 @@ export default function Setup({ onSessionCreated }) {
   }
 
   useEffect(() => {
+    // The resource API's account summary doesn't echo trust_score back (it's
+    // an input to it, not part of the balance record), so it's fetched
+    // separately from /users and merged in here for the escrow preview.
     Promise.all([
-      fetch(`${API}/wallet/1`).then(r => r.ok ? r.json() : null),
-      fetch(`${API}/wallet/2`).then(r => r.ok ? r.json() : null),
-    ]).then(([w1, w2]) => setWallets({ 1: w1, 2: w2 })).catch(() => {})
+      fetch(`${API}/users`).then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([users]) => {
+      const trustById = Object.fromEntries(users.map(u => [u.id, u.trust_score]))
+      Promise.all([
+        getAccount(1, trustById[1] ?? 0.5).catch(() => null),
+        getAccount(2, trustById[2] ?? 0.5).catch(() => null),
+      ]).then(([w1, w2]) => setWallets({
+        1: w1 && { ...w1, trust_score: trustById[1] ?? 1.0 },
+        2: w2 && { ...w2, trust_score: trustById[2] ?? 1.0 },
+      }))
+    }).catch(() => {})
   }, [])
 
   async function handleSubmit(e) {
@@ -58,7 +70,7 @@ export default function Setup({ onSessionCreated }) {
   const activeWallet = wallets[userId]
   const trustScore   = activeWallet?.trust_score ?? 1.0
   const escrowAmt    = calcEscrow(trustScore)
-  const available    = activeWallet?.available_balance ?? 999999
+  const available    = activeWallet?.available ?? 999999
   const canAfford    = available >= escrowAmt
 
   return (

@@ -3,6 +3,7 @@ import './App.css'
 import Setup from './screens/Setup'
 import LiveSession from './screens/LiveSession'
 import PostSession from './screens/PostSession'
+import { getAccount } from './api/resource'
 
 const NAV = [
   { icon: 'event_note', label: 'Sessions', key: 'sessions' },
@@ -98,8 +99,8 @@ function WalletPanel() {
   useEffect(() => {
     function fetchWallets() {
       Promise.all([
-        fetch('/wallet/1').then(r => r.ok ? r.json() : null).catch(() => null),
-        fetch('/wallet/2').then(r => r.ok ? r.json() : null).catch(() => null),
+        getAccount(1).catch(() => null),
+        getAccount(2).catch(() => null),
       ]).then(([w1, w2]) => setWallets({ 1: w1, 2: w2 }))
     }
     fetchWallets()
@@ -120,14 +121,17 @@ function WalletPanel() {
       <div className="space-y-3">
         {users.map(u => {
           const w      = wallets[u.id]
-          const trust  = w ? (w.trust_score * 100).toFixed(0) : '—'
-          const avail  = w ? w.available_balance : '—'
-          const locked = w ? w.locked_balance : 0
+          // Account summaries don't echo trust_score (it's an input to
+          // regen_rate, not part of the balance record) — show the regen
+          // rate that trust produces instead of fabricating a percentage.
+          const regen  = w ? `+${w.regen_rate}/day` : '—'
+          const avail  = w ? w.available : '—'
+          const locked = w ? w.locked : 0
           return (
             <div key={u.id} className="p-3 border-2 border-zinc-900 bg-surface-container-lowest">
               <div className="flex justify-between items-center mb-1">
                 <span className="font-headline font-bold text-xs">{u.name}</span>
-                <span className="text-[10px] font-bold text-primary">{trust}% trust</span>
+                <span className="text-[10px] font-bold text-primary">{regen}</span>
               </div>
               <div className="flex justify-between text-[10px] font-bold text-on-surface-variant">
                 <span>{avail} cr</span>
@@ -257,14 +261,14 @@ function Settings() {
   )
 }
 
-function MainContent({ screen, onSessionCreated, onComplete, onReset, barterId, agreedMinutes, userId }) {
+function MainContent({ screen, onSessionCreated, onComplete, onReset, barterId, agreedMinutes, userId, settlement }) {
   switch (screen) {
     case 'setup':
       return <Setup onSessionCreated={onSessionCreated} />
     case 'live':
       return <LiveSession barterId={barterId} agreedMinutes={agreedMinutes} userId={userId} onComplete={onComplete} />
     case 'post':
-      return <PostSession barterId={barterId} onReset={onReset} />
+      return <PostSession barterId={barterId} onReset={onReset} settlement={settlement} />
     case 'reports':
       return <Reports />
     case 'settings':
@@ -279,6 +283,7 @@ export default function App() {
   const [barterId, setBarterId]           = useState(null)
   const [agreedMinutes, setAgreedMinutes] = useState(5)
   const [userId, setUserId]               = useState(1)
+  const [settlement, setSettlement]       = useState(null)
 
   function handleSessionCreated(id, minutes, uid) {
     setBarterId(id)
@@ -287,8 +292,13 @@ export default function App() {
     setScreen('live')
   }
 
-  function handleComplete(id) {
+  // `settlementData` is only present when this browser's own confirm call is
+  // the one that completed the session (resource_agent's settle response
+  // rides back on that HTTP call, not on the WebSocket both_confirmed
+  // broadcast or the status poll) -- see LiveSession's handleConfirm.
+  function handleComplete(id, settlementData) {
     setBarterId(id)
+    setSettlement(settlementData || null)
     setScreen('post')
   }
 
@@ -315,6 +325,7 @@ export default function App() {
         barterId={barterId}
         agreedMinutes={agreedMinutes}
         userId={userId}
+        settlement={settlement}
       />
     </AppShell>
   )

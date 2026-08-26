@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import EscrowPanel from '../components/EscrowPanel'
 
 const API        = ''
 const WS         = location.protocol === 'https:' ? 'wss' : 'ws'
@@ -47,6 +48,13 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
   const [isRemoteMuted, setIsRemoteMuted] = useState(false)
   const [isRemoteHidden, setIsRemoteHidden] = useState(false)
 
+  // Only the confirm HTTP response that actually completes the session
+  // (both_confirmed: true) carries the settlement breakdown -- the
+  // both_confirmed WebSocket broadcast and the /status poll below don't.
+  // Stashed here so whichever path fires onComplete first can pass along
+  // whatever this client already knows.
+  const settlementRef   = useRef(null)
+
   const mrRef           = useRef(null)
   const audioWsRef      = useRef(null)
   const timerRef        = useRef(null)
@@ -85,7 +93,7 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
           localVideoElRef.current.srcObject.getTracks().forEach(t => t.stop())
         }
         setRecording(false)
-        onComplete(barterId)
+        onComplete(barterId, settlementRef.current)
       } else if (data.type === 'peer_confirmed') {
         // Show notification that the other user confirmed
         setWarnings(prev => [{ ...data, severity: 'mild' }, ...prev])
@@ -112,7 +120,7 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
       try {
         const res  = await fetch(`${API}/session/${barterId}/status`)
         const data = await res.json()
-        if (data.both_confirmed) { clearInterval(pollRef.current); onComplete(barterId) }
+        if (data.both_confirmed) { clearInterval(pollRef.current); onComplete(barterId, settlementRef.current) }
       } catch (_) {}
     }, 10_000)
     return () => clearInterval(pollRef.current)
@@ -276,6 +284,8 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
         body: JSON.stringify({ user_id: userId }),
       })
       if (!res.ok) throw new Error(await res.text())
+      const data = await res.json()
+      settlementRef.current = data.settlement || null
       setConfirmed(true)
       clearInterval(frameIntervalRef.current)
       mrRef.current?.stop()
@@ -286,6 +296,7 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
         localVideoElRef.current.srcObject.getTracks().forEach(t => t.stop())
       }
       setRecording(false)
+      if (data.both_confirmed) onComplete(barterId, settlementRef.current)
     } catch (err) {
       setError(err.message)
     }
@@ -297,8 +308,13 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
     halt()
   }
 
-  const teacherEscrow = escrowData?.teacher_escrow?.amount ?? 0
-  const learnerEscrow = escrowData?.learner_escrow?.amount ?? 0
+  // /session/{id}/start's response carries a flat `escrows` array (one entry
+  // per participant: { user_id, amount, state, ... }), not the
+  // teacher_escrow/learner_escrow shape the old backend-owned escrow model
+  // used -- pick out each side's stake by user_id instead.
+  const escrows        = escrowData?.escrows ?? []
+  const teacherEscrow  = escrows.find(e => e.user_id === 1)?.amount ?? 0
+  const learnerEscrow  = escrows.find(e => e.user_id === 2)?.amount ?? 0
 
   return (
     <div className="p-6 md:p-10">
@@ -463,6 +479,10 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
                 Total: {teacherEscrow + learnerEscrow} cr locked
               </p>
             </div>
+          )}
+
+          {started && (
+            <EscrowPanel escrows={escrows} names={{ 1: 'Alice (Teacher)', 2: 'Bob (Learner)' }} />
           )}
 
           {/* Fairness meter */}
