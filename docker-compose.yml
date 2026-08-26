@@ -51,6 +51,33 @@ services:
       BACKEND_URL: http://backend:8000
     restart: on-failure
 
+  resource_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: resource
+      POSTGRES_PASSWORD: resource
+      POSTGRES_DB: resource
+    ports:
+      - "5433:5432"
+    volumes:
+      - resource_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U resource"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: on-failure
+
+  resource_agent:
+    build:
+      context: ./apps/resource_agent
+    environment:
+      DATABASE_URL: postgresql+asyncpg://resource:resource@resource_db:5432/resource
+    depends_on:
+      resource_db:
+        condition: service_healthy
+    restart: on-failure
+
   frontend:
     build:
       context: ./apps/frontend
@@ -64,3 +91,4 @@ services:
 volumes:
   db_data:
   model_cache:
+  resource_db_data:
