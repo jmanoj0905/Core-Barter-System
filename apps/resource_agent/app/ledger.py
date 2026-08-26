@@ -111,7 +111,7 @@ async def post_entry(
 
     for account_id, amount in lines:
         # Lock the account row with an explicit SELECT ... FOR UPDATE before
-        # touching it, and before inserting the referencing LedgerLine. Two
+        # touching it, and before inserting the referencing LedgerLine. Three
         # reasons this shape matters:
         #  1. `db.get(Account, account_id, with_for_update=True)` depends on
         #     SQLAlchemy's internal `for_update_arg is None` check to decide
@@ -123,9 +123,23 @@ async def post_entry(
         #     their LedgerLine first, they can each hold that shared lock and
         #     then deadlock trying to upgrade to the exclusive FOR UPDATE
         #     lock. Taking the exclusive lock first avoids that.
+        #  3. `populate_existing=True` is required alongside the lock, not
+        #     optional decoration: callers on the real path (resolve_movements)
+        #     always load these same accounts via get_or_create_account just
+        #     before calling post_entry, so the account is already in this
+        #     session's identity map. Without populate_existing, SQLAlchemy
+        #     returns that cached object as-is instead of overwriting its
+        #     attributes from the row just locked — the lock would then
+        #     serialize the write but `account.balance += amount` below would
+        #     still increment a stale pre-lock value, losing a concurrent
+        #     update to the cached balance column even though the ledger_lines
+        #     themselves are both written correctly.
         account = (
             await db.execute(
-                select(Account).where(Account.id == account_id).with_for_update()
+                select(Account)
+                .where(Account.id == account_id)
+                .with_for_update()
+                .execution_options(populate_existing=True)
             )
         ).scalar_one()
         db.add(LedgerLine(entry_id=entry.id, account_id=account_id, amount=amount))
