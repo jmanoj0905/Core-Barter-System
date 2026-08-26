@@ -30,3 +30,4 @@ apps/frontend/node_modules/
 .bg-shell/
 .opencode/
 .gstack/
+.venv-resource/
