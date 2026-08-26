@@ -4,8 +4,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ledger import get_or_create_account, post_entry
-from app.models import Escrow
+from app.models import Account, Escrow
 from app.policy import PolicyConfig, floor_topup_amount, regen_amount, regen_rate
+
+ACTIVE_ESCROW_STATES = ("RESERVED", "HELD")
 
 
 def _utcnow() -> datetime:
@@ -13,7 +15,9 @@ def _utcnow() -> datetime:
 
 
 async def _has_active_reservation(db: AsyncSession, user_id: int) -> bool:
-    stmt = select(Escrow.id).where(Escrow.user_id == user_id, Escrow.state == "RESERVED")
+    stmt = select(Escrow.id).where(
+        Escrow.user_id == user_id, Escrow.state.in_(ACTIVE_ESCROW_STATES)
+    )
     return (await db.execute(stmt)).first() is not None
 
 
@@ -52,6 +56,16 @@ async def materialize(
     """
     now = now or _utcnow()
     available = await get_or_create_account(db, "user_available", user_id)
+    # Lock the row before reading last_regen_at/balance so a concurrent call
+    # for the same user can't read the same pre-update clock and post twice
+    # under two different day-scoped idempotency keys (e.g. straddling UTC
+    # midnight). Acquire the lock before anything below could autoflush a
+    # pending insert against this row — same ordering rule as app.ledger.
+    available = (
+        await db.execute(
+            select(Account).where(Account.id == available.id).with_for_update()
+        )
+    ).scalar_one()
     mint = await get_or_create_account(db, "platform_mint", None)
 
     owed = regen_amount(

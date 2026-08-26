@@ -2,9 +2,11 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from sqlalchemy import select
+
 from app.accounts import account_summary, ensure_accounts, materialize
 from app.ledger import get_or_create_account, post_entry
-from app.models import Escrow
+from app.models import Escrow, JournalEntry
 from app.policy import PolicyConfig
 
 CFG = PolicyConfig()
@@ -89,6 +91,59 @@ async def test_materialize_does_not_top_up_during_an_active_reservation(db):
     await db.refresh(account)
 
     assert account.balance == 0
+
+
+@pytest.mark.asyncio
+async def test_materialize_does_not_top_up_during_a_held_escrow(db):
+    await ensure_accounts(db, 1, CFG)
+    account = await get_or_create_account(db, "user_available", 1)
+    mint = await get_or_create_account(db, "platform_mint", None)
+    await post_entry(
+        db, idempotency_key="spend:4", entry_type="penalty", session_id=None,
+        payload={}, lines=[(account.id, -100), (mint.id, 100)],
+    )
+    account.last_regen_at = NOW
+    db.add(Escrow(session_id=98, user_id=1, amount=5, state="HELD"))
+    await db.commit()
+
+    await materialize(db, 1, trust_score=0.5, cfg=CFG, now=NOW)
+    await db.commit()
+    await db.refresh(account)
+
+    assert account.balance == 0
+
+
+@pytest.mark.asyncio
+async def test_materialize_is_idempotent_for_the_same_instant(db):
+    await ensure_accounts(db, 1, CFG)
+    account = await get_or_create_account(db, "user_available", 1)
+    mint = await get_or_create_account(db, "platform_mint", None)
+    await post_entry(
+        db, idempotency_key="spend:5", entry_type="penalty", session_id=None,
+        payload={}, lines=[(account.id, -90), (mint.id, 90)],
+    )
+    account.last_regen_at = NOW - timedelta(days=2)
+    await db.commit()
+
+    await materialize(db, 1, trust_score=0.5, cfg=CFG, now=NOW)
+    await db.commit()
+    await db.refresh(account)
+    balance_after_first = account.balance
+    last_regen_after_first = account.last_regen_at
+
+    await materialize(db, 1, trust_score=0.5, cfg=CFG, now=NOW)
+    await db.commit()
+    await db.refresh(account)
+
+    assert account.balance == balance_after_first
+    assert account.last_regen_at == last_regen_after_first
+
+    entries = (
+        await db.execute(
+            select(JournalEntry).where(JournalEntry.entry_type == "regen")
+        )
+    ).scalars().all()
+    assert len(entries) == 1
 
 
 @pytest.mark.asyncio
