@@ -109,7 +109,17 @@ async def post_entry(
         ).scalar_one()
         return existing, False
 
-    for account_id, amount in lines:
+    # Lock the accounts touched by this entry in a canonical order — sorted
+    # by account_id — independently of the order `lines` arrives in. Callers
+    # build movements in different orders (reserve does (available, locked)
+    # per user ascending; settle does all locked-account movements first,
+    # then all available-account movements), so without a canonical lock
+    # order a concurrent reserve and settle touching the same two accounts
+    # could acquire them in opposite orders and deadlock. The ledger lines
+    # themselves are still written in the order given below; only the
+    # locking order is canonicalised here.
+    locked_accounts: dict[int, Account] = {}
+    for account_id in sorted({account_id for account_id, _ in lines}):
         # Lock the account row with an explicit SELECT ... FOR UPDATE before
         # touching it, and before inserting the referencing LedgerLine. Three
         # reasons this shape matters:
@@ -134,7 +144,7 @@ async def post_entry(
         #     still increment a stale pre-lock value, losing a concurrent
         #     update to the cached balance column even though the ledger_lines
         #     themselves are both written correctly.
-        account = (
+        locked_accounts[account_id] = (
             await db.execute(
                 select(Account)
                 .where(Account.id == account_id)
@@ -142,8 +152,10 @@ async def post_entry(
                 .execution_options(populate_existing=True)
             )
         ).scalar_one()
+
+    for account_id, amount in lines:
         db.add(LedgerLine(entry_id=entry.id, account_id=account_id, amount=amount))
-        account.balance += amount
+        locked_accounts[account_id].balance += amount
 
     await db.flush()
     return entry, True

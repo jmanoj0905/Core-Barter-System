@@ -223,3 +223,87 @@ async def test_concurrent_distinct_entries_on_same_account_lose_no_update(db, se
     expected = 10 * len(keys)
     assert await balance_of(db, dst_id) == expected
     assert dst.balance == expected
+
+
+@pytest.mark.asyncio
+async def test_post_entry_locks_accounts_in_canonical_order_to_avoid_deadlock(
+    db, session_factory
+):
+    """Two entries touching the same two accounts, built with their lines in
+    opposite order, posted concurrently. This mirrors reserve() vs settle():
+    reserve's movements are (available, locked) per user ascending, while
+    settle's movements put all locked-account lines first and all
+    available-account lines after — so on shared accounts the two can build
+    `lines` in opposite account order.
+
+    Before the fix, post_entry locked accounts in whatever order `lines`
+    arrived in: if one transaction locks src first while the other locks dst
+    first, each can end up holding one row and waiting on the other — a
+    genuine Postgres deadlock. That interleaving is timing-dependent (plain
+    `gather()` on two fast local queries usually finishes one attempt before
+    the other even starts locking, so it doesn't reproduce reliably on its
+    own). Each session's `execute()` is instrumented to pause briefly right
+    after it acquires its FIRST account lock (call #2 — call #1 is the
+    idempotency-key lookup), giving the other session time to also acquire
+    its own first lock before either requests its second.
+
+    Under the old (order-by-`lines`) behavior this reproduces the deadlock
+    every time: forward locks src, pauses; reversed locks dst (uncontended,
+    since it's a different row), pauses; forward then requests dst (blocks on
+    reversed) while reversed requests src (blocks on forward) — a genuine
+    Postgres deadlock, which Postgres itself detects and raises rather than
+    hanging.
+
+    Under the fix, both sessions lock by sorted account_id, so they contend
+    for the *same* first lock: whichever session loses that race simply
+    blocks inside its first `execute()` call — before it can even reach the
+    pause — until the winner commits and releases it, then proceeds
+    uncontended. No deadlock, and the pause is a bounded delay, not a
+    rendezvous the loser might never reach — so this cannot hang either way.
+    A `wait_for` still guards the whole thing so a real regression fails
+    fast instead of hanging the suite.
+    """
+    src, dst = await _two_accounts(db)
+    await db.commit()
+    src_id, dst_id = src.id, dst.id
+    # Line order deliberately opposite between the two attempts.
+    forward_lines = [(src_id, -10), (dst_id, 10)]
+    reversed_lines = [(dst_id, 20), (src_id, -20)]
+
+    async def attempt(key, lines):
+        async with session_factory() as session:
+            orig_execute = session.execute
+            call_count = 0
+
+            async def patched_execute(*a, **kw):
+                nonlocal call_count
+                call_count += 1
+                result = await orig_execute(*a, **kw)
+                if call_count == 2:
+                    # Just acquired our first account lock (FOR UPDATE). A
+                    # short, bounded pause — not a rendezvous — gives the
+                    # other session a chance to acquire ITS first lock
+                    # before either of us requests a second one.
+                    await asyncio.sleep(0.2)
+                return result
+
+            session.execute = patched_execute
+            _, created = await post_entry(
+                session, idempotency_key=key, entry_type="grant",
+                session_id=None, payload={}, lines=lines,
+            )
+            await session.commit()
+            return created
+
+    results = await asyncio.wait_for(
+        asyncio.gather(
+            attempt("grant:order:forward", forward_lines),
+            attempt("grant:order:reversed", reversed_lines),
+        ),
+        timeout=10,
+    )
+
+    assert results == [True, True]
+    await db.refresh(dst)
+    assert await balance_of(db, dst_id) == 30
+    assert dst.balance == 30
