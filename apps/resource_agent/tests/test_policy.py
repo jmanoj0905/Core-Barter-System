@@ -32,6 +32,65 @@ def _expected_fee(pool: int, cfg: PolicyConfig) -> int:
     return max(cfg.platform_fee_min, _round_half_up(pool * cfg.platform_fee_pct))
 
 
+def _expected_split(total: int, user_ids) -> dict:
+    """Test-local reimplementation of the documented `_split_evenly` contract:
+    split total evenly, remainder to the earliest ids. Reimplemented rather
+    than imported so a misdirected remainder in the app is actually caught,
+    not just re-checked against itself."""
+    user_ids = list(user_ids)
+    if not user_ids:
+        return {}
+    base, remainder = divmod(total, len(user_ids))
+    return {
+        user_id: base + (1 if index < remainder else 0)
+        for index, user_id in enumerate(user_ids)
+    }
+
+
+def _expected_teaching_bonus(participant, mode: str, qa_score: float, cfg: PolicyConfig) -> int:
+    if mode == "FULL_RELEASE":
+        scale = 1.0
+    elif mode == "PARTIAL_RELEASE":
+        scale = qa_score
+    else:
+        return 0
+    return _round_half_up(cfg.teaching_bonus_base * participant.quality * scale)
+
+
+def _expected_engagement_bonus(participant, mode: str, cfg: PolicyConfig) -> int:
+    if mode not in ("FULL_RELEASE", "PARTIAL_RELEASE"):
+        return 0
+    return cfg.engagement_bonus if participant.engagement >= cfg.engagement_threshold else 0
+
+
+def _expected_fee_shares(pool: int, participants, cfg: PolicyConfig, mode: str) -> dict:
+    if mode not in ("FULL_RELEASE", "PARTIAL_RELEASE"):
+        return {p.user_id: 0 for p in participants}
+    fee = _expected_fee(pool, cfg)
+    if fee <= 0:
+        return {p.user_id: 0 for p in participants}
+    return _expected_split(fee, [p.user_id for p in participants])
+
+
+def _expected_compensation(participants, mode: str) -> dict:
+    """Forfeited stakes (PENALTY, no-show only) split across the participants
+    who did show up; zero for everyone if nobody or everybody no-showed."""
+    if mode != "PENALTY":
+        return {p.user_id: 0 for p in participants}
+
+    forfeited_by = {p.user_id: (p.stake if p.no_show else 0) for p in participants}
+    forfeited_total = sum(forfeited_by.values())
+    if forfeited_total <= 0:
+        return {p.user_id: 0 for p in participants}
+
+    wronged = [p for p in participants if forfeited_by[p.user_id] == 0]
+    if not wronged:
+        return {p.user_id: 0 for p in participants}
+
+    shares = _expected_split(forfeited_total, [p.user_id for p in wronged])
+    return {p.user_id: shares.get(p.user_id, 0) for p in participants}
+
+
 # ── escrow sizing ───────────────────────────────────────────────────────────
 
 @pytest.mark.parametrize(
@@ -282,9 +341,26 @@ def test_property_every_plan_balances_and_uses_integers(
         assert credited[participant.user_id] == expected_credit
         assert row["net"] == expected_credit - row["stake"]
 
-    # The platform fee is policy, not an incidental byproduct of the residual:
-    # pin it to an independently computed expectation, per mode.
+    # The reconciliation above only proves the movements agree with the
+    # breakdown row — both descend from the same computed value, so a wrong
+    # bonus or a misdirected remainder would sail through unnoticed. Pin
+    # every non-stake field to a value computed test-side from the raw
+    # inputs and the documented policy rules, independently of the row.
     pool = stake_a + stake_b
+    expected_fee_shares = _expected_fee_shares(pool, participants, CFG, plan.mode)
+    expected_compensation = _expected_compensation(participants, plan.mode)
+
+    for participant in participants:
+        row = plan.breakdown[participant.user_id]
+        assert row["teaching_bonus"] == _expected_teaching_bonus(
+            participant, plan.mode, qa, CFG
+        )
+        assert row["engagement_bonus"] == _expected_engagement_bonus(participant, plan.mode, CFG)
+        assert row["fee_share"] == expected_fee_shares[participant.user_id]
+        assert row["compensation"] == expected_compensation[participant.user_id]
+
+    # The platform fee is policy, not an incidental byproduct of the residual:
+    # pin the aggregate too, per mode.
     total_fee_share = sum(row["fee_share"] for row in plan.breakdown.values())
     if plan.mode in ("FULL_RELEASE", "PARTIAL_RELEASE"):
         assert total_fee_share == _expected_fee(pool, CFG)
