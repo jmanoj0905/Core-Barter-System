@@ -130,6 +130,7 @@ setup_venv apps/backend           "Backend"
 setup_venv apps/audio_pipeline    "Audio Pipeline"
 setup_venv apps/semantic_analysis "Semantic Analysis"
 setup_venv apps/warning_engine    "Warning Engine"
+setup_venv apps/video_engagement  "Video Engagement"
 
 # ── 5. Frontend node_modules ────────────────────────────────────────────────
 step "Checking frontend..."
@@ -161,12 +162,13 @@ launch "backend " apps/backend           app.main:app 8000
 launch "audio   " apps/audio_pipeline    main:app     8001
 launch "semantic" apps/semantic_analysis main:app     8002
 launch "warning " apps/warning_engine    main:app     8003
+launch "video   " apps/video_engagement  main:app     8004
 
 # Wait for services to be up
 info "Waiting for services to start..."
 sleep 3
 
-for port in 8000 8001 8002 8003; do
+for port in 8000 8001 8002 8003 8004; do
   if curl -sf "http://localhost:$port/health" &>/dev/null; then
     ok "Port $port"
   else
