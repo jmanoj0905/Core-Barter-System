@@ -1,4 +1,5 @@
 import logging
+import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
@@ -42,6 +43,12 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 # signal until validated against it.
 ENGAGEMENT_FUSION_W_SPEECH = float(os.getenv("ENGAGEMENT_FUSION_W_SPEECH", "0.7"))
 ENGAGEMENT_FUSION_W_VIDEO = float(os.getenv("ENGAGEMENT_FUSION_W_VIDEO", "0.3"))
+
+# A video score with no fresh update in this many seconds is treated as
+# stale/absent for fusion purposes (3 windows at the 5s buffer threshold
+# video_engagement uses) — a learner whose camera goes dark should not keep
+# contributing their last-seen video score forever.
+VIDEO_SCORE_STALE_SECONDS = float(os.getenv("VIDEO_SCORE_STALE_SECONDS", "15"))
 
 # ---------------------------------------------------------------------------
 # Pydantic Models
@@ -107,6 +114,7 @@ def _new_state() -> dict:
         "learner_user_id": None,
         "speech_engagement_score": None,
         "video_attention_score": None,
+        "video_attention_score_at": None,
     }
 
 
@@ -352,6 +360,9 @@ async def receive_engagement_alert(request: EngagementAlertRequest):
 async def _recompute_and_log_fusion(barter_id: int, state: dict):
     speech = state.get("speech_engagement_score")
     video = state.get("video_attention_score")
+    video_at = state.get("video_attention_score_at")
+    if video is not None and video_at is not None and time.time() - video_at > VIDEO_SCORE_STALE_SECONDS:
+        video = None
     if speech is None and video is None:
         return
     if speech is not None and video is not None:
@@ -393,6 +404,7 @@ async def receive_video_engagement_update(request: VideoEngagementUpdateRequest)
         return {"status": "ignored", "reason": "video score is not for the learner"}
 
     state["video_attention_score"] = request.video_attention_score
+    state["video_attention_score_at"] = time.time()
     await _recompute_and_log_fusion(barter_id, state)
     return {"status": "updated"}
 

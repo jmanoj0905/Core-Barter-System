@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 
@@ -69,3 +71,26 @@ async def test_fusion_falls_back_to_speech_only_when_no_video(warning_client):
     assert len(logged_call) == 1
     assert logged_call[0].kwargs["json"]["fused_engagement_score"] == 0.55
     assert logged_call[0].kwargs["json"]["video_attention_score"] is None
+
+
+@pytest.mark.asyncio
+async def test_fusion_excludes_stale_video_score(warning_client):
+    client, mock_http, we_main = warning_client
+    await client.post("/session/1/init", json={"teacher_user_id": 1, "learner_user_id": 2})
+
+    await client.post("/video-engagement/update", json={
+        "barter_id": 1, "user_id": 2, "video_attention_score": 0.9,
+    })
+
+    # Backdate the video score's timestamp past the staleness window.
+    we_main.sessions[1]["video_attention_score_at"] = time.time() - 20
+
+    resp = await client.post("/engagement/update", json={
+        "barter_id": 1, "user_id": 2, "engagement_score": 0.5,
+    })
+    assert resp.status_code == 200
+
+    logged_calls = [c for c in mock_http.post.call_args_list if c.args[0].endswith("/engagement-log")]
+    payload = logged_calls[-1].kwargs["json"]
+    # Stale video score must be excluded — fused equals speech alone, not a blend.
+    assert payload["fused_engagement_score"] == 0.5

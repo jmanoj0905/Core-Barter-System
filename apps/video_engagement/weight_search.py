@@ -70,9 +70,16 @@ def sweep_fusion_weights(
     return sorted(results, key=lambda r: -r["correlation"])
 
 
-def _fetch_session_data(backend_url: str, barter_id: int) -> tuple[list[dict], list[float]]:
+def _fetch_session_data(
+    backend_url: str, barter_id: int, learner_user_id: int, backend: str = "local"
+) -> tuple[list[dict], list[float]]:
     video_rows = httpx.get(f"{backend_url}/session/{barter_id}/video-engagement").json()
     history_rows = httpx.get(f"{backend_url}/session/{barter_id}/engagement/history").json()
+
+    video_rows = [
+        r for r in video_rows
+        if r["user_id"] == learner_user_id and r["backend_used"] == backend
+    ]
 
     raw_signals = [r["raw_signals"] for r in video_rows]
     speech_scores = [
@@ -114,9 +121,13 @@ if __name__ == "__main__":
     parser.add_argument("--backend-url", default="http://localhost:8000")
     parser.add_argument("--step", type=float, default=0.1)
     parser.add_argument("--out", default="../../docs/video_engagement/design-choices.md")
+    parser.add_argument("--learner-user-id", type=int, required=True)
+    parser.add_argument("--backend", default="local", choices=["local", "aws"])
     args = parser.parse_args()
 
-    raw_signals, speech_scores = _fetch_session_data(args.backend_url, args.barter_id)
+    raw_signals, speech_scores = _fetch_session_data(
+        args.backend_url, args.barter_id, args.learner_user_id, args.backend
+    )
     if len(raw_signals) < 2:
         raise SystemExit("Not enough data yet — need a pilot session with real windows first.")
 
