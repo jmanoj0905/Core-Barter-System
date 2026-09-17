@@ -7,8 +7,23 @@ Date: 2026-09-17
 
 Add a video-based engagement signal to barter sessions, computed two ways
 (local on-device vs cloud API), so the two can be compared for accuracy.
-Multi-modal: video signal fuses with the existing audio/topic-adherence
-signal in `warning_engine`.
+Multi-modal: the video signal and the existing audio/speech-based
+engagement signal stay two independent, single-purpose services; they
+are combined only in `warning_engine`.
+
+**Existing context this design must respect** (discovered while writing
+the implementation plan, not present when the architecture section
+above was first drafted): `semantic_analysis` already computes a
+speech-based `engagement_score` for the session's *learner* only
+(speaking-ratio + question-rate + acknowledgment heuristics, see
+`calculate_engagement_score()`), and already POSTs low-score alerts to
+`warning_engine` via `POST /engagement/alert`. `WindowResult` (topic
+adherence) has no `user_id` column — it's session-level, not per-user —
+so it cannot serve as a per-user fusion partner. The design below fuses
+with the existing per-learner speech `engagement_score` instead, and
+does so in `warning_engine`, not inside `semantic_analysis` — each
+scoring service stays untouched and single-purpose; only the combine
+step is new.
 
 ## Architecture
 
@@ -64,10 +79,13 @@ offline without re-running any video model.
 1. Grid-sweep weight triples summing to 1 (e.g. step 0.1 → ~66 combos).
 2. For each combo, recompute `video_attention_score` per stored window
    from the raw sub-signals.
-3. Correlate (Pearson) against that window's existing topic-adherence
-   label from `WindowResults` (correct=1, weakly_correct=0.5,
-   incorrect=0) — used as a proxy ground truth for engagement, since no
-   manual labeling pass exists yet.
+3. Correlate (Pearson) against the *existing* speech-based
+   `engagement_score` for that session's learner (the value
+   `semantic_analysis` already computes via `calculate_engagement_score`)
+   as the ground-truth proxy — checking whether video-derived attention
+   agrees with the independently-computed speech signal. Topic
+   adherence (`WindowResult`) is not used: it has no `user_id`, so it
+   cannot stand in for a per-learner signal.
 4. Pick the argmax-correlation weight set.
 5. Write every combo tried + its correlation + the chosen combo and
    rationale to `docs/video_engagement/design-choices.md`.
@@ -77,30 +95,63 @@ overridable via env (`VIDEO_WEIGHT_EYES`, `VIDEO_WEIGHT_HEAD`,
 `VIDEO_WEIGHT_GAZE`) for further experiments.
 
 **Bootstrap problem**: weight search needs real windows (raw signals +
-topic labels) to run against. Until a pilot session produces that data,
-ship with a placeholder set (0.4 / 0.4 / 0.2) explicitly marked in
-`design-choices.md` as "placeholder, pending weight_search run" — not
-presented as a considered choice.
+the corresponding speech `engagement_score`) to run against. Until a
+pilot session produces that data, ship with a placeholder set
+(0.4 / 0.4 / 0.2) explicitly marked in `design-choices.md` as
+"placeholder, pending weight_search run" — not presented as a
+considered choice.
+
+### Fusion weight (video vs speech)
+
+A second, separate weight controls how much the video score influences
+the final combined engagement number:
+
+```
+fused_engagement_score = w_speech * speech_engagement_score + w_video * video_attention_score
+```
+
+Picked the same experimental way — swept and compared, not hardcoded —
+default placeholder `w_speech=0.7, w_video=0.3` (speech signal is
+already tuned/trusted; video starts as a minority signal until proven).
+Documented in the same `design-choices.md`.
 
 ## Data flow / storage
 
-- `video_engagement` → `POST backend:8000/session/{id}/video-engagement`
-  → new `VideoEngagementResults` table: `barter_id`, `user_id`,
-  `window_start`, `window_end`, `video_attention_score`, `backend_used`,
-  `raw_signals` (JSON: eyes_open, head_deviation, gaze_centered).
-- `video_engagement` → `POST warning_engine:8003/engagement/update` with
-  the same payload. `warning_engine` looks up that window's existing
-  topic-adherence classification (it already has `WindowResults`
-  access) and fuses:
+Two independent producers, one combiner:
 
-  ```
-  engagement_score = 0.6*video_attention_score + 0.4*topic_adherence_score
-  ```
-
-  Stored, exposed via `GET /session/{id}/engagement`. **Does not affect
-  escalation logic** (1/2/3+ off-topic warning levels) — additive new
-  signal only. Wiring it into escalation thresholds is an explicit
-  future decision, out of scope here.
+- **`semantic_analysis`** (unchanged internals): its existing
+  `calculate_engagement_score()` logic is not touched. The only change
+  is additive — every time it recomputes the learner's score, it now
+  also `POST`s the current value to `warning_engine:8003/engagement/update`
+  (a new endpoint, distinct from the existing alert-only
+  `/engagement/alert`), not just when the score is low. This gives
+  `warning_engine` the live speech score, not only alerts.
+- **`video_engagement`** (new service): POSTs each window's result to
+  two places:
+  - `backend:8000/session/{id}/video-engagement` → new
+    `VideoEngagementResults` table: `barter_id`, `user_id`,
+    `window_start`, `window_end`, `video_attention_score`,
+    `backend_used`, `raw_signals` (JSON: eyes_open, head_deviation,
+    gaze_centered). Storage/exposition only — no fusion here.
+  - `warning_engine:8003/video-engagement/update` (new endpoint) with
+    the same score, keyed by `(barter_id, user_id)`.
+- **`warning_engine`** (new combine step, everything else in it
+  unchanged): holds the latest `speech_engagement_score` and
+  `video_attention_score` per `(barter_id, learner_user_id)` — the
+  video score is only used for fusion when its `user_id` matches that
+  session's `learner_user_id` (fetched once via the same
+  `SessionInitRequest`/contract data warning_engine already has for
+  topic-adherence decisions; a video score for the teacher is still
+  stored for later exposition but not fused). Computes
+  `fused_engagement_score` per the formula above and runs the
+  *existing* low-engagement-alert logic off the fused number instead of
+  the raw speech-only one. If no video score has arrived yet for that
+  session, fused = speech-only — behavior is identical to today until
+  video data exists (backward compatible, no regression).
+  Exposed via new `GET /session/{id}/engagement`. **Does not change
+  the topic-adherence escalation levels** (1/2/3+ off-topic warnings) —
+  those stay driven by `WindowResult` only, as today. This is a
+  parallel, additive signal.
 
 ## Error handling
 
@@ -127,7 +178,10 @@ presented as a considered choice.
 
 ## Out of scope (explicitly)
 
-- Changing warning_engine escalation levels based on engagement score.
+- Changing warning_engine escalation levels (topic-adherence warnings)
+  based on engagement score.
 - Manual human-labeled ground truth dataset for engagement (proxy via
-  topic-adherence used instead).
+  the existing speech-based `engagement_score` used instead).
 - Post-session/recorded-video analysis (live webcam only).
+- Any change to `semantic_analysis`'s internal engagement calculation —
+  it stays exactly as-is; only a new outbound POST is added.
