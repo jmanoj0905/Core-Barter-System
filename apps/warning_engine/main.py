@@ -63,6 +63,12 @@ class EngagementAlertRequest(BaseModel):
     engagement_score: float
 
 
+class EngagementUpdateRequest(BaseModel):
+    barter_id: int
+    user_id: int
+    engagement_score: float
+
+
 class SessionInitRequest(BaseModel):
     teacher_user_id: int = 1
     learner_user_id: int = 2
@@ -84,6 +90,9 @@ def _new_state() -> dict:
         "total_drift_incidents": 0,
         "warning_history": [],
         "terminated": False,
+        "learner_user_id": None,
+        "speech_engagement_score": None,
+        "video_attention_score": None,
     }
 
 
@@ -324,6 +333,17 @@ async def receive_engagement_alert(request: EngagementAlertRequest):
 
     _warn(f"Barter {barter_id}  low learner engagement — {request.engagement_score:.1%}")
     return {"action": "engagement_alert"}
+
+
+@app.post("/engagement/update")
+async def receive_engagement_update(request: EngagementUpdateRequest):
+    """Live speech-based engagement score from semantic_analysis (every update, not just low alerts)."""
+    barter_id = request.barter_id
+    if barter_id not in sessions:
+        sessions[barter_id] = _new_state()
+    state = sessions[barter_id]
+    state["speech_engagement_score"] = request.engagement_score
+    return {"status": "updated"}
 
 
 @app.post("/session/{barter_id}/end")
