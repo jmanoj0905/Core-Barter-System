@@ -35,6 +35,14 @@ logger = logging.getLogger("warning-engine")
 import os
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
+# Fusion weights — experimental placeholders, picked properly by
+# apps/video_engagement/weight_search.py and recorded in
+# docs/video_engagement/design-choices.md. Speech starts as the
+# majority signal since it is already tuned; video is a minority
+# signal until validated against it.
+ENGAGEMENT_FUSION_W_SPEECH = float(os.getenv("ENGAGEMENT_FUSION_W_SPEECH", "0.7"))
+ENGAGEMENT_FUSION_W_VIDEO = float(os.getenv("ENGAGEMENT_FUSION_W_VIDEO", "0.3"))
+
 # ---------------------------------------------------------------------------
 # Pydantic Models
 # ---------------------------------------------------------------------------
@@ -67,6 +75,12 @@ class EngagementUpdateRequest(BaseModel):
     barter_id: int
     user_id: int
     engagement_score: float
+
+
+class VideoEngagementUpdateRequest(BaseModel):
+    barter_id: int
+    user_id: int
+    video_attention_score: float
 
 
 class SessionInitRequest(BaseModel):
@@ -335,6 +349,25 @@ async def receive_engagement_alert(request: EngagementAlertRequest):
     return {"action": "engagement_alert"}
 
 
+async def _recompute_and_log_fusion(barter_id: int, state: dict):
+    speech = state.get("speech_engagement_score")
+    video = state.get("video_attention_score")
+    if speech is None and video is None:
+        return
+    if speech is not None and video is not None:
+        fused = ENGAGEMENT_FUSION_W_SPEECH * speech + ENGAGEMENT_FUSION_W_VIDEO * video
+    else:
+        fused = speech if speech is not None else video
+    fused = round(fused, 4)
+
+    await post_to_backend(f"/session/{barter_id}/engagement-log", {
+        "user_id": state.get("learner_user_id"),
+        "speech_engagement_score": speech,
+        "video_attention_score": video,
+        "fused_engagement_score": fused,
+    })
+
+
 @app.post("/engagement/update")
 async def receive_engagement_update(request: EngagementUpdateRequest):
     """Live speech-based engagement score from semantic_analysis (every update, not just low alerts)."""
@@ -343,6 +376,24 @@ async def receive_engagement_update(request: EngagementUpdateRequest):
         sessions[barter_id] = _new_state()
     state = sessions[barter_id]
     state["speech_engagement_score"] = request.engagement_score
+    await _recompute_and_log_fusion(barter_id, state)
+    return {"status": "updated"}
+
+
+@app.post("/video-engagement/update")
+async def receive_video_engagement_update(request: VideoEngagementUpdateRequest):
+    """Live video-attention score from video_engagement service; fused with speech and logged to backend."""
+    barter_id = request.barter_id
+    if barter_id not in sessions:
+        sessions[barter_id] = _new_state()
+    state = sessions[barter_id]
+
+    learner_id = state.get("learner_user_id")
+    if learner_id is not None and request.user_id != learner_id:
+        return {"status": "ignored", "reason": "video score is not for the learner"}
+
+    state["video_attention_score"] = request.video_attention_score
+    await _recompute_and_log_fusion(barter_id, state)
     return {"status": "updated"}
 
 
