@@ -67,6 +67,32 @@ class WindowResult(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class VideoEngagementResult(Base):
+    __tablename__ = "video_engagement_results"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    barter_session_id: Mapped[int] = mapped_column(ForeignKey("barter_sessions.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    window_start: Mapped[float] = mapped_column(Float, nullable=False)
+    window_end: Mapped[float] = mapped_column(Float, nullable=False)
+    video_attention_score: Mapped[float] = mapped_column(Float, nullable=False)
+    backend_used: Mapped[str] = mapped_column(String(20), nullable=False)
+    raw_signals: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class EngagementScoreLog(Base):
+    __tablename__ = "engagement_score_log"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    barter_session_id: Mapped[int] = mapped_column(ForeignKey("barter_sessions.id"), nullable=False)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    speech_engagement_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    video_attention_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    fused_engagement_score: Mapped[float] = mapped_column(Float, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Warning(Base):
     __tablename__ = "warnings"
 
