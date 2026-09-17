@@ -68,3 +68,78 @@ def test_process_frame_aws_fails_open_on_exception():
     with patch.object(main, "_rekognition_client", return_value=fake_client):
         result = main.process_frame_aws(frame_bytes)
     assert result is None
+
+
+import asyncio
+import time
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
+
+def test_video_config_get_default():
+    with TestClient(app) as client:
+        resp = client.get("/video/config")
+        assert resp.status_code == 200
+        assert resp.json()["backend"] == "local"
+        assert set(resp.json()["available"]) == {"local", "aws", "both"}
+
+
+def test_video_config_post_invalid_backend_rejected():
+    with TestClient(app) as client:
+        resp = client.post("/video/config", json={"backend": "gcp"})
+        assert resp.status_code == 400
+
+
+def test_video_config_post_switches_backend():
+    with TestClient(app) as client:
+        resp = client.post("/video/config", json={"backend": "aws"})
+        assert resp.status_code == 200
+        assert resp.json()["backend"] == "aws"
+        main.current_video_backend = "local"  # reset for other tests
+
+
+@pytest.mark.asyncio
+async def test_process_buffer_local_posts_result_when_face_found():
+    buf = {"frames": [b"fake-jpeg-bytes"], "wall_start": time.time()}
+    main.http_client = AsyncMock()
+
+    with patch.object(main, "process_frame_local", return_value={
+        "eyes_open": 0.9, "head_deviation": 0.1, "gaze_centered": 0.85,
+    }):
+        await main.process_buffer(barter_id=1, user_id=2, buf=buf, backend="local")
+
+    posted_paths = [c.args[0] for c in main.http_client.post.call_args_list]
+    assert any("/video-engagement" in p for p in posted_paths)
+    assert any("/video-engagement/update" in p for p in posted_paths)
+
+
+@pytest.mark.asyncio
+async def test_process_buffer_skips_window_when_no_face_detected():
+    buf = {"frames": [b"fake-jpeg-bytes"], "wall_start": time.time()}
+    main.http_client = AsyncMock()
+
+    with patch.object(main, "process_frame_local", return_value=None):
+        await main.process_buffer(barter_id=1, user_id=2, buf=buf, backend="local")
+
+    assert main.http_client.post.call_count == 0
+
+
+@pytest.mark.asyncio
+async def test_process_buffer_both_mode_posts_twice_with_different_backend_tag():
+    buf = {"frames": [b"fake-jpeg-bytes"], "wall_start": time.time()}
+    main.http_client = AsyncMock()
+
+    with patch.object(main, "process_frame_local", return_value={
+        "eyes_open": 0.9, "head_deviation": 0.1, "gaze_centered": 0.85,
+    }), patch.object(main, "process_frame_aws", return_value={
+        "eyes_open": 0.8, "head_deviation": 0.2, "gaze_centered": 0.75,
+    }):
+        await main.process_buffer(barter_id=1, user_id=2, buf=buf, backend="both")
+
+    backend_store_calls = [
+        c.kwargs["json"]["backend_used"]
+        for c in main.http_client.post.call_args_list
+        if c.args[0].endswith("/video-engagement")
+    ]
+    assert sorted(backend_store_calls) == ["aws", "local"]

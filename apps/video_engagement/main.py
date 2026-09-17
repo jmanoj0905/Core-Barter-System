@@ -118,3 +118,132 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+import time
+
+from fastapi import HTTPException, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel
+
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+WARNING_ENGINE_URL = os.getenv("WARNING_ENGINE_URL", "http://localhost:8003")
+BUFFER_THRESHOLD_SECONDS = 5.0
+
+_VALID_VIDEO_BACKENDS = {"local", "aws", "both"}
+current_video_backend: str = os.getenv("VIDEO_BACKEND", "local")
+
+buffers: dict[tuple[int, int], dict] = {}
+
+
+def _new_buffer() -> dict:
+    return {"frames": [], "wall_start": time.time()}
+
+
+class VideoConfigRequest(BaseModel):
+    backend: str
+
+
+@app.get("/video/config")
+async def get_video_config():
+    return {"backend": current_video_backend, "available": sorted(_VALID_VIDEO_BACKENDS)}
+
+
+@app.post("/video/config")
+async def set_video_config(body: VideoConfigRequest):
+    global current_video_backend
+    if body.backend not in _VALID_VIDEO_BACKENDS:
+        raise HTTPException(400, f"Unknown backend '{body.backend}'. Choose from: {sorted(_VALID_VIDEO_BACKENDS)}")
+    current_video_backend = body.backend
+    return {"backend": current_video_backend}
+
+
+async def _score_and_post(barter_id: int, user_id: int, window_start: float, window_end: float,
+                           sub_signals: dict, backend_used: str):
+    score = video_attention_score(sub_signals, ACTIVE_WEIGHTS)
+
+    payload = {
+        "user_id": user_id,
+        "window_start": window_start,
+        "window_end": window_end,
+        "video_attention_score": score,
+        "backend_used": backend_used,
+        "raw_signals": sub_signals,
+    }
+    try:
+        await http_client.post(f"{BACKEND_URL}/session/{barter_id}/video-engagement", json=payload)
+    except Exception as e:
+        logger.error("Failed to POST video-engagement to backend: %s", e)
+
+    try:
+        await http_client.post(f"{WARNING_ENGINE_URL}/video-engagement/update", json={
+            "barter_id": barter_id, "user_id": user_id, "video_attention_score": score,
+        })
+    except Exception as e:
+        logger.error("Failed to POST video-engagement update to warning_engine: %s", e)
+
+
+async def process_buffer(barter_id: int, user_id: int, buf: dict, backend: str):
+    """Run the configured backend(s) on the buffered frames and post any resulting score(s)."""
+    frames = buf["frames"]
+    if not frames:
+        return
+
+    window_start = buf["wall_start"]
+    window_end = time.time()
+
+    if backend in ("local", "both"):
+        detected = [s for s in (process_frame_local(f) for f in frames) if s is not None]
+        if detected:
+            avg = {
+                key: sum(s[key] for s in detected) / len(detected)
+                for key in ("eyes_open", "head_deviation", "gaze_centered")
+            }
+            await _score_and_post(barter_id, user_id, window_start, window_end, avg, "local")
+
+    if backend in ("aws", "both"):
+        mid_frame = frames[len(frames) // 2]
+        sub_signals = process_frame_aws(mid_frame)
+        if sub_signals is not None:
+            await _score_and_post(barter_id, user_id, window_start, window_end, sub_signals, "aws")
+
+
+def reset_buffer(buf: dict):
+    buf["frames"] = []
+    buf["wall_start"] = time.time()
+
+
+@app.websocket("/video/{barter_id}/{user_id}")
+async def video_ws(barter_id: int, user_id: int, ws: WebSocket):
+    await ws.accept()
+    key = (barter_id, user_id)
+    buffers[key] = _new_buffer()
+    buf = buffers[key]
+
+    try:
+        while True:
+            frame = await ws.receive_bytes()
+            if not frame:
+                continue
+            buf["frames"].append(frame)
+
+            if time.time() - buf["wall_start"] >= BUFFER_THRESHOLD_SECONDS:
+                await process_buffer(barter_id, user_id, buf, current_video_backend)
+                reset_buffer(buf)
+
+    except (WebSocketDisconnect, RuntimeError):
+        if buf["frames"]:
+            await process_buffer(barter_id, user_id, buf, current_video_backend)
+        if key in buffers:
+            del buffers[key]
+
+
+@app.post("/session/{barter_id}/end")
+async def end_session(barter_id: int):
+    keys_to_delete = [k for k in buffers if k[0] == barter_id]
+    for key in keys_to_delete:
+        user_id = key[1]
+        buf = buffers[key]
+        if buf["frames"]:
+            await process_buffer(barter_id, user_id, buf, current_video_backend)
+        del buffers[key]
+    return {"status": "ended", "barter_id": barter_id}
