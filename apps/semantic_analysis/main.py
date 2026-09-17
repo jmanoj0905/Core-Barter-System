@@ -248,6 +248,10 @@ async def update_engagement_score(barter_id: int, segment: SegmentRequest):
     score = calculate_engagement_score(state)
     state["last_score"] = score
 
+    learner_id = contracts.get(barter_id, {}).get("learner_user_id")
+    if learner_id is not None:
+        await post_engagement_update(barter_id, learner_id, score)
+
     # Alert if low engagement, with cooldown
     if score < 0.3 and (time.time() - state["last_alert_time"] > ENGAGEMENT_ALERT_COOLDOWN):
         await post_engagement_alert(barter_id, score)
@@ -275,6 +279,16 @@ async def post_engagement_alert(barter_id: int, score: float):
         _warn(f"Low engagement alert  barter={barter_id}  score={score:.2f}")
     except Exception as e:
         logger.error("Failed to POST engagement alert: %s", e)
+
+
+async def post_engagement_update(barter_id: int, user_id: int, score: float):
+    """Live score, posted on every update — not just low-engagement alerts."""
+    try:
+        await http_client.post(f"{WARNING_ENGINE_URL}/engagement/update", json={
+            "barter_id": barter_id, "user_id": user_id, "engagement_score": score,
+        })
+    except Exception as e:
+        logger.error("Failed to POST engagement update: %s", e)
 
 
 # ---------------------------------------------------------------------------
