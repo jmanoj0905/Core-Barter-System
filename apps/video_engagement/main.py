@@ -192,12 +192,19 @@ async def process_buffer(barter_id: int, user_id: int, buf: dict, backend: str):
     window_end = time.time()
 
     if backend in ("local", "both"):
-        detected = [s for s in (process_frame_local(f) for f in frames) if s is not None]
-        if detected:
-            avg = {
-                key: sum(s[key] for s in detected) / len(detected)
-                for key in ("eyes_open", "head_deviation", "gaze_centered")
-            }
+        try:
+            detected = [s for s in (process_frame_local(f) for f in frames) if s is not None]
+            avg = None
+            if detected:
+                avg = {
+                    key: sum(s[key] for s in detected) / len(detected)
+                    for key in ("eyes_open", "head_deviation", "gaze_centered")
+                }
+        except Exception as e:
+            logger.error("Local frame processing failed: %s", e)
+            avg = None
+
+        if avg:
             await _score_and_post(barter_id, user_id, window_start, window_end, avg, "local")
 
     if backend in ("aws", "both"):

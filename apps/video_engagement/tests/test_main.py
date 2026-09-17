@@ -143,3 +143,22 @@ async def test_process_buffer_both_mode_posts_twice_with_different_backend_tag()
         if c.args[0].endswith("/video-engagement")
     ]
     assert sorted(backend_store_calls) == ["aws", "local"]
+
+
+@pytest.mark.asyncio
+async def test_process_buffer_local_raises_aws_still_posts_in_both_mode():
+    buf = {"frames": [b"fake-jpeg-bytes"], "wall_start": time.time()}
+    main.http_client = AsyncMock()
+
+    with patch.object(main, "process_frame_local", side_effect=RuntimeError("boom")), \
+         patch.object(main, "process_frame_aws", return_value={
+             "eyes_open": 0.8, "head_deviation": 0.2, "gaze_centered": 0.75,
+         }):
+        await main.process_buffer(barter_id=1, user_id=2, buf=buf, backend="both")
+
+    backend_store_calls = [
+        c.kwargs["json"]["backend_used"]
+        for c in main.http_client.post.call_args_list
+        if c.args[0].endswith("/video-engagement")
+    ]
+    assert backend_store_calls == ["aws"]
