@@ -67,22 +67,26 @@ from app.database import get_db
 from app.models import (
     BarterSession,
     Confirmation,
+    EngagementScoreLog,
     SessionContract,
     TranscriptSegment,
     User,
     Verdict,
+    VideoEngagementResult,
     Warning,
     WindowResult,
 )
 from app.schemas import (
     ConfirmRequest,
     DriftSummaryRequest,
+    EngagementLogRequest,
     EscrowReleaseRequest,
     FrameCheckRequest,
     SessionCreateRequest,
     SettlementRequest,
     TerminateRequest,
     TranscriptSegmentRequest,
+    VideoEngagementRequest,
     WarningLogRequest,
     WindowResultRequest,
 )
@@ -423,6 +427,108 @@ async def get_windows(barter_id: int, db: AsyncSession = Depends(get_db)):
             "created_at": w.created_at.isoformat(),
         }
         for w in windows
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Video Engagement Results
+# ---------------------------------------------------------------------------
+
+
+@router.post("/session/{barter_id}/video-engagement")
+async def store_video_engagement(
+    barter_id: int, req: VideoEngagementRequest, db: AsyncSession = Depends(get_db)
+):
+    row = VideoEngagementResult(
+        barter_session_id=barter_id,
+        user_id=req.user_id,
+        window_start=req.window_start,
+        window_end=req.window_end,
+        video_attention_score=req.video_attention_score,
+        backend_used=req.backend_used,
+        raw_signals=json.dumps(req.raw_signals),
+    )
+    db.add(row)
+    await db.commit()
+    return {"status": "stored", "id": row.id}
+
+
+@router.get("/session/{barter_id}/video-engagement")
+async def list_video_engagement(barter_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(VideoEngagementResult)
+        .where(VideoEngagementResult.barter_session_id == barter_id)
+        .order_by(VideoEngagementResult.window_start)
+    )
+    rows = result.scalars().all()
+    return [
+        {
+            "user_id": r.user_id,
+            "window_start": r.window_start,
+            "window_end": r.window_end,
+            "video_attention_score": r.video_attention_score,
+            "backend_used": r.backend_used,
+            "raw_signals": json.loads(r.raw_signals),
+            "created_at": r.created_at.isoformat(),
+        }
+        for r in rows
+    ]
+
+
+@router.post("/session/{barter_id}/engagement-log")
+async def store_engagement_log(
+    barter_id: int, req: EngagementLogRequest, db: AsyncSession = Depends(get_db)
+):
+    row = EngagementScoreLog(
+        barter_session_id=barter_id,
+        user_id=req.user_id,
+        speech_engagement_score=req.speech_engagement_score,
+        video_attention_score=req.video_attention_score,
+        fused_engagement_score=req.fused_engagement_score,
+        created_at=datetime.now(timezone.utc),
+    )
+    db.add(row)
+    await db.commit()
+    return {"status": "stored", "id": row.id}
+
+
+@router.get("/session/{barter_id}/engagement")
+async def get_latest_engagement(barter_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(EngagementScoreLog)
+        .where(EngagementScoreLog.barter_session_id == barter_id)
+        .order_by(EngagementScoreLog.created_at.desc())
+        .limit(1)
+    )
+    row = result.scalar_one_or_none()
+    if row is None:
+        raise HTTPException(status_code=404, detail="No engagement data for this session")
+    return {
+        "user_id": row.user_id,
+        "speech_engagement_score": row.speech_engagement_score,
+        "video_attention_score": row.video_attention_score,
+        "fused_engagement_score": row.fused_engagement_score,
+        "created_at": row.created_at.isoformat(),
+    }
+
+
+@router.get("/session/{barter_id}/engagement/history")
+async def get_engagement_history(barter_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(EngagementScoreLog)
+        .where(EngagementScoreLog.barter_session_id == barter_id)
+        .order_by(EngagementScoreLog.created_at)
+    )
+    rows = result.scalars().all()
+    return [
+        {
+            "user_id": r.user_id,
+            "speech_engagement_score": r.speech_engagement_score,
+            "video_attention_score": r.video_attention_score,
+            "fused_engagement_score": r.fused_engagement_score,
+            "created_at": r.created_at.isoformat(),
+        }
+        for r in rows
     ]
 
 

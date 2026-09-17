@@ -4,6 +4,7 @@ const API        = ''
 const WS         = location.protocol === 'https:' ? 'wss' : 'ws'
 const AUDIO_WS   = `${WS}://${location.host}`
 const WARNINGS_WS = `${WS}://${location.host}`
+const VIDEO_WS = `${WS}://${location.host}`
 
 function fmt(s) {
   const h  = Math.floor(s / 3600)
@@ -56,6 +57,8 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
   const pcRef           = useRef(null)
   const signalWsRef     = useRef(null)
   const frameIntervalRef = useRef(null)
+  const videoWsRef       = useRef(null)
+  const videoFrameIntervalRef = useRef(null)
 
   const agreedSeconds = agreedMinutes * 60
   const name          = userId === 1 ? 'Alice' : 'Bob'
@@ -77,6 +80,8 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
         // Real-time notification when both users confirm - end session immediately
         setConfirmed(true)
         clearInterval(frameIntervalRef.current)
+        if (videoFrameIntervalRef.current) clearInterval(videoFrameIntervalRef.current)
+        if (videoWsRef.current) videoWsRef.current.close()
         mrRef.current?.stop()
         audioWsRef.current?.close()
         pcRef.current?.close()
@@ -122,6 +127,8 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
     clearInterval(timerRef.current)
     clearInterval(pollRef.current)
     clearInterval(frameIntervalRef.current)
+    if (videoFrameIntervalRef.current) clearInterval(videoFrameIntervalRef.current)
+    if (videoWsRef.current) videoWsRef.current.close()
     mrRef.current?.stop()
     audioWsRef.current?.close()
     pcRef.current?.close()
@@ -262,6 +269,22 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
           body: JSON.stringify({ barter_id: barterId, user_id: userId, image_base64: base64 }),
         }).catch(() => {})
       }, 10_000)
+
+      const videoWs = new WebSocket(`${VIDEO_WS}/video/${barterId}/${userId}`)
+      videoWsRef.current = videoWs
+      await new Promise((resolve, reject) => { videoWs.onopen = resolve; videoWs.onerror = reject })
+
+      videoFrameIntervalRef.current = setInterval(() => {
+        if (!localVideoElRef.current || localVideoElRef.current.videoWidth === 0) return
+        if (videoWs.readyState !== WebSocket.OPEN) return
+        const canvas = document.createElement('canvas')
+        canvas.width  = localVideoElRef.current.videoWidth
+        canvas.height = localVideoElRef.current.videoHeight
+        canvas.getContext('2d').drawImage(localVideoElRef.current, 0, 0)
+        canvas.toBlob((blob) => {
+          if (blob && videoWs.readyState === WebSocket.OPEN) videoWs.send(blob)
+        }, 'image/jpeg', 0.7)
+      }, 1_000)
     } catch (err) {
       setError(err.message)
     }
@@ -278,6 +301,8 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
       if (!res.ok) throw new Error(await res.text())
       setConfirmed(true)
       clearInterval(frameIntervalRef.current)
+      if (videoFrameIntervalRef.current) clearInterval(videoFrameIntervalRef.current)
+      if (videoWsRef.current) videoWsRef.current.close()
       mrRef.current?.stop()
       audioWsRef.current?.close()
       pcRef.current?.close()

@@ -1,4 +1,5 @@
 import logging
+import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
@@ -35,6 +36,20 @@ logger = logging.getLogger("warning-engine")
 import os
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
+# Fusion weights — experimental placeholders, picked properly by
+# apps/video_engagement/weight_search.py and recorded in
+# docs/video_engagement/design-choices.md. Speech starts as the
+# majority signal since it is already tuned; video is a minority
+# signal until validated against it.
+ENGAGEMENT_FUSION_W_SPEECH = float(os.getenv("ENGAGEMENT_FUSION_W_SPEECH", "0.7"))
+ENGAGEMENT_FUSION_W_VIDEO = float(os.getenv("ENGAGEMENT_FUSION_W_VIDEO", "0.3"))
+
+# A video score with no fresh update in this many seconds is treated as
+# stale/absent for fusion purposes (3 windows at the 5s buffer threshold
+# video_engagement uses) — a learner whose camera goes dark should not keep
+# contributing their last-seen video score forever.
+VIDEO_SCORE_STALE_SECONDS = float(os.getenv("VIDEO_SCORE_STALE_SECONDS", "15"))
+
 # ---------------------------------------------------------------------------
 # Pydantic Models
 # ---------------------------------------------------------------------------
@@ -63,6 +78,18 @@ class EngagementAlertRequest(BaseModel):
     engagement_score: float
 
 
+class EngagementUpdateRequest(BaseModel):
+    barter_id: int
+    user_id: int
+    engagement_score: float
+
+
+class VideoEngagementUpdateRequest(BaseModel):
+    barter_id: int
+    user_id: int
+    video_attention_score: float
+
+
 class SessionInitRequest(BaseModel):
     teacher_user_id: int = 1
     learner_user_id: int = 2
@@ -84,6 +111,10 @@ def _new_state() -> dict:
         "total_drift_incidents": 0,
         "warning_history": [],
         "terminated": False,
+        "learner_user_id": None,
+        "speech_engagement_score": None,
+        "video_attention_score": None,
+        "video_attention_score_at": None,
     }
 
 
@@ -324,6 +355,58 @@ async def receive_engagement_alert(request: EngagementAlertRequest):
 
     _warn(f"Barter {barter_id}  low learner engagement — {request.engagement_score:.1%}")
     return {"action": "engagement_alert"}
+
+
+async def _recompute_and_log_fusion(barter_id: int, state: dict):
+    speech = state.get("speech_engagement_score")
+    video = state.get("video_attention_score")
+    video_at = state.get("video_attention_score_at")
+    if video is not None and video_at is not None and time.time() - video_at > VIDEO_SCORE_STALE_SECONDS:
+        video = None
+    if speech is None and video is None:
+        return
+    if speech is not None and video is not None:
+        fused = ENGAGEMENT_FUSION_W_SPEECH * speech + ENGAGEMENT_FUSION_W_VIDEO * video
+    else:
+        fused = speech if speech is not None else video
+    fused = round(fused, 4)
+
+    await post_to_backend(f"/session/{barter_id}/engagement-log", {
+        "user_id": state.get("learner_user_id"),
+        "speech_engagement_score": speech,
+        "video_attention_score": video,
+        "fused_engagement_score": fused,
+    })
+
+
+@app.post("/engagement/update")
+async def receive_engagement_update(request: EngagementUpdateRequest):
+    """Live speech-based engagement score from semantic_analysis (every update, not just low alerts)."""
+    barter_id = request.barter_id
+    if barter_id not in sessions:
+        sessions[barter_id] = _new_state()
+    state = sessions[barter_id]
+    state["speech_engagement_score"] = request.engagement_score
+    await _recompute_and_log_fusion(barter_id, state)
+    return {"status": "updated"}
+
+
+@app.post("/video-engagement/update")
+async def receive_video_engagement_update(request: VideoEngagementUpdateRequest):
+    """Live video-attention score from video_engagement service; fused with speech and logged to backend."""
+    barter_id = request.barter_id
+    if barter_id not in sessions:
+        sessions[barter_id] = _new_state()
+    state = sessions[barter_id]
+
+    learner_id = state.get("learner_user_id")
+    if learner_id is not None and request.user_id != learner_id:
+        return {"status": "ignored", "reason": "video score is not for the learner"}
+
+    state["video_attention_score"] = request.video_attention_score
+    state["video_attention_score_at"] = time.time()
+    await _recompute_and_log_fusion(barter_id, state)
+    return {"status": "updated"}
 
 
 @app.post("/session/{barter_id}/end")

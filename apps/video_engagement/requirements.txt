@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+httpx
+python-dotenv
+boto3
+mediapipe==0.10.21
+opencv-python-headless<4.10
+numpy<2

@@ -136,3 +136,19 @@ class CreditTransactionResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class VideoEngagementRequest(BaseModel):
+    user_id: int
+    window_start: float
+    window_end: float
+    video_attention_score: float
+    backend_used: str
+    raw_signals: dict
+
+
+class EngagementLogRequest(BaseModel):
+    user_id: int | None = None
+    speech_engagement_score: float | None = None
+    video_attention_score: float | None = None
+    fused_engagement_score: float

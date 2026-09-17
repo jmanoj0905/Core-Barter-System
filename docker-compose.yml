@@ -34,6 +34,23 @@ services:
       STT_BACKEND: ${STT_BACKEND:-aws}
     restart: on-failure
 
+  video_engagement:
+    build:
+      context: ./apps/video_engagement
+    volumes:
+      - model_cache:/root/.cache
+    environment:
+      BACKEND_URL: http://backend:8000
+      WARNING_ENGINE_URL: http://warning_engine:8003
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_REGION: ${AWS_REGION:-ap-south-1}
+      VIDEO_BACKEND: ${VIDEO_BACKEND:-local}
+      VIDEO_WEIGHT_EYES: ${VIDEO_WEIGHT_EYES:-0.4}
+      VIDEO_WEIGHT_HEAD: ${VIDEO_WEIGHT_HEAD:-0.4}
+      VIDEO_WEIGHT_GAZE: ${VIDEO_WEIGHT_GAZE:-0.2}
+    restart: on-failure
+
   semantic_analysis:
     build:
       context: ./apps/semantic_analysis
@@ -49,6 +66,8 @@ services:
       context: ./apps/warning_engine
     environment:
       BACKEND_URL: http://backend:8000
+      ENGAGEMENT_FUSION_W_SPEECH: ${ENGAGEMENT_FUSION_W_SPEECH:-0.7}
+      ENGAGEMENT_FUSION_W_VIDEO: ${ENGAGEMENT_FUSION_W_VIDEO:-0.3}
     restart: on-failure
 
   frontend:
