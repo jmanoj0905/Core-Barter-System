@@ -28,7 +28,7 @@ os.environ.setdefault("MISTRAL_API_KEY", "test-key")
 # Make service packages importable
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "backend"))
+sys.path.insert(0, str(ROOT / "apps" / "backend"))
 
 # ---------------------------------------------------------------------------
 # Patch routes to use naive datetimes (SQLite doesn't store tz info).
@@ -105,14 +105,14 @@ async def backend_client():
 @pytest_asyncio.fixture
 async def warning_client():
     """Async test client for the warning engine, with backend calls mocked."""
-    we_path = str(ROOT / "warning_engine")
+    we_path = str(ROOT / "apps" / "warning_engine")
     if we_path not in sys.path:
         sys.path.insert(0, we_path)
 
     import importlib.util
 
     spec = importlib.util.spec_from_file_location(
-        "warning_engine_main", ROOT / "warning_engine" / "main.py"
+        "warning_engine_main", ROOT / "apps" / "warning_engine" / "main.py"
     )
     we_main = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(we_main)

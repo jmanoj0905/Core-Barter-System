@@ -1,4 +1,5 @@
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
@@ -50,6 +51,19 @@ async def get_or_create_wallet(db: AsyncSession, user_id: int) -> Wallet:
 
 
 async def lock_escrow(db: AsyncSession, barter_session_id: int, user_id: int) -> Escrow | None:
+    # Idempotent: a repeated lock call for the same session/user reuses the
+    # existing locked escrow instead of stranding a second deposit (ISSUE-007).
+    existing_result = await db.execute(
+        select(Escrow).where(
+            Escrow.barter_session_id == barter_session_id,
+            Escrow.user_id == user_id,
+            Escrow.status == "locked",
+        )
+    )
+    existing = existing_result.scalar_one_or_none()
+    if existing:
+        return existing
+
     user_result = await db.execute(select(User).where(User.id == user_id))
     user = user_result.scalar_one_or_none()
     if not user:
@@ -82,7 +96,21 @@ async def lock_escrow(db: AsyncSession, barter_session_id: int, user_id: int) ->
         status="locked",
     )
     db.add(escrow)
-    await db.flush()
+    try:
+        await db.flush()
+    except IntegrityError:
+        # Lost a concurrent race to lock the same (session, user) escrow —
+        # the unique index caught it where the earlier check couldn't.
+        # Roll back this insert and hand back the winner's row.
+        await db.rollback()
+        winner = await db.execute(
+            select(Escrow).where(
+                Escrow.barter_session_id == barter_session_id,
+                Escrow.user_id == user_id,
+                Escrow.status == "locked",
+            )
+        )
+        return winner.scalar_one_or_none()
 
     return escrow
 
@@ -99,6 +127,13 @@ async def release_escrow(
     escrow = result.scalar_one_or_none()
     if not escrow:
         return None
+
+    # A penalty larger than the deposit would produce a negative released
+    # amount and deduct credits the escrow never held (ISSUE-012).
+    if not (0 <= penalty_amount <= escrow.amount):
+        raise ValueError(
+            f"penalty_amount must be between 0 and escrow amount ({escrow.amount})"
+        )
 
     wallet_result = await db.execute(select(Wallet).where(Wallet.user_id == escrow.user_id))
     wallet = wallet_result.scalar_one_or_none()
@@ -190,6 +225,20 @@ async def release_escrow(
     return escrow
 
 
+async def _release_group(
+    db: AsyncSession, escrows: list[Escrow], release_type: str, penalty_fraction: float
+) -> int:
+    """Release every locked escrow in the group, splitting the same penalty
+    fraction across each. Handles legacy sessions with more than one locked
+    escrow per user (ISSUE-007) as well as the normal single-escrow case."""
+    released_total = 0
+    for escrow in escrows:
+        penalty_amount = int(escrow.amount * penalty_fraction)
+        await release_escrow(db, escrow.id, release_type, penalty_amount)
+        released_total += escrow.amount - penalty_amount
+    return released_total
+
+
 async def apply_settlement(
     db: AsyncSession,
     barter_session_id: int,
@@ -205,7 +254,9 @@ async def apply_settlement(
     if not escrows:
         return {"error": "No locked escrows found"}
 
-    escrow_by_user = {e.user_id: e for e in escrows}
+    escrows_by_user: dict[int, list[Escrow]] = {}
+    for escrow in escrows:
+        escrows_by_user.setdefault(escrow.user_id, []).append(escrow)
 
     contract_result = await db.execute(
         select(SessionContract).where(SessionContract.barter_session_id == barter_session_id)
@@ -215,22 +266,15 @@ async def apply_settlement(
     if not contract:
         return {"error": "Session contract not found"}
 
-    teacher_escrow = escrow_by_user.get(contract.teacher_user_id)
-    learner_escrow = escrow_by_user.get(contract.learner_user_id)
-
-    teacher_released = 0
-    learner_released = 0
+    teacher_escrows = escrows_by_user.get(contract.teacher_user_id, [])
+    learner_escrows = escrows_by_user.get(contract.learner_user_id, [])
 
     if qa_score >= 0.8:
         release_type = "full_release"
         bonus = ESCROW_CONFIG["teaching_bonus"]
 
-        if teacher_escrow:
-            await release_escrow(db, teacher_escrow.id, release_type, 0)
-            teacher_released = teacher_escrow.amount
-        if learner_escrow:
-            await release_escrow(db, learner_escrow.id, release_type, 0)
-            learner_released = learner_escrow.amount
+        teacher_released = await _release_group(db, teacher_escrows, release_type, 0.0)
+        learner_released = await _release_group(db, learner_escrows, release_type, 0.0)
 
         teacher_wallet = await get_or_create_wallet(db, contract.teacher_user_id)
         teacher_wallet.available_balance += bonus
@@ -252,19 +296,10 @@ async def apply_settlement(
 
     elif qa_score >= 0.5:
         release_type = "partial_release"
+        penalty_fraction = 1 - ((qa_score - 0.5) / 0.3)
 
-        if teacher_escrow:
-            teacher_release = int(teacher_escrow.amount * ((qa_score - 0.5) / 0.3))
-            await release_escrow(
-                db, teacher_escrow.id, release_type, teacher_escrow.amount - teacher_release
-            )
-            teacher_released = teacher_release
-        if learner_escrow:
-            learner_release = int(learner_escrow.amount * ((qa_score - 0.5) / 0.3))
-            await release_escrow(
-                db, learner_escrow.id, release_type, learner_escrow.amount - learner_release
-            )
-            learner_released = learner_release
+        teacher_released = await _release_group(db, teacher_escrows, release_type, penalty_fraction)
+        learner_released = await _release_group(db, learner_escrows, release_type, penalty_fraction)
 
         trust_delta = 0.02
         teacher_trust_delta = 0.02
@@ -273,12 +308,8 @@ async def apply_settlement(
     else:
         release_type = "penalty"
 
-        if teacher_escrow:
-            await release_escrow(db, teacher_escrow.id, release_type, 0)
-            teacher_released = 0
-        if learner_escrow:
-            await release_escrow(db, learner_escrow.id, "refund", 0)
-            learner_released = learner_escrow.amount
+        teacher_released = await _release_group(db, teacher_escrows, "penalty", 1.0)
+        learner_released = await _release_group(db, learner_escrows, "refund", 0.0)
 
         trust_delta = -0.10
         teacher_trust_delta = -0.10

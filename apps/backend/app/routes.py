@@ -60,6 +60,7 @@ def _trust(barter_id, u1_before, u1_after, u2_before, u2_after):
 
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -96,6 +97,148 @@ router = APIRouter()
 
 
 # ---------------------------------------------------------------------------
+# Shared finalization helpers
+#
+# One server-controlled policy for turning session evidence into a verdict,
+# a settlement, and a trust update — used by confirm_session (the normal
+# completion path) and reused by the standalone /verdict and /trust endpoints
+# so both paths agree and neither can double-apply money or trust
+# (ISSUE-001, ISSUE-002, ISSUE-003, ISSUE-018).
+# ---------------------------------------------------------------------------
+
+
+def _elapsed_seconds(session: BarterSession) -> float | None:
+    if not session.started_at:
+        return None
+    end_time = session.ended_at or datetime.now(timezone.utc)
+    started_at = session.started_at
+    if started_at.tzinfo is None:
+        started_at = started_at.replace(tzinfo=timezone.utc)
+    if end_time.tzinfo is None:
+        end_time = end_time.replace(tzinfo=timezone.utc)
+    return (end_time - started_at).total_seconds()
+
+
+def _duration_pass(session: BarterSession, contract: SessionContract | None) -> bool:
+    if not contract:
+        return False
+    elapsed = _elapsed_seconds(session)
+    if elapsed is None:
+        return False
+    return elapsed >= contract.agreed_duration_seconds * 0.8
+
+
+async def _evaluate_topic_quality(db: AsyncSession, barter_id: int) -> dict:
+    """Read actual monitoring evidence for this session directly from the
+    window/warning tables, instead of trusting the verdict's cached
+    on_topic_percentage (which can be stale or, with zero windows, wrongly
+    read as 100% — ISSUE-019)."""
+    windows_result = await db.execute(
+        select(WindowResult).where(WindowResult.barter_session_id == barter_id)
+    )
+    windows = windows_result.scalars().all()
+    total = len(windows)
+    has_evidence = total > 0
+    on_topic = sum(1 for w in windows if w.classification in ("correct", "weakly_correct"))
+    on_topic_percentage = round(100.0 * on_topic / total, 2) if has_evidence else 0.0
+
+    severe_result = await db.execute(
+        select(Warning)
+        .where(Warning.barter_session_id == barter_id, Warning.severity == "severe")
+        .limit(1)
+    )
+    has_severe_warning = severe_result.scalar_one_or_none() is not None
+
+    return {
+        "has_evidence": has_evidence,
+        "on_topic_percentage": on_topic_percentage,
+        "has_severe_warning": has_severe_warning,
+    }
+
+
+def _decide_verdict_type(
+    terminated: bool, duration_pass: bool, confirmation_pass: bool, topic: dict
+) -> str:
+    """Documented quality policy (ISSUE-003): topic monitoring evidence can
+    veto an otherwise-complete session, and never counts missing evidence as
+    proof of good behavior (ISSUE-019)."""
+    if terminated:
+        return "DISPUTE"
+
+    topic_failed = topic["has_evidence"] and (
+        topic["on_topic_percentage"] < 40 or topic["has_severe_warning"]
+    )
+    if topic_failed:
+        return "DISPUTE"
+
+    topic_ok_for_success = not topic["has_evidence"] or topic["on_topic_percentage"] >= 70
+    topic_ok_for_partial = not topic["has_evidence"] or topic["on_topic_percentage"] >= 40
+
+    if duration_pass and confirmation_pass and topic_ok_for_success:
+        return "SUCCESSFUL"
+    if (duration_pass or confirmation_pass) and topic_ok_for_partial:
+        return "PARTIAL"
+    return "DISPUTE"
+
+
+async def _upsert_verdict_checks(
+    db: AsyncSession,
+    barter_id: int,
+    verdict: Verdict | None,
+    verdict_type: str,
+    duration_pass: bool,
+    confirmation_pass: bool,
+    actual_duration_seconds: float | None = None,
+) -> Verdict:
+    if verdict:
+        verdict.verdict_type = verdict_type
+        verdict.duration_check = str(duration_pass).lower()
+        verdict.confirmation_check = str(confirmation_pass).lower()
+        verdict.actual_duration_seconds = actual_duration_seconds
+    else:
+        verdict = Verdict(
+            barter_session_id=barter_id,
+            verdict_type=verdict_type,
+            on_topic_percentage=0.0,
+            warning_count=0,
+            duration_check=str(duration_pass).lower(),
+            confirmation_check=str(confirmation_pass).lower(),
+            trust_delta_user1=0.0,
+            trust_delta_user2=0.0,
+            actual_duration_seconds=actual_duration_seconds,
+        )
+        db.add(verdict)
+    await db.flush()
+    return verdict
+
+
+async def _apply_finalization_trust(
+    db: AsyncSession, session: BarterSession, contract: SessionContract, settlement: dict
+) -> dict:
+    """Apply the settlement's role-specific trust deltas exactly once, to the
+    contract's actual teacher/learner (not a fixed formula recomputed per
+    endpoint — ISSUE-018)."""
+    u1 = (await db.execute(select(User).where(User.id == session.user1_id))).scalar_one()
+    u2 = (await db.execute(select(User).where(User.id == session.user2_id))).scalar_one()
+
+    delta_by_user = {
+        contract.teacher_user_id: settlement["teacher_trust_delta"],
+        contract.learner_user_id: settlement["learner_trust_delta"],
+    }
+
+    u1_before, u2_before = u1.trust_score, u2.trust_score
+    u1.trust_score = max(0.0, min(1.0, u1.trust_score + delta_by_user.get(session.user1_id, 0.0)))
+    u2.trust_score = max(0.0, min(1.0, u2.trust_score + delta_by_user.get(session.user2_id, 0.0)))
+
+    _trust(session.id, u1_before, u1.trust_score, u2_before, u2.trust_score)
+
+    return {
+        "trust_delta_user1": round(u1.trust_score - u1_before, 4),
+        "trust_delta_user2": round(u2.trust_score - u2_before, 4),
+    }
+
+
+# ---------------------------------------------------------------------------
 # Session Lifecycle
 # ---------------------------------------------------------------------------
 
@@ -122,8 +265,22 @@ async def get_session_contract(barter_id: int, db: AsyncSession = Depends(get_db
 
 @router.post("/session/create")
 async def create_session(req: SessionCreateRequest, db: AsyncSession = Depends(get_db)):
-    # Create barter session (hardcoded Alice=1, Bob=2 for POC)
-    session = BarterSession(user1_id=1, user2_id=2, status="proposed")
+    # Session participants must be the actual contract teacher/learner, not a
+    # fixed Alice=1/Bob=2 pair — otherwise escrow/trust operations that key
+    # off session.user1_id/user2_id silently diverge from the contract
+    # (ISSUE-013).
+    teacher = (
+        await db.execute(select(User).where(User.id == req.teacher_user_id))
+    ).scalar_one_or_none()
+    if not teacher:
+        raise HTTPException(status_code=404, detail=f"User {req.teacher_user_id} not found")
+    learner = (
+        await db.execute(select(User).where(User.id == req.learner_user_id))
+    ).scalar_one_or_none()
+    if not learner:
+        raise HTTPException(status_code=404, detail=f"User {req.learner_user_id} not found")
+
+    session = BarterSession(user1_id=req.teacher_user_id, user2_id=req.learner_user_id, status="proposed")
     db.add(session)
     await db.flush()
 
@@ -253,6 +410,27 @@ async def confirm_session(barter_id: int, req: ConfirmRequest, db: AsyncSession 
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    if session.status != "active":
+        raise HTTPException(
+            status_code=400, detail=f"Session is {session.status}, cannot confirm"
+        )
+
+    contract_result = await db.execute(
+        select(SessionContract).where(SessionContract.barter_session_id == barter_id)
+    )
+    contract = contract_result.scalar_one_or_none()
+    if not contract:
+        raise HTTPException(status_code=404, detail="Session contract not found")
+
+    # Only the two actual contract participants can confirm — a supplied
+    # user_id that isn't teacher/learner on this session cannot complete it
+    # (ISSUE-006).
+    participant_ids = {contract.teacher_user_id, contract.learner_user_id}
+    if req.user_id not in participant_ids:
+        raise HTTPException(
+            status_code=403, detail="User is not a participant in this session"
+        )
+
     existing = await db.execute(
         select(Confirmation).where(
             Confirmation.barter_session_id == barter_id,
@@ -264,60 +442,85 @@ async def confirm_session(barter_id: int, req: ConfirmRequest, db: AsyncSession 
 
     confirmation = Confirmation(barter_session_id=barter_id, user_id=req.user_id)
     db.add(confirmation)
-    await db.flush()
+    try:
+        await db.flush()
+    except IntegrityError:
+        # Lost a concurrent race to confirm — the unique constraint caught
+        # what the earlier existence check couldn't (ISSUE-026).
+        await db.rollback()
+        raise HTTPException(status_code=400, detail="User already confirmed")
 
     all_confs = await db.execute(
         select(Confirmation).where(Confirmation.barter_session_id == barter_id)
     )
-    confirmed_users = [c.user_id for c in all_confs.scalars().all()]
-    both_confirmed = len(confirmed_users) >= 2
-    settlement_result = None
+    confirmed_users = {c.user_id for c in all_confs.scalars().all()}
+    both_confirmed = participant_ids <= confirmed_users
 
-    # Broadcast immediately when either user confirms
-    if both_confirmed:
-        await manager.broadcast(barter_id, {
-            "type": "both_confirmed",
-            "barter_id": barter_id,
-            "confirmed_by": confirmed_users,
-        })
-    else:
-        # Notify that one user confirmed - the other user sees this
+    if not both_confirmed:
+        await db.commit()
         await manager.broadcast(barter_id, {
             "type": "peer_confirmed",
             "user_id": req.user_id,
             "message": "Other user marked complete",
         })
+        return {
+            "barter_id": barter_id,
+            "confirmed_by": sorted(confirmed_users),
+            "both_confirmed": False,
+            "settlement": None,
+        }
 
-    if both_confirmed:
-        session.status = "completed"
-        session.ended_at = datetime.now(timezone.utc)
-
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            try:
-                await client.post(f"{settings.AUDIO_URL}/session/{barter_id}/end")
-            except Exception:
-                pass
-
-        verdict_result = await db.execute(
-            select(Verdict).where(Verdict.barter_session_id == barter_id)
-        )
-        verdict = verdict_result.scalar_one_or_none()
-
-        qa_score = (
-            1.0
-            if verdict and verdict.verdict_type == "SUCCESSFUL"
-            else 0.5
-            if verdict and verdict.verdict_type == "PARTIAL"
-            else 0.0
-        )
-        settlement_result = await apply_settlement(db, barter_id, qa_score)
-
+    # Both participants confirmed. Run finalization once, in order: freeze
+    # the session, let analysis finish, generate the authoritative verdict
+    # from actual evidence, settle escrow, apply trust once, commit, and only
+    # then announce completion (ISSUE-001, ISSUE-003, ISSUE-009).
+    session.status = "finalizing"
+    session.ended_at = datetime.now(timezone.utc)
     await db.commit()
+
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        try:
+            await client.post(f"{settings.AUDIO_URL}/session/{barter_id}/end")
+        except Exception:
+            pass
+
+    duration_pass = _duration_pass(session, contract)
+    topic = await _evaluate_topic_quality(db, barter_id)
+    verdict_type = _decide_verdict_type(False, duration_pass, True, topic)
+
+    verdict_result = await db.execute(
+        select(Verdict).where(Verdict.barter_session_id == barter_id)
+    )
+    verdict = verdict_result.scalar_one_or_none()
+    verdict = await _upsert_verdict_checks(
+        db, barter_id, verdict, verdict_type, duration_pass, True,
+        actual_duration_seconds=_elapsed_seconds(session),
+    )
+
+    qa_score = {"SUCCESSFUL": 1.0, "PARTIAL": 0.5}.get(verdict_type, 0.0)
+    settlement_result = await apply_settlement(db, barter_id, qa_score)
+
+    if "error" not in settlement_result and not verdict.finalized:
+        trust_deltas = await _apply_finalization_trust(db, session, contract, settlement_result)
+        verdict.trust_delta_user1 = trust_deltas["trust_delta_user1"]
+        verdict.trust_delta_user2 = trust_deltas["trust_delta_user2"]
+        verdict.finalized = True
+
+    session.status = "completed"
+    await db.commit()
+
+    _verdict(barter_id, verdict_type, duration_pass, True)
+
+    await manager.broadcast(barter_id, {
+        "type": "both_confirmed",
+        "barter_id": barter_id,
+        "confirmed_by": sorted(confirmed_users),
+    })
 
     return {
         "barter_id": barter_id,
-        "confirmed_by": confirmed_users,
-        "both_confirmed": both_confirmed,
+        "confirmed_by": sorted(confirmed_users),
+        "both_confirmed": True,
         "settlement": settlement_result,
     }
 
@@ -367,14 +570,36 @@ async def terminate_session(
     req: TerminateRequest | None = None,
     db: AsyncSession = Depends(get_db),
 ):
+    from app.escrow import get_escrows_by_session, release_escrow
+
     result = await db.execute(select(BarterSession).where(BarterSession.id == barter_id))
     session = result.scalar_one_or_none()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    if session.status in ("completed", "terminated"):
+        raise HTTPException(status_code=400, detail=f"Session already {session.status}")
+
     session.status = "terminated"
     session.ended_at = datetime.now(timezone.utc)
+
+    # Manual/automatic termination isn't a QA outcome, so it doesn't run the
+    # success/penalty settlement policy — it just returns both deposits.
+    # Only still-locked escrows are touched, so repeated termination calls
+    # don't double-refund (ISSUE-005).
+    escrows = await get_escrows_by_session(db, barter_id)
+    for escrow in escrows:
+        if escrow.status == "locked":
+            await release_escrow(db, escrow.id, "refund", 0)
+
     await db.commit()
+
+    reason = req.reason if req else "Manual termination"
+    await manager.broadcast(barter_id, {
+        "type": "terminated",
+        "barter_id": barter_id,
+        "reason": reason,
+    })
 
     return {"barter_id": barter_id, "status": "terminated"}
 
@@ -638,19 +863,26 @@ async def receive_drift_summary(
 ):
     drift_json = json.dumps(req.model_dump())
 
+    # Zero analyzed windows means no evidence, not a clean 100% — reporting
+    # it as full marks would treat missing data as demonstrated accuracy
+    # (ISSUE-019). The raw total_windows=0 is still preserved in drift_json.
+    on_topic_percentage = (
+        round(100.0 - req.percent_incorrect, 2) if req.total_windows > 0 else 0.0
+    )
+
     # Create or update verdict row with drift data
     existing = await db.execute(select(Verdict).where(Verdict.barter_session_id == barter_id))
     verdict = existing.scalar_one_or_none()
 
     if verdict:
         verdict.drift_summary = drift_json
-        verdict.on_topic_percentage = round(100.0 - req.percent_incorrect, 2)
+        verdict.on_topic_percentage = on_topic_percentage
         verdict.warning_count = req.warning_count
     else:
         verdict = Verdict(
             barter_session_id=barter_id,
             verdict_type="PENDING",
-            on_topic_percentage=round(100.0 - req.percent_incorrect, 2),
+            on_topic_percentage=on_topic_percentage,
             warning_count=req.warning_count,
             duration_check="pending",
             confirmation_check="pending",
@@ -711,57 +943,38 @@ async def generate_verdict(barter_id: int, db: AsyncSession = Depends(get_db)):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    existing = await db.execute(select(Verdict).where(Verdict.barter_session_id == barter_id))
+    verdict = existing.scalar_one_or_none()
+
+    # Already finalized (settled + trust applied) by confirm_session — the
+    # verdict is terminal, so return it rather than recomputing (ISSUE-010).
+    if verdict and verdict.finalized:
+        return {
+            "verdict": verdict.verdict_type,
+            "duration_check": verdict.duration_check == "true",
+            "confirmation_check": verdict.confirmation_check == "true",
+        }
+
     contract_result = await db.execute(
         select(SessionContract).where(SessionContract.barter_session_id == barter_id)
     )
     contract = contract_result.scalar_one_or_none()
 
-    # Duration check: actual >= 80% of agreed
-    duration_pass = False
-    if session.started_at and contract:
-        end_time = session.ended_at or datetime.now(timezone.utc)
-        actual_seconds = (end_time - session.started_at).total_seconds()
-        duration_pass = actual_seconds >= (contract.agreed_duration_seconds * 0.8)
+    duration_pass = _duration_pass(session, contract)
 
-    # Confirmation check: both users confirmed
     confs = await db.execute(
         select(Confirmation).where(Confirmation.barter_session_id == barter_id)
     )
     confirmation_pass = len(confs.scalars().all()) >= 2
 
-    # Determine verdict type
     terminated = session.status == "terminated"
-    if terminated:
-        verdict_type = "DISPUTE"
-    elif duration_pass and confirmation_pass:
-        verdict_type = "SUCCESSFUL"
-    elif duration_pass or confirmation_pass:
-        verdict_type = "PARTIAL"
-    else:
-        verdict_type = "DISPUTE"
+    topic = await _evaluate_topic_quality(db, barter_id)
+    verdict_type = _decide_verdict_type(terminated, duration_pass, confirmation_pass, topic)
 
-    # Create or update verdict record
-    existing = await db.execute(select(Verdict).where(Verdict.barter_session_id == barter_id))
-    verdict = existing.scalar_one_or_none()
-
-    if verdict:
-        verdict.verdict_type = verdict_type
-        verdict.duration_check = str(duration_pass).lower()
-        verdict.confirmation_check = str(confirmation_pass).lower()
-    else:
-        verdict = Verdict(
-            barter_session_id=barter_id,
-            verdict_type=verdict_type,
-            on_topic_percentage=0.0,
-            warning_count=0,
-            duration_check=str(duration_pass).lower(),
-            confirmation_check=str(confirmation_pass).lower(),
-            trust_delta_user1=0.0,
-            trust_delta_user2=0.0,
-        )
-        db.add(verdict)
-
-    await db.flush()
+    verdict = await _upsert_verdict_checks(
+        db, barter_id, verdict, verdict_type, duration_pass, confirmation_pass,
+        actual_duration_seconds=_elapsed_seconds(session),
+    )
     await db.commit()
 
     _verdict(barter_id, verdict_type, duration_pass, confirmation_pass)
@@ -791,6 +1004,7 @@ async def get_verdict(barter_id: int, db: AsyncSession = Depends(get_db)):
         "warning_count": verdict.warning_count,
         "trust_delta_user1": verdict.trust_delta_user1,
         "trust_delta_user2": verdict.trust_delta_user2,
+        "actual_duration_seconds": verdict.actual_duration_seconds,
         "drift_summary": drift,
     }
 
@@ -812,16 +1026,29 @@ async def update_trust(barter_id: int, db: AsyncSession = Depends(get_db)):
     if not verdict:
         raise HTTPException(status_code=404, detail="Verdict not found. Generate verdict first.")
 
-    # QA score mapping
+    u1 = (await db.execute(select(User).where(User.id == session.user1_id))).scalar_one()
+    u2 = (await db.execute(select(User).where(User.id == session.user2_id))).scalar_one()
+
+    if verdict.finalized:
+        # Trust was already applied exactly once, inside confirm_session's
+        # finalization. Repeated or concurrent results-page loads must read
+        # the stored result, not mutate trust again (ISSUE-002).
+        u1_after, u2_after = u1.trust_score, u2.trust_score
+        u1_before = round(u1_after - verdict.trust_delta_user1, 4)
+        u2_before = round(u2_after - verdict.trust_delta_user2, 4)
+        return {
+            "user_1_trust": {"before": u1_before, "after": round(u1_after, 4)},
+            "user_2_trust": {"before": u2_before, "after": round(u2_after, 4)},
+        }
+
+    # Legacy path: a verdict generated outside confirm-driven finalization
+    # (e.g. a manually terminated session). Applies the QA-score trust
+    # formula once, then locks it so this endpoint stays idempotent too.
     qa_scores = {"SUCCESSFUL": 1.0, "PARTIAL": 0.5, "DISPUTE": 0.0}
     qa_score = qa_scores.get(verdict.verdict_type, 0.0)
 
     # satisfaction_rating hardcoded to 4/5 for POC
     quality_adjusted = (qa_score + 0.8) / 2
-
-    # Fetch both users
-    u1 = (await db.execute(select(User).where(User.id == session.user1_id))).scalar_one()
-    u2 = (await db.execute(select(User).where(User.id == session.user2_id))).scalar_one()
 
     u1_before = u1.trust_score
     u2_before = u2.trust_score
@@ -832,6 +1059,7 @@ async def update_trust(barter_id: int, db: AsyncSession = Depends(get_db)):
 
     verdict.trust_delta_user1 = round(u1.trust_score - u1_before, 4)
     verdict.trust_delta_user2 = round(u2.trust_score - u2_before, 4)
+    verdict.finalized = True
 
     await db.commit()
 
@@ -943,7 +1171,10 @@ async def release_escrow_endpoint(req: EscrowReleaseRequest, db: AsyncSession = 
     from app.escrow import release_escrow
     from app.schemas import EscrowResponse
 
-    escrow = await release_escrow(db, req.escrow_id, req.release_type, req.penalty_amount)
+    try:
+        escrow = await release_escrow(db, req.escrow_id, req.release_type, req.penalty_amount)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     await db.commit()
 
     if not escrow:

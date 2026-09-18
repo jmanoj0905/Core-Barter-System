@@ -1,0 +1,18 @@
+{
+  "n": 5,
+  "mean_ms": 9185.188983203261,
+  "p50_ms": 8921.648917006678,
+  "p95_ms": 10148.126141398097,
+  "p99_ms": 10309.730894676759,
+  "min_ms": 8593.571791003342,
+  "max_ms": 10350.132082996424,
+  "backend": "aws",
+  "sample_transcripts": [
+    "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+    "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+    "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+    "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+    "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly."
+  ],
+  "note": "whisper backend unavailable in this environment (cached model corrupted, HF token expired) \u2014 only AWS Transcribe measured. Not a fabricated comparison."
+}

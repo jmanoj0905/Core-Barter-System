@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Float, ForeignKey, Integer, String, Text, DateTime
+from sqlalchemy import Boolean, Float, ForeignKey, Index, Integer, String, Text, DateTime, UniqueConstraint, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -116,14 +116,24 @@ class Verdict(Base):
     warning_count: Mapped[int] = mapped_column(Integer, nullable=False)
     duration_check: Mapped[str] = mapped_column(String(10), nullable=False)
     confirmation_check: Mapped[str] = mapped_column(String(10), nullable=False)
+    actual_duration_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
     trust_delta_user1: Mapped[float] = mapped_column(Float, nullable=False)
     trust_delta_user2: Mapped[float] = mapped_column(Float, nullable=False)
     drift_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Set once by the single server-controlled finalization path (confirm_session).
+    # Settlement and trust application check this to avoid re-running on repeated
+    # or concurrent requests (ISSUE-001 / ISSUE-002 / ISSUE-007).
+    finalized: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class Confirmation(Base):
     __tablename__ = "confirmations"
+    # A user confirms a given session at most once. The application already
+    # checks this before insert, but that check-then-insert is racy under
+    # concurrent requests — the constraint is the actual guarantee
+    # (ISSUE-026).
+    __table_args__ = (UniqueConstraint("barter_session_id", "user_id"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     barter_session_id: Mapped[int] = mapped_column(ForeignKey("barter_sessions.id"), nullable=False)
@@ -150,6 +160,20 @@ class Wallet(Base):
 
 class Escrow(Base):
     __tablename__ = "escrows"
+    # At most one *locked* escrow per (session, user) — a released/refunded/
+    # penalized row doesn't count, so a session can still show settlement
+    # history without blocking a later re-lock. Backs up lock_escrow's
+    # idempotency check, which alone is racy under concurrent requests
+    # (ISSUE-026, ISSUE-007).
+    __table_args__ = (
+        Index(
+            "ix_escrows_locked_unique",
+            "barter_session_id",
+            "user_id",
+            unique=True,
+            sqlite_where=text("status = 'locked'"),
+        ),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     barter_session_id: Mapped[int] = mapped_column(ForeignKey("barter_sessions.id"), nullable=False)

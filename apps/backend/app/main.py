@@ -115,14 +115,20 @@ async def signal_ws(barter_id: int, user_id: int, ws: WebSocket):
             msg_type = data.get("type", "unknown")
             logger.info(f"Relaying {msg_type} from user {user_id} to peer")
             
-            target_id = 2 if user_id == 1 else 1
-            target_ws = signal_peers.get(barter_id, {}).get(target_id)
-            if target_ws:
+            # Relay to whichever other peer is actually connected in this
+            # room, instead of assuming session participants are IDs 1/2
+            # (ISSUE-013 — contract roles can be any user pair).
+            peers = signal_peers.get(barter_id, {})
+            sent = False
+            for uid, target_ws in peers.items():
+                if uid == user_id:
+                    continue
                 try:
                     await target_ws.send_json({**data, "from": user_id})
+                    sent = True
                 except Exception as e:
                     logger.error(f"Error relaying to peer: {e}")
-            else:
-                logger.warning(f"No peer found for user {target_id}")
+            if not sent:
+                logger.warning(f"No peer found to relay to for barter {barter_id}")
     except (WebSocketDisconnect, RuntimeError):
         signal_peers.get(barter_id, {}).pop(user_id, None)

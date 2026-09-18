@@ -1,14 +1,29 @@
-from pydantic import BaseModel, field_validator
+from typing import Literal
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class SessionCreateRequest(BaseModel):
     skill_a: str = ""
     skill_b: str = ""
-    topic: str
-    scope: str
-    agreed_duration_minutes: int
+    topic: str = Field(min_length=1, max_length=200)
+    scope: str = Field(min_length=1)
+    agreed_duration_minutes: int = Field(gt=0, le=240)
     teacher_user_id: int = 1
     learner_user_id: int = 2
+
+    @field_validator("topic", "scope")
+    @classmethod
+    def not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("must not be blank")
+        return v
+
+    @model_validator(mode="after")
+    def distinct_participants(self):
+        if self.teacher_user_id == self.learner_user_id:
+            raise ValueError("teacher_user_id and learner_user_id must be distinct")
+        return self
 
 
 class ConfirmRequest(BaseModel):
@@ -107,8 +122,8 @@ class EscrowLockRequest(BaseModel):
 
 class EscrowReleaseRequest(BaseModel):
     escrow_id: int
-    release_type: str
-    penalty_amount: int = 0
+    release_type: Literal["full_release", "partial_release", "refund", "penalty"]
+    penalty_amount: int = Field(default=0, ge=0)
 
 
 class SettlementRequest(BaseModel):

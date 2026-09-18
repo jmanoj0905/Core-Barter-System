@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 from contextlib import asynccontextmanager
@@ -136,14 +137,22 @@ async def lifespan(app: FastAPI):
     await http_client.aclose()
 
 
-async def post_to_backend(path: str, payload: dict) -> dict | None:
-    try:
-        resp = await http_client.post(f"{BACKEND_URL}{path}", json=payload)
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as e:
-        logger.error("Backend call failed %s: %s", path, e)
-        return None
+async def post_to_backend(path: str, payload: dict, retries: int = 2) -> dict | None:
+    """POST to the backend with bounded retry. A transient failure here
+    otherwise silently discards monitoring evidence — window results,
+    warnings, and the session's drift summary (ISSUE-025)."""
+    last_exc: Exception | None = None
+    for attempt in range(retries + 1):
+        try:
+            resp = await http_client.post(f"{BACKEND_URL}{path}", json=payload)
+            resp.raise_for_status()
+            return resp.json()
+        except Exception as e:
+            last_exc = e
+            if attempt < retries:
+                await asyncio.sleep(0.5 * (attempt + 1))
+    logger.error("Backend call failed %s after %d attempts: %s", path, retries + 1, last_exc)
+    return None
 
 
 # ---------------------------------------------------------------------------

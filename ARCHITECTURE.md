@@ -2,48 +2,40 @@
 
 ## Overview
 
-The Core Barter System is a real-time audio conversation monitoring platform that enforces topic adherence during barter/negotiation sessions. It uses a microservices architecture with four FastAPI services and a React frontend.
+The Core Barter System is a real-time audio conversation monitoring platform that enforces topic adherence during barter/negotiation sessions. It uses a microservices architecture with five FastAPI services and a React (nginx-served) frontend, backed by SQLite.
 
 ## System Architecture Diagram
 
 ```mermaid
 graph TB
     subgraph "Client Layer"
-        FE[React Frontend<br/>Port 5173]
+        FE[React Frontend<br/>nginx, ports 80/443]
     end
 
     subgraph "API Gateway / Core Service"
-        BE[Backend API<br/>Port 8000<br/>FastAPI + PostgreSQL]
+        BE[Backend API<br/>Port 8000<br/>FastAPI + SQLite]
     end
 
     subgraph "ML Services"
-        AP[Audio Pipeline<br/>Port 8001<br/>Whisper STT]
+        AP[Audio Pipeline<br/>Port 8001<br/>AWS Transcribe STT]
         SA[Semantic Analysis<br/>Port 8002<br/>Sentence-BERT]
         WE[Warning Engine<br/>Port 8003<br/>Escalation Logic]
+        VE[Video Engagement<br/>Webcam attention scoring]
     end
 
     subgraph "Data Layer"
-        PG[(PostgreSQL<br/>Port 5432)]
+        DB[(SQLite<br/>barter.db)]
     end
 
-    subgraph "Shared Package"
-        SH[shared/<br/>types.py]
-    end
-
-    FE -->|HTTP/WebSocket| BE
+    FE -->|HTTP/WebSocket via nginx| BE
     BE -->|REST| AP
     BE -->|REST| SA
     BE -->|REST| WE
+    BE -->|REST| VE
     AP -->|Audio Data| SA
     SA -->|Classification| WE
     WE -->|Warnings| FE
-    BE -->|SQL| PG
-    AP -->|SQL| PG
-    WE -->|SQL| PG
-    SH -.->|Shared Types| BE
-    SH -.->|Shared Types| AP
-    SH -.->|Shared Types| SA
-    SH -.->|Shared Types| WE
+    BE -->|SQL| DB
 ```
 
 ## Service Details
@@ -57,7 +49,7 @@ graph TB
   - Post-session screen with verdict and trust scores
 
 ### 2. Backend API (FastAPI - Port 8000)
-- **Technology**: FastAPI, SQLAlchemy, PostgreSQL
+- **Technology**: FastAPI, SQLAlchemy, SQLite (async, via aiosqlite)
 - **Purpose**: Core business logic and orchestration
 - **Components**:
   - `main.py` - FastAPI application entry point
@@ -69,11 +61,12 @@ graph TB
   - `safety.py` - Safety and validation utilities
 
 ### 3. Audio Pipeline (FastAPI - Port 8001)
-- **Technology**: FastAPI, OpenAI Whisper, FFmpeg, PyTorch
+- **Technology**: FastAPI, FFmpeg
+- **STT backend**: AWS Transcribe by default (`STT_BACKEND=aws`); other backends (e.g. local/Whisper, Deepgram) may be configured per deployment — see `CLAUDE.md`
 - **Purpose**: Audio transcription service
 - **Responsibilities**:
-  - Receive audio chunks from frontend
-  - Transcribe audio using Whisper model
+  - Receive audio chunks from frontend over WebSocket, buffered in ~5-second windows
+  - Transcribe audio via the configured STT backend
   - Return text transcriptions to backend
 
 ### 4. Semantic Analysis (FastAPI - Port 8002)
@@ -85,18 +78,22 @@ graph TB
   - Use configurable thresholds (UPPER=0.55, LOWER=0.35)
 
 ### 5. Warning Engine (FastAPI - Port 8003)
-- **Technology**: FastAPI, PostgreSQL
+- **Technology**: FastAPI
 - **Purpose**: Warning escalation and session termination
 - **Responsibilities**:
   - Track consecutive off-topic windows
   - Issue escalating warnings:
     - 1 window: Silent warning
     - 2 windows: Strong warning
-    - 3+ windows: Severe warning + auto-terminate
-  - Log warnings to database
+    - 3+ windows: Severe warning
+  - Log warnings to the backend via REST (no independent database of its own — session state is in-process, see `## Known Limitations`)
 
-### 6. PostgreSQL Database (Port 5432)
-- **Technology**: PostgreSQL 16
+### 6. Video Engagement
+- **Purpose**: Scores webcam attention/engagement from streamed frames, fused with speech engagement in the warning engine
+- **Note**: wired into `start.sh`; omitted from some earlier diagrams
+
+### 7. SQLite Database
+- **Technology**: SQLite, accessed via SQLAlchemy async engine (`aiosqlite`)
 - **Tables**:
   - `users` - User accounts
   - `barter_sessions` - Session records
@@ -187,19 +184,23 @@ graph LR
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
-| Frontend | React 18+, Vite | User interface |
+| Frontend | React 18+, Vite, nginx | User interface + reverse proxy/SSL termination |
 | Backend | FastAPI, Python | Core API |
-| Database | PostgreSQL | Data persistence |
-| Audio STT | OpenAI Whisper | Speech-to-text |
+| Database | SQLite | Data persistence |
+| Audio STT | AWS Transcribe (default), FFmpeg | Speech-to-text |
 | Semantic Analysis | Sentence-BERT | Topic relevance |
-| ML Runtime | PyTorch | Model inference |
-| Audio Processing | FFmpeg | Audio format handling |
 | Real-time | WebSocket | Live updates |
-| Container | Docker | Service deployment |
+| Container | Docker Compose | Service deployment |
 
 ## Inter-Service Communication
 
-- **Frontend → Backend**: HTTP REST + WebSocket
-- **Backend → ML Services**: REST API calls
-- **All Services → Database**: SQL via SQLAlchemy
-- **Shared Types**: Python package import from `packages/shared/`
+- **Frontend → Backend**: HTTP REST + WebSocket, proxied through nginx (see `apps/frontend/nginx.conf`)
+- **Backend → ML/Warning services**: REST API calls, resolved via Docker Compose service DNS
+- **All Services → Database**: only the backend talks to SQLite directly; other services report evidence to the backend over REST
+
+## Known Limitations
+
+- Audio buffers, warning counters, and semantic windows live in each service's process memory — restarting a service loses in-flight session state (no persistence/replay of monitoring history).
+- No authentication/authorization layer yet: service-only and participant-facing routes are not separated, and identities are supplied by the caller rather than verified.
+
+See `ISSUES.md` for the current, actively-tracked list of known bugs and gaps.

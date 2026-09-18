@@ -1,15 +1,13 @@
-[tool.workspace]
-members = [
-    "apps/backend",
-    "apps/audio_pipeline",
-    "apps/semantic_analysis",
-    "apps/warning_engine",
-]
+[project]
+name = "core-barter-system"
+version = "0.1.0"
+description = "Core Barter System - Real-time audio conversation monitoring platform"
+requires-python = ">=3.11"
 
 [tool.ruff]
 line-length = 100
 
-[tool.uv]
-name = "core-barter-system"
-version = "0.1.0"
-description = "Core Barter System - Real-time audio conversation monitoring platform"
+# Each service under apps/ is a self-contained Docker image with its own
+# requirements.txt (see apps/*/Dockerfile) — dependencies are not managed
+# through a uv workspace here. This file exists for repo-wide metadata and
+# tooling config (ruff, pytest) only.

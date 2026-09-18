@@ -8,8 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-ENV HF_TOKEN=***REMOVED-LEAKED-HF-TOKEN*** \
-    HF_HUB_ENABLE_HF_TRANSFER=1 \
+ENV HF_HUB_ENABLE_HF_TRANSFER=1 \
     HF_HUB_DISABLE_SYMLINKS=1 \
     TRANSFORMERS_OFFLINE=0 \
     HF_HUB_OFFLINE=0

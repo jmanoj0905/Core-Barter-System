@@ -59,6 +59,40 @@ current_stt_backend: str = os.getenv("STT_BACKEND", "whisper")
 
 buffers: dict[tuple[int, int], dict] = {}
 
+# Serializes access to a given (barter_id, user_id) buffer across the three
+# paths that can touch it: the receive loop's threshold trigger, a
+# WebSocket disconnect, and /session/{id}/end — none of which coordinated
+# with each other before, risking duplicate/late segments or a KeyError on
+# concurrent cleanup (ISSUE-023).
+buffer_locks: dict[tuple[int, int], asyncio.Lock] = {}
+
+
+def _get_lock(key: tuple[int, int]) -> asyncio.Lock:
+    lock = buffer_locks.get(key)
+    if lock is None:
+        lock = asyncio.Lock()
+        buffer_locks[key] = lock
+    return lock
+
+
+async def _post_with_retry(url: str, payload: dict, retries: int = 2) -> bool:
+    """POST with bounded retry; returns whether it ultimately succeeded.
+    Used for delivery of evidence (transcripts, segments, safety alerts)
+    that would otherwise be silently dropped on a transient failure
+    (ISSUE-025)."""
+    last_exc: Exception | None = None
+    for attempt in range(retries + 1):
+        try:
+            resp = await http_client.post(url, json=payload)
+            resp.raise_for_status()
+            return True
+        except Exception as e:
+            last_exc = e
+            if attempt < retries:
+                await asyncio.sleep(0.5 * (attempt + 1))
+    logger.error("POST %s failed after %d attempts: %s", url, retries + 1, last_exc)
+    return False
+
 
 def _new_buffer() -> dict:
     return {
@@ -84,9 +118,10 @@ async def lifespan(app: FastAPI):
     global whisper_model, http_client
     _banner("Audio Pipeline  ·  Port 8001")
     _info(f"STT backend: {current_stt_backend}")
-    _info("Loading faster-whisper  large-v3  (CTranslate2 int8) …")
-    whisper_model = WhisperModel("large-v3", compute_type="int8")
-    _ok("faster-whisper model ready")
+    if current_stt_backend == "whisper":
+        _info("Loading faster-whisper  large-v3  (CTranslate2 int8) …")
+        whisper_model = WhisperModel("large-v3", compute_type="int8")
+        _ok("faster-whisper model ready")
     if current_stt_backend == "deepgram" and not DEEPGRAM_API_KEY:
         _warn("DEEPGRAM_API_KEY not set — Deepgram calls will fail")
     http_client = httpx.AsyncClient(timeout=30.0)
@@ -150,8 +185,13 @@ _HALLUCINATION_PHRASES = {
 
 def transcribe(wav_path: str) -> str:
     """Run faster-whisper on a WAV file, return transcript text."""
+    global whisper_model
     try:
-        segments, _info = whisper_model.transcribe(
+        if whisper_model is None:
+            _info("Loading faster-whisper  large-v3  (CTranslate2 int8) …")
+            whisper_model = WhisperModel("large-v3", compute_type="int8")
+            _ok("faster-whisper model ready")
+        segments, _ = whisper_model.transcribe(
             wav_path,
             language="en",
             vad_filter=True,
@@ -259,12 +299,8 @@ async def post_segment(barter_id: int, user_id: int, text: str,
         "timestamp_start": ts_start,
         "timestamp_end": ts_end,
     }
-    try:
-        resp = await http_client.post(f"{SEMANTIC_URL}/ingest/segment", json=payload)
-        resp.raise_for_status()
+    if await _post_with_retry(f"{SEMANTIC_URL}/ingest/segment", payload):
         _ok(f"Segment → semantic  barter={barter_id}  user={user_id}  dur={duration:.1f}s")
-    except Exception as e:
-        logger.error("Failed to POST segment to semantic engine: %s", e)
 
 
 async def check_toxicity(text: str) -> dict | None:
@@ -305,12 +341,8 @@ async def post_safety_warning(barter_id: int, user_id: int, warning_type: str, d
         "warning_type": warning_type,
         "details": details,
     }
-    try:
-        resp = await http_client.post(f"{WARNING_ENGINE_URL}/safety/alert", json=payload)
-        resp.raise_for_status()
+    if await _post_with_retry(f"{WARNING_ENGINE_URL}/safety/alert", payload):
         _safety(f"Warning posted  barter={barter_id}  type={warning_type}")
-    except Exception as e:
-        logger.error("Failed to POST safety warning: %s", e)
 
 
 async def process_buffer(barter_id: int, user_id: int, buf: dict):
@@ -357,20 +389,17 @@ async def process_buffer(barter_id: int, user_id: int, buf: dict):
         await post_safety_warning(barter_id, user_id, "toxicity", toxicity_result)
 
     # Save transcript to backend DB
-    try:
-        await http_client.post(
-            f"{BACKEND_URL}/session/{barter_id}/transcript",
-            json={
-                "barter_id": barter_id,
-                "user_id": user_id,
-                "text": text,
-                "duration_seconds": accumulated,
-                "timestamp_start": ts_start,
-                "timestamp_end": ts_end,
-            },
-        )
-    except Exception as e:
-        logger.error("Failed to save transcript segment: %s", e)
+    await _post_with_retry(
+        f"{BACKEND_URL}/session/{barter_id}/transcript",
+        {
+            "barter_id": barter_id,
+            "user_id": user_id,
+            "text": text,
+            "duration_seconds": accumulated,
+            "timestamp_start": ts_start,
+            "timestamp_end": ts_end,
+        },
+    )
 
     # Forward to semantic analysis regardless (toxicity doesn't block topic analysis)
     await post_segment(barter_id, user_id, text, accumulated, ts_start, ts_end)
@@ -418,6 +447,7 @@ async def audio_ws(barter_id: int, user_id: int, ws: WebSocket):
     key = (barter_id, user_id)
     buffers[key] = _new_buffer()
     buf = buffers[key]
+    lock = _get_lock(key)
 
     _ok(f"Audio stream connected  barter={barter_id}  user={user_id}  (buffering {BUFFER_THRESHOLD_SECONDS:.0f}s windows)")
 
@@ -433,15 +463,24 @@ async def audio_ws(barter_id: int, user_id: int, ws: WebSocket):
             buf["accumulated_seconds"] = time.time() - buf["wall_start"]
 
             if buf["accumulated_seconds"] >= BUFFER_THRESHOLD_SECONDS:
-                await process_buffer(barter_id, user_id, buf)
-                reset_buffer(buf)
+                async with lock:
+                    await process_buffer(barter_id, user_id, buf)
+                    reset_buffer(buf)
 
     except (WebSocketDisconnect, RuntimeError):
         _info(f"Audio stream closed  barter={barter_id}  user={user_id}")
-        if buf["chunks"]:
-            await process_buffer(barter_id, user_id, buf)
-        if key in buffers:
-            del buffers[key]
+        async with lock:
+            # Only reprocess if real audio arrived since the last window —
+            # a buffer holding nothing but the retained header chunk would
+            # otherwise produce a spurious duplicate final segment
+            # (ISSUE-024).
+            has_new_audio = buf["chunks"] and buf["chunks"] != (
+                [buf["header_chunk"]] if buf["header_chunk"] else []
+            )
+            if has_new_audio:
+                await process_buffer(barter_id, user_id, buf)
+            buffers.pop(key, None)
+        buffer_locks.pop(key, None)
 
 
 # ---------------------------------------------------------------------------
@@ -457,11 +496,16 @@ async def end_session(barter_id: int):
 
     for key in keys_to_delete:
         user_id = key[1]
-        buf = buffers[key]
-        if buf["chunks"]:
-            await process_buffer(barter_id, user_id, buf)
-            flushed_users.append(user_id)
-        del buffers[key]
+        lock = _get_lock(key)
+        async with lock:
+            # The buffer may already be gone if the client disconnected
+            # between listing keys and acquiring the lock.
+            buf = buffers.get(key)
+            if buf and buf["chunks"]:
+                await process_buffer(barter_id, user_id, buf)
+                flushed_users.append(user_id)
+            buffers.pop(key, None)
+        buffer_locks.pop(key, None)
 
     try:
         resp = await http_client.post(f"{SEMANTIC_URL}/session/{barter_id}/end")

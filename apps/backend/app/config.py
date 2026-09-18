@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     AUDIO_URL: str = "http://localhost:8001"
     WARNING_URL: str = "http://localhost:8003"
 
-    model_config = {"env_file": ".env"}
+    model_config = {"env_file": ".env", "extra": "ignore"}
 
 
 settings = Settings()

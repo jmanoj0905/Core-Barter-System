@@ -1,0 +1,15 @@
+# Local-only: exposes internal service ports to host for latency benchmarking.
+# Not for production — remove or gitignore before deploying.
+services:
+  backend:
+    ports:
+      - "8000:8000"
+  audio_pipeline:
+    ports:
+      - "8001:8001"
+  semantic_analysis:
+    ports:
+      - "8002:8002"
+  warning_engine:
+    ports:
+      - "8003:8003"

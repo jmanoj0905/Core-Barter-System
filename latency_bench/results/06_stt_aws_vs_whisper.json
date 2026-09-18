@@ -1,0 +1,34 @@
+{
+  "aws": {
+    "n": 5,
+    "mean_ms": 9045.881066602306,
+    "p50_ms": 8344.456916995114,
+    "p95_ms": 10733.18945800711,
+    "p99_ms": 11012.11975800863,
+    "min_ms": 8188.13404100365,
+    "max_ms": 11081.85233300901,
+    "sample_transcripts": [
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly."
+    ]
+  },
+  "whisper": {
+    "n": 5,
+    "mean_ms": 11567.30244999926,
+    "p50_ms": 10759.413583000423,
+    "p95_ms": 14546.207308600424,
+    "p99_ms": 15080.638395320857,
+    "min_ms": 9739.514999993844,
+    "max_ms": 15214.246167000965,
+    "sample_transcripts": [
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly.",
+      "Today we will discuss how Python decorators work and why closures matter for wrapping functions cleanly."
+    ]
+  }
+}
