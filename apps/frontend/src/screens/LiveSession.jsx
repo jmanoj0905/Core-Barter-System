@@ -40,6 +40,7 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
   const [warnings, setWarnings]           = useState([])
   const [windows, setWindows]             = useState([])
   const [liveTranscripts, setLiveTranscripts] = useState([])
+  const [feedbackOpenFor, setFeedbackOpenFor] = useState(null)
   const [terminated, setTerminated]       = useState(false)
   const [error, setError]                 = useState('')
   const [escrowData, setEscrowData]       = useState(null)
@@ -290,6 +291,18 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
     }
   }
 
+  async function submitWindowFeedback(windowId, humanLabel) {
+    setWindows(prev => prev.map(w => w.window_id === windowId ? { ...w, human_label: humanLabel } : w))
+    setFeedbackOpenFor(null)
+    try {
+      await fetch(`${API}/session/${barterId}/window/${windowId}/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, human_label: humanLabel }),
+      })
+    } catch { /* best-effort, feedback stays reflected locally either way */ }
+  }
+
   async function handleConfirm() {
     setError('')
     try {
@@ -446,15 +459,44 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
               </h4>
               <div className="flex flex-col gap-2 max-h-40 overflow-y-auto">
                 {windows.map((w, i) => (
-                  <div key={i} className="flex justify-between items-center px-3 py-2 border border-outline-variant text-xs">
-                    <span className="font-bold">#{w.window_id}</span>
-                    <span className={classColor[w.classification] || ''}>
-                      {w.classification.replace('_', ' ')}
-                    </span>
-                    <span className="text-on-surface-variant">sim {w.similarity}</span>
-                    <span className="text-on-surface-variant max-w-[140px] overflow-hidden text-ellipsis whitespace-nowrap">
-                      {w.text_preview}
-                    </span>
+                  <div key={i} className="flex flex-col gap-1 px-3 py-2 border border-outline-variant text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold">#{w.window_id}</span>
+                      <span className={classColor[w.classification] || ''}>
+                        {w.classification.replace('_', ' ')}
+                      </span>
+                      <span className="text-on-surface-variant">sim {w.similarity}</span>
+                      <span className="text-on-surface-variant max-w-[140px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {w.text_preview}
+                      </span>
+                      {w.human_label ? (
+                        <span className="text-on-surface-variant italic">
+                          you said: {w.human_label.replace('_', ' ')}
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="underline text-on-surface-variant hover:text-on-background"
+                          onClick={() => setFeedbackOpenFor(feedbackOpenFor === w.window_id ? null : w.window_id)}
+                        >
+                          {feedbackOpenFor === w.window_id ? 'cancel' : 'rate this'}
+                        </button>
+                      )}
+                    </div>
+                    {feedbackOpenFor === w.window_id && (
+                      <div className="flex gap-2 flex-wrap justify-end">
+                        {['correct', 'weakly_correct', 'incorrect', 'out_of_scope'].map(label => (
+                          <button
+                            key={label}
+                            type="button"
+                            className={`px-2 py-1 border border-outline-variant ${classColor[label] || ''}`}
+                            onClick={() => submitWindowFeedback(w.window_id, label)}
+                          >
+                            {label.replace('_', ' ')}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
