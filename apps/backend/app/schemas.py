@@ -67,6 +67,11 @@ class WindowResultRequest(BaseModel):
     timestamp_end: float = 0.0
 
 
+class WindowFeedbackRequest(BaseModel):
+    user_id: int
+    human_label: Literal["correct", "weakly_correct", "incorrect", "out_of_scope"]
+
+
 class DriftSummaryRequest(BaseModel):
     barter_id: int
     total_windows: int

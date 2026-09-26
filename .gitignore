@@ -28,5 +28,9 @@ apps/frontend/node_modules/
 
 # Local tooling
 .bg-shell/
+
+# Ground-truth calibration datasets (regenerate synthetic; real one may hold
+# real transcript text and shouldn't be committed)
+apps/semantic_analysis/ground_truth/*.csv
 .opencode/
 .gstack/

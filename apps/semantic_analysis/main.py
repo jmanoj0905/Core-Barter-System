@@ -47,15 +47,46 @@ import os
 WARNING_ENGINE_URL = os.getenv("WARNING_ENGINE_URL", "http://localhost:8003")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
-# Cosine similarity thresholds
-UPPER = 0.55  # >= UPPER → correct
-LOWER = 0.35  # LOWER..UPPER → weakly_correct, < LOWER → incorrect
+# Cosine similarity thresholds, calibrated on ground_truth/synthetic_dataset.csv.
+# NOT hand-picked: UPPER is the grid-search optimum, stable in 60/60 leave-one-out
+# and 6/6 leave-one-topic-out folds. LOWER is set below its accuracy optimum on
+# purpose — see design_decisions.md (D1, D2) for the false-accusation tradeoff.
+# The previous 0.55 / 0.35 scored worst of every option tested (28/60).
+UPPER = 0.36  # >= UPPER → correct
+LOWER = 0.14  # LOWER..UPPER → weakly_correct, < LOWER → incorrect
 
-# Filler words to strip before embedding
+# Filler words stripped before embedding. Kept deliberately aggressive: an
+# ablation over the 60-row fixture (ground_truth/design_decisions.md, D5) showed
+# that narrowing this to pure vocalizations — leaving "like", "so", "well",
+# "basically", "literally", "actually", "okay" in the text — cost 5 of 60
+# held-out predictions (45/60 -> 40/60), exactly matching no cleaning at all.
+# These markers dilute a window toward generic conversational language; removing
+# them concentrates the topical content the cosine has to work with.
 FILLER_WORDS = {
     "uh", "um", "er", "ah", "like", "you know", "i mean",
     "basically", "literally", "actually", "so", "well", "okay",
 }
+
+# Multi-word entries above can never match a whitespace token, so they are
+# removed from the raw string first. Before this, "you know" and "i mean" sat
+# in the set but were dead weight — split() never produces them.
+FILLER_PHRASES = tuple(w for w in FILLER_WORDS if " " in w)
+
+# Word-bounded so "i mean" is stripped but "dopamine" survives.
+_FILLER_PHRASE_RE = re.compile(
+    r"\b(?:" + "|".join(re.escape(w) for w in sorted(FILLER_PHRASES)) + r")\b",
+    re.IGNORECASE,
+)
+
+# Trimmed from a token before filler matching. Hyphen excluded so hyphenated
+# words stay intact.
+_PUNCTUATION = ".,!?;:\"'()[]{}…"
+
+# A window with fewer content tokens than this after cleaning carries too
+# little topical evidence to classify, and is skipped rather than scored. See
+# design_decisions.md (D6): scoring it would almost certainly yield a low
+# cosine and thus a spurious `incorrect`, which is what escalates warnings.
+MIN_CONTENT_TOKENS = 3
 
 # Window triggers when accumulated audio >= this many seconds
 WINDOW_DURATION_THRESHOLD = 25.0
@@ -130,7 +161,7 @@ async def lifespan(app: FastAPI):
     _banner("Semantic Analysis  ·  Port 8002")
     _info("Loading sentence-transformers  all-MiniLM-L6-v2  (384-dim, 22M params) …")
     model = SentenceTransformer("all-MiniLM-L6-v2")
-    _ok("Model ready  —  UPPER=0.55  LOWER=0.35  window=15s")
+    _ok(f"Model ready  —  UPPER={UPPER}  LOWER={LOWER}  window={WINDOW_DURATION_THRESHOLD:g}s")
     http_client = httpx.AsyncClient(timeout=10.0)
     _ok("Service online — waiting for session contracts")
     yield
@@ -158,10 +189,29 @@ app.add_middleware(
 
 
 def clean_text(text: str) -> str:
-    """Strip filler words and extra whitespace."""
-    tokens = text.lower().split()
-    cleaned = [t for t in tokens if t not in FILLER_WORDS]
-    return " ".join(cleaned).strip()
+    """Strip filler words and extra whitespace.
+
+    Matching ignores surrounding punctuation, so "um," is dropped the same way
+    "um" is — the previous version compared raw tokens and silently kept every
+    filler that happened to sit beside a comma. Casing of kept tokens is now
+    preserved: the encoder's tokenizer is uncased, so lowercasing changed no
+    embedding (verified on the fixture) and only made logged text harder to read.
+    """
+    stripped = _FILLER_PHRASE_RE.sub(" ", text)
+    kept = [t for t in stripped.split() if t.strip(_PUNCTUATION).lower() not in FILLER_WORDS]
+    return _tidy(" ".join(kept))
+
+
+def _tidy(text: str) -> str:
+    """Repair punctuation left dangling by filler removal.
+
+    Dropping a leading "You know," leaves ", hydration matters" — a stray comma
+    the encoder would tokenize. Close the gap and trim punctuation that no
+    longer follows a word.
+    """
+    text = re.sub(r"\s+([,.!?;:])", r"\1", text)
+    text = re.sub(r"^[\s,.!?;:]+", "", text)
+    return re.sub(r"\s{2,}", " ", text).strip()
 
 
 def embed(text: str):
@@ -338,8 +388,16 @@ async def process_window(barter_id: int, buf: dict, contract: dict):
     combined_text = " ".join(s["text"] for s in buf["segments"])
     cleaned = clean_text(combined_text)
 
-    if not cleaned:
-        logger.info("Window %d barter %d: empty after cleaning, skipping", window_id, barter_id)
+    # Too little content to judge: skip rather than score. A filler-only or
+    # near-empty window embeds to near-noise, which reliably lands under LOWER
+    # and would register as `incorrect` — and consecutive `incorrect` windows
+    # are exactly what escalates a warning. No evidence must mean no verdict,
+    # not an off-topic accusation.
+    if len(cleaned.split()) < MIN_CONTENT_TOKENS:
+        logger.info(
+            "Window %d barter %d: only %d content tokens after cleaning, skipping",
+            window_id, barter_id, len(cleaned.split()),
+        )
         return
 
     ts_start = buf["segments"][0]["ts_start"]

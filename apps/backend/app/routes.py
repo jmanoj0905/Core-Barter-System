@@ -89,6 +89,7 @@ from app.schemas import (
     TranscriptSegmentRequest,
     VideoEngagementRequest,
     WarningLogRequest,
+    WindowFeedbackRequest,
     WindowResultRequest,
 )
 from app.websocket import manager
@@ -650,9 +651,40 @@ async def get_windows(barter_id: int, db: AsyncSession = Depends(get_db)):
             "similarity": round(w.cosine_similarity, 3),
             "text_preview": w.text_content,
             "created_at": w.created_at.isoformat(),
+            "human_label": w.human_label,
         }
         for w in windows
     ]
+
+
+@router.post("/session/{barter_id}/window/{window_id}/feedback")
+async def submit_window_feedback(
+    barter_id: int, window_id: int, req: WindowFeedbackRequest, db: AsyncSession = Depends(get_db)
+):
+    """Ground-truth signal for threshold calibration / fine-tuning: a
+    participant flags whether the model's own classification for a window
+    was actually right. Independent from `classification`, which stays the
+    model's prediction."""
+    result = await db.execute(
+        select(WindowResult).where(
+            WindowResult.barter_session_id == barter_id,
+            WindowResult.window_number == window_id,
+        )
+    )
+    window = result.scalar_one_or_none()
+    if not window:
+        raise HTTPException(status_code=404, detail="Window not found")
+
+    window.human_label = req.human_label
+    window.labeled_by_user_id = req.user_id
+    window.labeled_at = datetime.now(timezone.utc)
+    await db.commit()
+
+    return {
+        "window_id": window_id,
+        "human_label": window.human_label,
+        "model_classification": window.classification,
+    }
 
 
 # ---------------------------------------------------------------------------

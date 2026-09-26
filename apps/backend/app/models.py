@@ -65,6 +65,13 @@ class WindowResult(Base):
     cosine_similarity: Mapped[float] = mapped_column(Float, nullable=False)
     text_content: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    # Human ground-truth for this window's classification, collected via the
+    # referee feedback endpoint — separate from `classification`, which is
+    # always the model's own prediction. Used to calibrate thresholds and,
+    # eventually, fine-tune the embedding model.
+    human_label: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    labeled_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    labeled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class VideoEngagementResult(Base):
