@@ -292,15 +292,26 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
   }
 
   async function submitWindowFeedback(windowId, humanLabel) {
+    // Optimistic, but reverted if the write fails. These labels are the only
+    // ground truth threshold calibration has, so a label that looks saved and
+    // isn't is worse than no label: it costs a rating nobody will give twice.
+    // This used to be fire-and-forget, and fetch does not reject on a 500 — so
+    // every write against a database missing the human_label columns was lost
+    // in silence while the row still read "you said: ...".
+    const previousLabel = windows.find(w => w.window_id === windowId)?.human_label ?? null
     setWindows(prev => prev.map(w => w.window_id === windowId ? { ...w, human_label: humanLabel } : w))
     setFeedbackOpenFor(null)
     try {
-      await fetch(`${API}/session/${barterId}/window/${windowId}/feedback`, {
+      const res = await fetch(`${API}/session/${barterId}/window/${windowId}/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, human_label: humanLabel }),
       })
-    } catch { /* best-effort, feedback stays reflected locally either way */ }
+      if (!res.ok) throw new Error(`rating not saved (${res.status})`)
+    } catch (err) {
+      setWindows(prev => prev.map(w => w.window_id === windowId ? { ...w, human_label: previousLabel } : w))
+      setError(`Could not save your rating for window ${windowId}: ${err.message}`)
+    }
   }
 
   async function handleConfirm() {
