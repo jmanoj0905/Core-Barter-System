@@ -1,11 +1,17 @@
 """Hand-authored (topic, scope, labeled example texts) fixtures.
 
 Each entry mimics one barter session contract: a topic+scope pair plus a
-handful of example teacher utterances per label. "correct" examples stay
-squarely inside the scope, "weakly_correct" ones are adjacent/tangential,
-and "incorrect" ones are unrelated small talk or an entirely different
-domain. These are a synthetic stand-in for real session transcripts until
-enough real, human-labeled window_results accumulate.
+handful of example teacher utterances per label.
+
+The authoritative definition of each label, its decision procedure and its
+tie-breaks is labeling_rubric.md — read that before adding or relabeling
+examples here. In short: "correct" advances something the scope clause names,
+"weakly_correct" is on topic but needs one bridging sentence to reach a scope
+item, and "incorrect" has no topical relation at all.
+
+These are a synthetic stand-in for real session transcripts until enough real,
+human-labeled window_results accumulate. SCOPE_COUNTERFACTUALS at the bottom of
+this file is a separate diagnostic probe, not calibration data.
 """
 
 TOPICS = [
@@ -127,6 +133,120 @@ TOPICS = [
             "I switched gyms recently and the new one has way better equipment.",
             "We are trying to decide between two flights for the trip, one has a layover.",
             "My neighbor's dog keeps getting into our yard, need to fix the fence.",
+        ],
+    },
+]
+
+
+# ---------------------------------------------------------------------------
+# Scope counterfactuals
+# ---------------------------------------------------------------------------
+#
+# Random unrelated negatives (the "incorrect" lists above) are easy: small talk
+# looks nothing like a lesson in any embedding space. They cannot tell us
+# whether the model reads the *scope* clause it was handed, or merely recognises
+# the broad topic. These pairs do.
+#
+# Each entry keeps one topic fixed and varies only the scope. Every utterance is
+# genuine teaching content on that topic, and is labeled TWICE — once under each
+# scope. A model that ignores scope scores an utterance identically under both,
+# so the paired comparison is a threshold-free test: does similarity move in the
+# direction the labels say it should?
+#
+# These rows are a DIAGNOSTIC PROBE and must never be folded into the
+# calibration set. They are adversarial by construction, so fitting thresholds
+# on them would bias the boundary toward hard cases that are not
+# representative of ordinary session traffic. See design_decisions.md (D7).
+
+SCOPE_COUNTERFACTUALS = [
+    {
+        "topic": "Python list comprehensions",
+        "scope_a": "syntax, common patterns, and performance versus a for loop",
+        "scope_b": "readability trade-offs and when to avoid them in team code review",
+        "pairs": [
+            {
+                "text": "For large inputs a comprehension avoids repeated append calls, so it runs measurably faster.",
+                "under_a": "correct", "under_b": "weakly_correct",
+            },
+            {
+                "text": "Past two levels of nesting most reviewers will ask you to rewrite it as an explicit loop.",
+                "under_a": "weakly_correct", "under_b": "correct",
+            },
+        ],
+    },
+    {
+        "topic": "Home sourdough bread baking",
+        "scope_a": "starter maintenance, hydration ratios, and oven spring technique",
+        "scope_b": "choosing flour types and milling your own grain at home",
+        "pairs": [
+            {
+                "text": "Feed the starter equal weights of flour and water once a day at room temperature.",
+                "under_a": "correct", "under_b": "weakly_correct",
+            },
+            {
+                "text": "Freshly milled whole grain turns rancid within weeks, so mill only what you will use.",
+                "under_a": "weakly_correct", "under_b": "correct",
+            },
+        ],
+    },
+    {
+        "topic": "Beginner acoustic guitar chords",
+        "scope_a": "open chord shapes, transitions, and basic strumming patterns",
+        "scope_b": "tuning the instrument and changing worn strings",
+        "pairs": [
+            {
+                "text": "Move between G and C slowly until the change is clean, then bring the tempo up.",
+                "under_a": "correct", "under_b": "weakly_correct",
+            },
+            {
+                "text": "Stretch each new string as you bring it up to pitch or it will slip flat for days.",
+                "under_a": "weakly_correct", "under_b": "correct",
+            },
+        ],
+    },
+    {
+        "topic": "Filing a basic personal income tax return",
+        "scope_a": "standard deduction, W-2 income, and common filing mistakes",
+        "scope_b": "self-employment income and quarterly estimated payments",
+        "pairs": [
+            {
+                "text": "If all your income sits on a W-2, the standard deduction is usually simpler than itemizing.",
+                "under_a": "correct", "under_b": "weakly_correct",
+            },
+            {
+                "text": "Send estimated tax four times a year or you will owe an underpayment penalty at filing.",
+                "under_a": "weakly_correct", "under_b": "correct",
+            },
+        ],
+    },
+    {
+        "topic": "Basic dog obedience training",
+        "scope_a": "sit, stay, and loose-leash walking using positive reinforcement",
+        "scope_b": "crate training and overnight routines for a new puppy",
+        "pairs": [
+            {
+                "text": "Reward the instant the rear touches the floor, not after the dog stands back up.",
+                "under_a": "correct", "under_b": "weakly_correct",
+            },
+            {
+                "text": "Keep the crate beside your bed for the first few nights so the puppy settles faster.",
+                "under_a": "weakly_correct", "under_b": "correct",
+            },
+        ],
+    },
+    {
+        "topic": "Watercolor painting fundamentals",
+        "scope_a": "wet-on-wet vs wet-on-dry technique and basic color mixing",
+        "scope_b": "stretching paper and choosing brushes for a first kit",
+        "pairs": [
+            {
+                "text": "Drop pigment into a still-wet wash and it blooms outward with soft feathered edges.",
+                "under_a": "correct", "under_b": "weakly_correct",
+            },
+            {
+                "text": "Tape damp paper down to a board or it will cockle the moment you lay a broad wash.",
+                "under_a": "weakly_correct", "under_b": "correct",
+            },
         ],
     },
 ]

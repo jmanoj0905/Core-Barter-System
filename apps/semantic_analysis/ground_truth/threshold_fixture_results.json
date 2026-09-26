@@ -1,0 +1,3889 @@
+{
+  "protocol": "synthetic_sentence_diagnostic",
+  "production_evidence": false,
+  "limitations": [
+    "Single-sentence synthetic fixtures, not independently labeled 25-second windows.",
+    "Leave-one-example-out shares authors and topics; it is not session-held-out evidence.",
+    "Cross-validation folds overlap; 60 predictions do not represent 60 independent topics.",
+    "Existing fixture labels have unresolved correct/weakly_correct ambiguity."
+  ],
+  "leave_one_example_out": {
+    "metrics": {
+      "current": {
+        "n": 60,
+        "correct": 28,
+        "accuracy": 0.4666666666666667,
+        "macro_f1": 0.42653456865264533,
+        "boundary_accuracy": 0.23809523809523808,
+        "false_incorrect_rate": 0.40476190476190477,
+        "per_class": {
+          "correct": {
+            "support": 24,
+            "precision": 0.7142857142857143,
+            "recall": 0.20833333333333334,
+            "f1": 0.3225806451612903
+          },
+          "weakly_correct": {
+            "support": 18,
+            "precision": 0.2777777777777778,
+            "recall": 0.2777777777777778,
+            "f1": 0.2777777777777778
+          },
+          "incorrect": {
+            "support": 18,
+            "precision": 0.5142857142857142,
+            "recall": 1.0,
+            "f1": 0.6792452830188679
+          }
+        },
+        "confusion": {
+          "correct": {
+            "correct": 5,
+            "weakly_correct": 13,
+            "incorrect": 6
+          },
+          "weakly_correct": {
+            "correct": 2,
+            "weakly_correct": 5,
+            "incorrect": 11
+          },
+          "incorrect": {
+            "correct": 0,
+            "weakly_correct": 0,
+            "incorrect": 18
+          }
+        }
+      },
+      "global": {
+        "n": 60,
+        "correct": 45,
+        "accuracy": 0.75,
+        "macro_f1": 0.7443240454076369,
+        "boundary_accuracy": 0.6666666666666666,
+        "false_incorrect_rate": 0.07142857142857142,
+        "per_class": {
+          "correct": {
+            "support": 24,
+            "precision": 0.75,
+            "recall": 0.75,
+            "f1": 0.75
+          },
+          "weakly_correct": {
+            "support": 18,
+            "precision": 0.625,
+            "recall": 0.5555555555555556,
+            "f1": 0.5882352941176471
+          },
+          "incorrect": {
+            "support": 18,
+            "precision": 0.85,
+            "recall": 0.9444444444444444,
+            "f1": 0.8947368421052632
+          }
+        },
+        "confusion": {
+          "correct": {
+            "correct": 18,
+            "weakly_correct": 5,
+            "incorrect": 1
+          },
+          "weakly_correct": {
+            "correct": 6,
+            "weakly_correct": 10,
+            "incorrect": 2
+          },
+          "incorrect": {
+            "correct": 0,
+            "weakly_correct": 1,
+            "incorrect": 17
+          }
+        }
+      },
+      "grouped": {
+        "n": 60,
+        "correct": 42,
+        "accuracy": 0.7,
+        "macro_f1": 0.6911542926580521,
+        "boundary_accuracy": 0.5952380952380952,
+        "false_incorrect_rate": 0.07142857142857142,
+        "per_class": {
+          "correct": {
+            "support": 24,
+            "precision": 0.68,
+            "recall": 0.7083333333333334,
+            "f1": 0.6938775510204082
+          },
+          "weakly_correct": {
+            "support": 18,
+            "precision": 0.5333333333333333,
+            "recall": 0.4444444444444444,
+            "f1": 0.48484848484848486
+          },
+          "incorrect": {
+            "support": 18,
+            "precision": 0.85,
+            "recall": 0.9444444444444444,
+            "f1": 0.8947368421052632
+          }
+        },
+        "confusion": {
+          "correct": {
+            "correct": 17,
+            "weakly_correct": 6,
+            "incorrect": 1
+          },
+          "weakly_correct": {
+            "correct": 8,
+            "weakly_correct": 8,
+            "incorrect": 2
+          },
+          "incorrect": {
+            "correct": 0,
+            "weakly_correct": 1,
+            "incorrect": 17
+          }
+        }
+      }
+    },
+    "per_topic": {
+      "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]": {
+        "current": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "macro_f1": 0.3111111111111111,
+          "boundary_accuracy": 0.14285714285714285,
+          "false_incorrect_rate": 0.5714285714285714,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.5,
+              "recall": 0.25,
+              "f1": 0.3333333333333333
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.42857142857142855,
+              "recall": 1.0,
+              "f1": 0.6
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 2
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 0,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.5873015873015873,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.6666666666666666,
+              "recall": 0.5,
+              "f1": 0.5714285714285714
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.3333333333333333,
+              "recall": 0.3333333333333333,
+              "f1": 0.3333333333333333
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.5873015873015873,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.6666666666666666,
+              "recall": 0.5,
+              "f1": 0.5714285714285714
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.3333333333333333,
+              "recall": 0.3333333333333333,
+              "f1": 0.3333333333333333
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      },
+      "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]": {
+        "current": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "macro_f1": 0.3111111111111111,
+          "boundary_accuracy": 0.14285714285714285,
+          "false_incorrect_rate": 0.5714285714285714,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.3333333333333333,
+              "recall": 0.3333333333333333,
+              "f1": 0.3333333333333333
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.42857142857142855,
+              "recall": 1.0,
+              "f1": 0.6
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 0,
+              "weakly_correct": 2,
+              "incorrect": 2
+            },
+            "weakly_correct": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.6238095238095238,
+          "boundary_accuracy": 0.5714285714285714,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.6666666666666666,
+              "recall": 0.5,
+              "f1": 0.5714285714285714
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.4,
+              "recall": 0.6666666666666666,
+              "f1": 0.5
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 5,
+          "accuracy": 0.5,
+          "macro_f1": 0.5285714285714286,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.5,
+              "recall": 0.5,
+              "f1": 0.5
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.25,
+              "recall": 0.3333333333333333,
+              "f1": 0.2857142857142857
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 2,
+              "weakly_correct": 1,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            }
+          }
+        }
+      },
+      "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]": {
+        "current": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.5738095238095239,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.2857142857142857,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 1.0,
+              "recall": 0.25,
+              "f1": 0.4
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.5,
+              "recall": 0.6666666666666666,
+              "f1": 0.5714285714285714
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.6,
+              "recall": 1.0,
+              "f1": 0.75
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 1
+            },
+            "weakly_correct": {
+              "correct": 0,
+              "weakly_correct": 2,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.8055555555555555,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.6666666666666666,
+              "recall": 0.6666666666666666,
+              "f1": 0.6666666666666666
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 1,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.611111111111111,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.5,
+              "recall": 0.5,
+              "f1": 0.5
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.3333333333333333,
+              "recall": 0.3333333333333333,
+              "f1": 0.3333333333333333
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 2,
+              "weakly_correct": 1,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      },
+      "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]": {
+        "current": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "macro_f1": 0.3333333333333333,
+          "boundary_accuracy": 0.14285714285714285,
+          "false_incorrect_rate": 0.2857142857142857,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.2,
+              "recall": 0.3333333333333333,
+              "f1": 0.25
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.6,
+              "recall": 1.0,
+              "f1": 0.75
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 0,
+              "weakly_correct": 4,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.7486772486772487,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.8,
+              "recall": 1.0,
+              "f1": 0.8888888888888888
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.3333333333333333,
+              "f1": 0.5
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 4,
+              "weakly_correct": 0,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.7486772486772487,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.8,
+              "recall": 1.0,
+              "f1": 0.8888888888888888
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.3333333333333333,
+              "f1": 0.5
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 4,
+              "weakly_correct": 0,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      },
+      "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]": {
+        "current": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.47222222222222215,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.42857142857142855,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 0,
+              "incorrect": 1
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 0,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.8023809523809523,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 0,
+              "incorrect": 1
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.8023809523809523,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 0,
+              "incorrect": 1
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      },
+      "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]": {
+        "current": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "macro_f1": 0.3333333333333333,
+          "boundary_accuracy": 0.14285714285714285,
+          "false_incorrect_rate": 0.2857142857142857,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.2,
+              "recall": 0.3333333333333333,
+              "f1": 0.25
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.6,
+              "recall": 1.0,
+              "f1": 0.75
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 0,
+              "weakly_correct": 4,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 9,
+          "accuracy": 0.9,
+          "macro_f1": 0.8962962962962964,
+          "boundary_accuracy": 0.8571428571428571,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.8,
+              "recall": 1.0,
+              "f1": 0.8888888888888888
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 4,
+              "weakly_correct": 0,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 9,
+          "accuracy": 0.9,
+          "macro_f1": 0.8962962962962964,
+          "boundary_accuracy": 0.8571428571428571,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.8,
+              "recall": 1.0,
+              "f1": 0.8888888888888888
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 4,
+              "weakly_correct": 0,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      }
+    },
+    "paired_changes": {
+      "improved": 0,
+      "regressed": 3,
+      "net_correct": -3
+    },
+    "fallback_count": 0,
+    "predictions": [
+      {
+        "row_id": "synthetic_dataset.csv:2",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:2",
+        "expected_label": "correct",
+        "similarity": 0.7605,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:3",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:3",
+        "expected_label": "correct",
+        "similarity": 0.1573,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:4",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:4",
+        "expected_label": "correct",
+        "similarity": 0.6407,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:5",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:5",
+        "expected_label": "correct",
+        "similarity": 0.5754,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:6",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:6",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2256,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:7",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:7",
+        "expected_label": "weakly_correct",
+        "similarity": 0.559,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:8",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:8",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2831,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:9",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:9",
+        "expected_label": "incorrect",
+        "similarity": 0.0155,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:10",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:10",
+        "expected_label": "incorrect",
+        "similarity": 0.0411,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:11",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "synthetic_dataset.csv:11",
+        "expected_label": "incorrect",
+        "similarity": -0.0282,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.56,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:12",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:12",
+        "expected_label": "correct",
+        "similarity": 0.4749,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:13",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:13",
+        "expected_label": "correct",
+        "similarity": 0.3827,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:14",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:14",
+        "expected_label": "correct",
+        "similarity": 0.3648,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:15",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:15",
+        "expected_label": "correct",
+        "similarity": 0.4968,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:16",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:16",
+        "expected_label": "weakly_correct",
+        "similarity": 0.4584,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:17",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:17",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2962,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:18",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:18",
+        "expected_label": "weakly_correct",
+        "similarity": 0.1799,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:19",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:19",
+        "expected_label": "incorrect",
+        "similarity": -0.0496,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:20",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:20",
+        "expected_label": "incorrect",
+        "similarity": -0.0354,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:21",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "synthetic_dataset.csv:21",
+        "expected_label": "incorrect",
+        "similarity": 0.0337,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:22",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:22",
+        "expected_label": "correct",
+        "similarity": 0.4968,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.26,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:23",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:23",
+        "expected_label": "correct",
+        "similarity": 0.2771,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.47,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:24",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:24",
+        "expected_label": "correct",
+        "similarity": 0.5496,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.26,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:25",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:25",
+        "expected_label": "correct",
+        "similarity": 0.2655,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.47,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:26",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:26",
+        "expected_label": "weakly_correct",
+        "similarity": 0.3456,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.26,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:27",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:27",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2454,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.26,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:28",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:28",
+        "expected_label": "weakly_correct",
+        "similarity": 0.4669,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.26,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:29",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:29",
+        "expected_label": "incorrect",
+        "similarity": 0.1642,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.26,
+        "grouped_lower": 0.14,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:30",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:30",
+        "expected_label": "incorrect",
+        "similarity": 0.0007,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.26,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:31",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "synthetic_dataset.csv:31",
+        "expected_label": "incorrect",
+        "similarity": 0.0476,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.26,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:32",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:32",
+        "expected_label": "correct",
+        "similarity": 0.6203,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:33",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:33",
+        "expected_label": "correct",
+        "similarity": 0.485,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:34",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:34",
+        "expected_label": "correct",
+        "similarity": 0.3278,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:35",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:35",
+        "expected_label": "correct",
+        "similarity": 0.3897,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.47,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:36",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:36",
+        "expected_label": "weakly_correct",
+        "similarity": 0.3577,
+        "current": "weakly_correct",
+        "global": "weakly_correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.32,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:37",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:37",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2728,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:38",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:38",
+        "expected_label": "weakly_correct",
+        "similarity": 0.4674,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:39",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:39",
+        "expected_label": "incorrect",
+        "similarity": 0.0091,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:40",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:40",
+        "expected_label": "incorrect",
+        "similarity": -0.0211,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:41",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "synthetic_dataset.csv:41",
+        "expected_label": "incorrect",
+        "similarity": 0.0001,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:42",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:42",
+        "expected_label": "correct",
+        "similarity": 0.3616,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:43",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:43",
+        "expected_label": "correct",
+        "similarity": 0.2871,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:44",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:44",
+        "expected_label": "correct",
+        "similarity": 0.6247,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:45",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:45",
+        "expected_label": "correct",
+        "similarity": 0.1782,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:46",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:46",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2141,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:47",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:47",
+        "expected_label": "weakly_correct",
+        "similarity": 0.1475,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:48",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:48",
+        "expected_label": "weakly_correct",
+        "similarity": 0.6519,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:49",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:49",
+        "expected_label": "incorrect",
+        "similarity": 0.0924,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:50",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:50",
+        "expected_label": "incorrect",
+        "similarity": 0.0054,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:51",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "synthetic_dataset.csv:51",
+        "expected_label": "incorrect",
+        "similarity": 0.0191,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.28,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:52",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:52",
+        "expected_label": "correct",
+        "similarity": 0.4367,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:53",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:53",
+        "expected_label": "correct",
+        "similarity": 0.4835,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:54",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:54",
+        "expected_label": "correct",
+        "similarity": 0.3985,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:55",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:55",
+        "expected_label": "correct",
+        "similarity": 0.4961,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:56",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:56",
+        "expected_label": "weakly_correct",
+        "similarity": 0.248,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:57",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:57",
+        "expected_label": "weakly_correct",
+        "similarity": 0.252,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:58",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:58",
+        "expected_label": "weakly_correct",
+        "similarity": 0.5077,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:59",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:59",
+        "expected_label": "incorrect",
+        "similarity": 0.0645,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:60",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:60",
+        "expected_label": "incorrect",
+        "similarity": 0.1028,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      },
+      {
+        "row_id": "synthetic_dataset.csv:61",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "synthetic_dataset.csv:61",
+        "expected_label": "incorrect",
+        "similarity": 0.0072,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": false
+      }
+    ]
+  },
+  "leave_one_topic_out": {
+    "metrics": {
+      "current": {
+        "n": 60,
+        "correct": 28,
+        "accuracy": 0.4666666666666667,
+        "macro_f1": 0.42653456865264533,
+        "boundary_accuracy": 0.23809523809523808,
+        "false_incorrect_rate": 0.40476190476190477,
+        "per_class": {
+          "correct": {
+            "support": 24,
+            "precision": 0.7142857142857143,
+            "recall": 0.20833333333333334,
+            "f1": 0.3225806451612903
+          },
+          "weakly_correct": {
+            "support": 18,
+            "precision": 0.2777777777777778,
+            "recall": 0.2777777777777778,
+            "f1": 0.2777777777777778
+          },
+          "incorrect": {
+            "support": 18,
+            "precision": 0.5142857142857142,
+            "recall": 1.0,
+            "f1": 0.6792452830188679
+          }
+        },
+        "confusion": {
+          "correct": {
+            "correct": 5,
+            "weakly_correct": 13,
+            "incorrect": 6
+          },
+          "weakly_correct": {
+            "correct": 2,
+            "weakly_correct": 5,
+            "incorrect": 11
+          },
+          "incorrect": {
+            "correct": 0,
+            "weakly_correct": 0,
+            "incorrect": 18
+          }
+        }
+      },
+      "global": {
+        "n": 60,
+        "correct": 45,
+        "accuracy": 0.75,
+        "macro_f1": 0.7443240454076369,
+        "boundary_accuracy": 0.6666666666666666,
+        "false_incorrect_rate": 0.07142857142857142,
+        "per_class": {
+          "correct": {
+            "support": 24,
+            "precision": 0.75,
+            "recall": 0.75,
+            "f1": 0.75
+          },
+          "weakly_correct": {
+            "support": 18,
+            "precision": 0.625,
+            "recall": 0.5555555555555556,
+            "f1": 0.5882352941176471
+          },
+          "incorrect": {
+            "support": 18,
+            "precision": 0.85,
+            "recall": 0.9444444444444444,
+            "f1": 0.8947368421052632
+          }
+        },
+        "confusion": {
+          "correct": {
+            "correct": 18,
+            "weakly_correct": 5,
+            "incorrect": 1
+          },
+          "weakly_correct": {
+            "correct": 6,
+            "weakly_correct": 10,
+            "incorrect": 2
+          },
+          "incorrect": {
+            "correct": 0,
+            "weakly_correct": 1,
+            "incorrect": 17
+          }
+        }
+      },
+      "grouped": {
+        "n": 60,
+        "correct": 45,
+        "accuracy": 0.75,
+        "macro_f1": 0.7443240454076369,
+        "boundary_accuracy": 0.6666666666666666,
+        "false_incorrect_rate": 0.07142857142857142,
+        "per_class": {
+          "correct": {
+            "support": 24,
+            "precision": 0.75,
+            "recall": 0.75,
+            "f1": 0.75
+          },
+          "weakly_correct": {
+            "support": 18,
+            "precision": 0.625,
+            "recall": 0.5555555555555556,
+            "f1": 0.5882352941176471
+          },
+          "incorrect": {
+            "support": 18,
+            "precision": 0.85,
+            "recall": 0.9444444444444444,
+            "f1": 0.8947368421052632
+          }
+        },
+        "confusion": {
+          "correct": {
+            "correct": 18,
+            "weakly_correct": 5,
+            "incorrect": 1
+          },
+          "weakly_correct": {
+            "correct": 6,
+            "weakly_correct": 10,
+            "incorrect": 2
+          },
+          "incorrect": {
+            "correct": 0,
+            "weakly_correct": 1,
+            "incorrect": 17
+          }
+        }
+      }
+    },
+    "per_topic": {
+      "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]": {
+        "current": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "macro_f1": 0.3111111111111111,
+          "boundary_accuracy": 0.14285714285714285,
+          "false_incorrect_rate": 0.5714285714285714,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.5,
+              "recall": 0.25,
+              "f1": 0.3333333333333333
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.42857142857142855,
+              "recall": 1.0,
+              "f1": 0.6
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 2
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 0,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.5873015873015873,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.6666666666666666,
+              "recall": 0.5,
+              "f1": 0.5714285714285714
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.3333333333333333,
+              "recall": 0.3333333333333333,
+              "f1": 0.3333333333333333
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.5873015873015873,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.6666666666666666,
+              "recall": 0.5,
+              "f1": 0.5714285714285714
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.3333333333333333,
+              "recall": 0.3333333333333333,
+              "f1": 0.3333333333333333
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      },
+      "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]": {
+        "current": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "macro_f1": 0.3111111111111111,
+          "boundary_accuracy": 0.14285714285714285,
+          "false_incorrect_rate": 0.5714285714285714,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.3333333333333333,
+              "recall": 0.3333333333333333,
+              "f1": 0.3333333333333333
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.42857142857142855,
+              "recall": 1.0,
+              "f1": 0.6
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 0,
+              "weakly_correct": 2,
+              "incorrect": 2
+            },
+            "weakly_correct": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.6238095238095238,
+          "boundary_accuracy": 0.5714285714285714,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.6666666666666666,
+              "recall": 0.5,
+              "f1": 0.5714285714285714
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.4,
+              "recall": 0.6666666666666666,
+              "f1": 0.5
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.6238095238095238,
+          "boundary_accuracy": 0.5714285714285714,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.6666666666666666,
+              "recall": 0.5,
+              "f1": 0.5714285714285714
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.4,
+              "recall": 0.6666666666666666,
+              "f1": 0.5
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 2,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            }
+          }
+        }
+      },
+      "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]": {
+        "current": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.5738095238095239,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.2857142857142857,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 1.0,
+              "recall": 0.25,
+              "f1": 0.4
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.5,
+              "recall": 0.6666666666666666,
+              "f1": 0.5714285714285714
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.6,
+              "recall": 1.0,
+              "f1": 0.75
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 1
+            },
+            "weakly_correct": {
+              "correct": 0,
+              "weakly_correct": 2,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.8055555555555555,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.6666666666666666,
+              "recall": 0.6666666666666666,
+              "f1": 0.6666666666666666
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 1,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.8055555555555555,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.6666666666666666,
+              "recall": 0.6666666666666666,
+              "f1": 0.6666666666666666
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 1,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      },
+      "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]": {
+        "current": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "macro_f1": 0.3333333333333333,
+          "boundary_accuracy": 0.14285714285714285,
+          "false_incorrect_rate": 0.2857142857142857,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.2,
+              "recall": 0.3333333333333333,
+              "f1": 0.25
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.6,
+              "recall": 1.0,
+              "f1": 0.75
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 0,
+              "weakly_correct": 4,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.7486772486772487,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.8,
+              "recall": 1.0,
+              "f1": 0.8888888888888888
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.3333333333333333,
+              "f1": 0.5
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 4,
+              "weakly_correct": 0,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.7486772486772487,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.8,
+              "recall": 1.0,
+              "f1": 0.8888888888888888
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.3333333333333333,
+              "f1": 0.5
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 4,
+              "weakly_correct": 0,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 1,
+              "incorrect": 1
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      },
+      "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]": {
+        "current": {
+          "n": 10,
+          "correct": 6,
+          "accuracy": 0.6,
+          "macro_f1": 0.47222222222222215,
+          "boundary_accuracy": 0.42857142857142855,
+          "false_incorrect_rate": 0.42857142857142855,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 0,
+              "incorrect": 1
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 0,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.8023809523809523,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 0,
+              "incorrect": 1
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 8,
+          "accuracy": 0.8,
+          "macro_f1": 0.8023809523809523,
+          "boundary_accuracy": 0.7142857142857143,
+          "false_incorrect_rate": 0.14285714285714285,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.75,
+              "recall": 0.75,
+              "f1": 0.75
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.75,
+              "recall": 1.0,
+              "f1": 0.8571428571428571
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 3,
+              "weakly_correct": 0,
+              "incorrect": 1
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      },
+      "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]": {
+        "current": {
+          "n": 10,
+          "correct": 4,
+          "accuracy": 0.4,
+          "macro_f1": 0.3333333333333333,
+          "boundary_accuracy": 0.14285714285714285,
+          "false_incorrect_rate": 0.2857142857142857,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 0.2,
+              "recall": 0.3333333333333333,
+              "f1": 0.25
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 0.6,
+              "recall": 1.0,
+              "f1": 0.75
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 0,
+              "weakly_correct": 4,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 0,
+              "weakly_correct": 1,
+              "incorrect": 2
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "global": {
+          "n": 10,
+          "correct": 9,
+          "accuracy": 0.9,
+          "macro_f1": 0.8962962962962964,
+          "boundary_accuracy": 0.8571428571428571,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.8,
+              "recall": 1.0,
+              "f1": 0.8888888888888888
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 4,
+              "weakly_correct": 0,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        },
+        "grouped": {
+          "n": 10,
+          "correct": 9,
+          "accuracy": 0.9,
+          "macro_f1": 0.8962962962962964,
+          "boundary_accuracy": 0.8571428571428571,
+          "false_incorrect_rate": 0.0,
+          "per_class": {
+            "correct": {
+              "support": 4,
+              "precision": 0.8,
+              "recall": 1.0,
+              "f1": 0.8888888888888888
+            },
+            "weakly_correct": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1": 0.8
+            },
+            "incorrect": {
+              "support": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          },
+          "confusion": {
+            "correct": {
+              "correct": 4,
+              "weakly_correct": 0,
+              "incorrect": 0
+            },
+            "weakly_correct": {
+              "correct": 1,
+              "weakly_correct": 2,
+              "incorrect": 0
+            },
+            "incorrect": {
+              "correct": 0,
+              "weakly_correct": 0,
+              "incorrect": 3
+            }
+          }
+        }
+      }
+    },
+    "paired_changes": {
+      "improved": 0,
+      "regressed": 0,
+      "net_correct": 0
+    },
+    "fallback_count": 60,
+    "predictions": [
+      {
+        "row_id": "synthetic_dataset.csv:42",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "correct",
+        "similarity": 0.3616,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:43",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "correct",
+        "similarity": 0.2871,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:44",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "correct",
+        "similarity": 0.6247,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:45",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "correct",
+        "similarity": 0.1782,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:46",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2141,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:47",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "weakly_correct",
+        "similarity": 0.1475,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:48",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "weakly_correct",
+        "similarity": 0.6519,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:49",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "incorrect",
+        "similarity": 0.0924,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:50",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "incorrect",
+        "similarity": 0.0054,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:51",
+        "contract": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "group": "[\"Basic dog obedience training\", \"sit, stay, and loose-leash walking using positive reinforcement\"]",
+        "fold": "Basic dog obedience training",
+        "expected_label": "incorrect",
+        "similarity": 0.0191,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:22",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "correct",
+        "similarity": 0.4968,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:23",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "correct",
+        "similarity": 0.2771,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:24",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "correct",
+        "similarity": 0.5496,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:25",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "correct",
+        "similarity": 0.2655,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:26",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "weakly_correct",
+        "similarity": 0.3456,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:27",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2454,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:28",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "weakly_correct",
+        "similarity": 0.4669,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:29",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "incorrect",
+        "similarity": 0.1642,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:30",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "incorrect",
+        "similarity": 0.0007,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:31",
+        "contract": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "group": "[\"Beginner acoustic guitar chords\", \"open chord shapes, transitions, and basic strumming patterns\"]",
+        "fold": "Beginner acoustic guitar chords",
+        "expected_label": "incorrect",
+        "similarity": 0.0476,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.14,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.14,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:32",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "correct",
+        "similarity": 0.6203,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:33",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "correct",
+        "similarity": 0.485,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:34",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "correct",
+        "similarity": 0.3278,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:35",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "correct",
+        "similarity": 0.3897,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:36",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "weakly_correct",
+        "similarity": 0.3577,
+        "current": "weakly_correct",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:37",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2728,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:38",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "weakly_correct",
+        "similarity": 0.4674,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:39",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "incorrect",
+        "similarity": 0.0091,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:40",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "incorrect",
+        "similarity": -0.0211,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:41",
+        "contract": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "group": "[\"Filing a basic personal income tax return\", \"standard deduction, W-2 income, and common filing mistakes\"]",
+        "fold": "Filing a basic personal income tax return",
+        "expected_label": "incorrect",
+        "similarity": 0.0001,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:12",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "correct",
+        "similarity": 0.4749,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:13",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "correct",
+        "similarity": 0.3827,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:14",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "correct",
+        "similarity": 0.3648,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:15",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "correct",
+        "similarity": 0.4968,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:16",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "weakly_correct",
+        "similarity": 0.4584,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:17",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2962,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:18",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "weakly_correct",
+        "similarity": 0.1799,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:19",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "incorrect",
+        "similarity": -0.0496,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:20",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "incorrect",
+        "similarity": -0.0354,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:21",
+        "contract": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "group": "[\"Home sourdough bread baking\", \"starter maintenance, hydration ratios, and oven spring technique\"]",
+        "fold": "Home sourdough bread baking",
+        "expected_label": "incorrect",
+        "similarity": 0.0337,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.21,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.21,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:2",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "correct",
+        "similarity": 0.7605,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:3",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "correct",
+        "similarity": 0.1573,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:4",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "correct",
+        "similarity": 0.6407,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:5",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "correct",
+        "similarity": 0.5754,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:6",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2256,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:7",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "weakly_correct",
+        "similarity": 0.559,
+        "current": "correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:8",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "weakly_correct",
+        "similarity": 0.2831,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:9",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "incorrect",
+        "similarity": 0.0155,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:10",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "incorrect",
+        "similarity": 0.0411,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:11",
+        "contract": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "group": "[\"Python list comprehensions\", \"syntax, common patterns, and performance versus a for loop\"]",
+        "fold": "Python list comprehensions",
+        "expected_label": "incorrect",
+        "similarity": -0.0282,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:52",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "correct",
+        "similarity": 0.4367,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:53",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "correct",
+        "similarity": 0.4835,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:54",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "correct",
+        "similarity": 0.3985,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:55",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "correct",
+        "similarity": 0.4961,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:56",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "weakly_correct",
+        "similarity": 0.248,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:57",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "weakly_correct",
+        "similarity": 0.252,
+        "current": "incorrect",
+        "global": "weakly_correct",
+        "grouped": "weakly_correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:58",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "weakly_correct",
+        "similarity": 0.5077,
+        "current": "weakly_correct",
+        "global": "correct",
+        "grouped": "correct",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:59",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "incorrect",
+        "similarity": 0.0645,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:60",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "incorrect",
+        "similarity": 0.1028,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      },
+      {
+        "row_id": "synthetic_dataset.csv:61",
+        "contract": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "group": "[\"Watercolor painting fundamentals\", \"wet-on-wet vs wet-on-dry technique and basic color mixing\"]",
+        "fold": "Watercolor painting fundamentals",
+        "expected_label": "incorrect",
+        "similarity": 0.0072,
+        "current": "incorrect",
+        "global": "incorrect",
+        "grouped": "incorrect",
+        "global_upper": 0.36,
+        "global_lower": 0.17,
+        "grouped_upper": 0.36,
+        "grouped_lower": 0.17,
+        "fallback": true
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "path": "synthetic_dataset.csv",
+      "sha256": "00ffe940932ae4d154a6a7845ea13884c607f86b79c6cdb50231eaf4857a5540"
+    }
+  ],
+  "configuration": {
+    "encoder": "unchanged; uses supplied cosine scores",
+    "objective": "calibration accuracy",
+    "grid": "-1.00 to 1.01, step 0.01",
+    "tie_break": "closest to current thresholds globally; closest to global within group",
+    "minimum_group_examples_per_boundary_class": 2,
+    "current_baseline": {
+      "upper": 0.55,
+      "lower": 0.35
+    }
+  }
+}

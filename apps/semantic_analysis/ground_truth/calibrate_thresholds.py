@@ -12,6 +12,7 @@ Usage:
 
 import csv
 import sys
+from bisect import bisect_left
 from pathlib import Path
 
 LABELS = ("correct", "weakly_correct", "incorrect")
@@ -52,19 +53,38 @@ def evaluate(rows: list[dict], upper: float, lower: float) -> tuple[float, dict]
     return accuracy, confusion
 
 
-def grid_search(rows: list[dict]):
+def grid_search(rows: list[dict], fixed_lower=None, reference=(0.55, 0.35)):
+    """Fit calibration accuracy; resolve ties toward reference thresholds.
+
+    Search the full cosine range on a 0.01 grid. 1.01 permits an empty top
+    class even when a score equals 1. Prefix counts keep repeated fits cheap.
+    Evaluation rows must never be passed here when reporting test performance.
+    """
+    if not rows:
+        raise ValueError("Cannot calibrate on an empty dataset")
+    grid = [i / 100 for i in range(-100, 102)]
+    scores = {label: sorted(r["similarity"] for r in rows if r["expected_label"] == label)
+              for label in LABELS}
+    lower_candidates = grid if fixed_lower is None else [fixed_lower]
+    below = {t: {label: bisect_left(values, t) for label, values in scores.items()}
+             for t in set(grid + lower_candidates)}
     best = None
-    step = 0.01
-    upper_range = [round(u, 2) for u in [0.30 + i * step for i in range(int((0.90 - 0.30) / step) + 1)]]
-    for upper in upper_range:
-        lower_range = [round(l, 2) for l in [0.10 + i * step for i in range(int((upper - 0.10) / step))]]
-        for lower in lower_range:
+    for upper in grid:
+        for lower in lower_candidates:
             if lower >= upper:
                 continue
-            accuracy, confusion = evaluate(rows, upper, lower)
-            if best is None or accuracy > best[0]:
-                best = (accuracy, upper, lower, confusion)
-    return best
+            count = (len(scores["correct"]) - below[upper]["correct"]
+                     + below[upper]["weakly_correct"] - below[lower]["weakly_correct"]
+                     + below[lower]["incorrect"])
+            distance = round(abs(upper - reference[0]) + abs(lower - reference[1]), 8)
+            key = (count, -distance, -upper, -lower)
+            if best is None or key > best[0]:
+                best = (key, upper, lower)
+    if best is None:
+        raise ValueError("No upper threshold above fixed_lower")
+    _, upper, lower = best
+    accuracy, confusion = evaluate(rows, upper, lower)
+    return accuracy, upper, lower, confusion
 
 
 def main():
@@ -78,6 +98,8 @@ def main():
         return
 
     print(f"Loaded {len(rows)} labeled examples.")
+    print("CALIBRATION ONLY: these rows also select the thresholds; this is not test performance.")
+    print("Use threshold_experiment.py for a separate calibration/evaluation comparison.")
 
     current_accuracy, current_confusion = evaluate(rows, upper=0.55, lower=0.35)
     print(f"\nCurrent thresholds (UPPER=0.55, LOWER=0.35): accuracy={current_accuracy:.3f}")
