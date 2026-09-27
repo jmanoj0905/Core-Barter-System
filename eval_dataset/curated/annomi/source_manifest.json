@@ -1,0 +1,26 @@
+{
+  "repository": "https://github.com/uccollab/AnnoMI",
+  "revision": "42936645ec3857a9c84ab296a36a3c34b779ef49",
+  "retrieved_on": "2026-09-27",
+  "license": "NONE — no licence file in the upstream repository; see SOURCE_README.md",
+  "files": [
+    {
+      "local_path": "raw/AnnoMI-full.csv",
+      "url": "https://raw.githubusercontent.com/uccollab/AnnoMI/42936645ec3857a9c84ab296a36a3c34b779ef49/AnnoMI-full.csv",
+      "sha256": "3b60fec5e9d83cbb18ade0e412fb9afaef3b81724748a5d715f844bdd7432c9f",
+      "bytes": 3795371
+    },
+    {
+      "local_path": "raw/AnnoMI-simple.csv",
+      "url": "https://raw.githubusercontent.com/uccollab/AnnoMI/42936645ec3857a9c84ab296a36a3c34b779ef49/AnnoMI-simple.csv",
+      "sha256": "b178db3b0b9858a0fa4ed670dabeccd63e975ba67e141d7ae16f2e8214f78e61",
+      "bytes": 2386609
+    },
+    {
+      "local_path": "raw/README.md",
+      "url": "https://raw.githubusercontent.com/uccollab/AnnoMI/42936645ec3857a9c84ab296a36a3c34b779ef49/README.md",
+      "sha256": "45fd4a9e30e3cf0f727f120159a8042eefc0dacdf1c4fe576859a4bfd815948c",
+      "bytes": 6637
+    }
+  ]
+}
