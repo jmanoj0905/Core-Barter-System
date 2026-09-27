@@ -82,6 +82,14 @@ FOLD_FAMILIES = ("session", "topic", "author")
 
 AUTHORS = ("agent:opus-5", "agent:sonnet-5", "agent:haiku-4.5", "real:annomi")
 
+AGENT_AUTHORS = tuple(a for a in AUTHORS if a.startswith("agent:"))
+REAL_AUTHORS = tuple(a for a in AUTHORS if a.startswith("real:"))
+
+# The two categories with zero declared digressions. Spec 7.5 criterion 2 asks
+# about the false-digression rate on on-topic material specifically, so the
+# pooled mix is also reported restricted to these.
+ON_TOPIC_CATEGORIES = ("abstract_on_topic", "depressed_baseline")
+
 WER_NOT_RUN = {
     "status": "not_run",
     "targets_planned": [0, 10, 20, 30],
@@ -291,6 +299,101 @@ def asymmetric_cost(mix: ErrorMix) -> float:
     return mix.false_digression_rate + 0.5 * (1.0 - mix.caught_rate)
 
 
+def accuracy(mix: ErrorMix) -> float:
+    """Reported only for the objective-sensitivity block; never picks the argmax."""
+    labellable = mix.on_topic_total + mix.digression_total
+    if not labellable:
+        return 0.0
+    correct = mix.caught + (mix.on_topic_total - mix.false_digressions)
+    return correct / labellable
+
+
+def digression_f1(mix: ErrorMix) -> float:
+    """F1 of the digression class. Reported only for objective sensitivity."""
+    predicted = mix.caught + mix.false_digressions
+    if not predicted or not mix.digression_total:
+        return 0.0
+    precision = mix.caught / predicted
+    recall = mix.caught / mix.digression_total
+    if precision + recall == 0:
+        return 0.0
+    return 2 * precision * recall / (precision + recall)
+
+
+def weighted_informedness(mix: ErrorMix, weight: float) -> float:
+    """caught_rate - weight * false_digression_rate. weight=1 is the primary."""
+    return mix.caught_rate - weight * mix.false_digression_rate
+
+
+# Every alternative is expressed as a score to MAXIMISE, so one argmax helper
+# serves them all. The primary stays weight=1 informedness; these only measure
+# how far the argmax moves under a different reading of the same error mix.
+ALTERNATIVE_OBJECTIVES = {
+    "informedness_primary": informedness,
+    "committed_secondary_asymmetric_cost": lambda m: -asymmetric_cost(m),
+    "accuracy": accuracy,
+    "digression_class_f1": digression_f1,
+    "weighted_informedness_w0.25": lambda m: weighted_informedness(m, 0.25),
+    "weighted_informedness_w0.50": lambda m: weighted_informedness(m, 0.50),
+    "weighted_informedness_w1.00": lambda m: weighted_informedness(m, 1.00),
+    "weighted_informedness_w2.00": lambda m: weighted_informedness(m, 2.00),
+    "weighted_informedness_w3.00": lambda m: weighted_informedness(m, 3.00),
+}
+
+
+def objective_sensitivity(by_rho: dict) -> dict:
+    """Each alternative objective's argmax over the full-corpus grid.
+
+    I-2: the committed secondary objective does not agree with the primary, and
+    that disagreement must be on the record rather than left to prose. The
+    primary is NOT changed by this block; only disclosed against.
+    """
+    out = {}
+    for name, score in ALTERNATIVE_OBJECTIVES.items():
+        best = min(GRID, key=lambda rho: (-score(by_rho[rho]), rho))
+        out[name] = {
+            "argmax": best,
+            "value_at_its_argmax": score(by_rho[best]),
+            "value_at_primary_argmax": score(by_rho[argmax_rho(by_rho)]),
+        }
+    out["_parameterisation"] = {
+        "weighted_informedness_wK": "caught_rate - K * false_digression_rate",
+        "note": (
+            "K weights the FALSE-DIGRESSION side, so larger K is more "
+            "false-accusation-averse and pulls the argmax down. A sweep "
+            "parameterised the other way round (cost = false_digression_rate + "
+            "W * (1 - caught_rate), i.e. weighting the MISSED side) maps as "
+            "W = 1/K: W=0.25 -> K=4, W=0.5 -> K=2 (this is exactly the committed "
+            "asymmetric_cost, argmax 0.20), W=1 -> K=1 (the primary, 0.26), "
+            "W=2 -> K=0.5 (0.36). The two readings describe the same grid."
+        ),
+        "committed_secondary_asymmetric_cost": (
+            "false_digression_rate + 0.5 * (1 - caught_rate); equivalent to "
+            "weighted_informedness with K=2"
+        ),
+    }
+    primary = out["informedness_primary"]["argmax"]
+    secondary = out["committed_secondary_asymmetric_cost"]["argmax"]
+    out["_summary"] = {
+        "primary_argmax": primary,
+        "committed_secondary_argmax": secondary,
+        "primary_and_secondary_agree": primary == secondary,
+        "distinct_argmaxes_across_objectives": sorted(
+            {v["argmax"] for k, v in out.items() if not k.startswith("_")}
+        ),
+        "note": (
+            "The primary objective (informedness, weight 1 on the "
+            "false-digression rate) and the committed secondary objective "
+            "(asymmetric_cost) DISAGREE on this corpus. Accuracy and "
+            "digression-class F1 also disagree with the primary. The argmax is "
+            "therefore a function of the objective choice as much as of the "
+            "data, and the objective was chosen by this task rather than "
+            "pre-registered in the spec. Read the argmax as conditional on it."
+        ),
+    }
+    return out
+
+
 def argmax_rho(mixes: dict) -> float:
     """Pick RHO by the pre-registered objective with its pre-registered tie-break."""
     return min(
@@ -366,14 +469,23 @@ class GridResult:
     flat_control: ErrorMix = ZERO_MIX
     per_fold: list = field(default_factory=list)
     argmax_stability: dict = field(default_factory=dict)
+    pooled_cross_validated: dict = field(default_factory=dict)
 
     def as_dict(self) -> dict:
         return {
             "folds": self.folds,
             "overall_argmax": self.overall_argmax,
+            "overall_argmax_is_in_sample": True,
             "overall_error_mix": self.overall_error_mix.as_dict(),
+            "overall_error_mix_note": (
+                "IN-SAMPLE: evaluated at an argmax fitted on all sessions, "
+                "including the ones being scored. Spec 7.2's gate ('if thr = "
+                "RHO*R does not beat a flat threshold there is nothing to ship') "
+                "belongs to pooled_cross_validated, not to this block."
+            ),
             "flat_lower_control": self.flat_control.as_dict(),
             "argmax_stability": self.argmax_stability,
+            "pooled_cross_validated": self.pooled_cross_validated,
             "per_fold": self.per_fold,
             "grid": {f"{rho:.2f}": row for rho, row in self.grid.items()},
         }
@@ -472,6 +584,65 @@ def grid_search(sessions, folds: str) -> GridResult:
             }
         )
 
+    # I-3: the out-of-sample numbers spec 7.2's gate actually belongs to. Every
+    # session sits in exactly one fold, so summing each fold's held-out mix at
+    # that fold's own (training-fitted) argmax pools a genuine cross-validated
+    # mix over all the same windows the in-sample headline uses.
+    pooled = ZERO_MIX
+    pooled_flat = ZERO_MIX
+    pooled_on_topic = ZERO_MIX
+    pooled_on_topic_flat = ZERO_MIX
+    for record in per_fold:
+        held_ids = set(record["held_out_sessions"])
+        held_sessions = [s for s in sessions if s.session_id in held_ids]
+        pooled = pooled + evaluate(held_sessions, record["argmax"], durations=durations)
+        pooled_flat = pooled_flat + evaluate_flat(held_sessions, durations=durations)
+        on_topic_only = [s for s in held_sessions if s.category in ON_TOPIC_CATEGORIES]
+        if on_topic_only:
+            pooled_on_topic = pooled_on_topic + evaluate(
+                on_topic_only, record["argmax"], durations=durations
+            )
+            pooled_on_topic_flat = pooled_on_topic_flat + evaluate_flat(
+                on_topic_only, durations=durations
+            )
+
+    pooled_block = {
+        "definition": (
+            "Each fold's held-out sessions scored at that fold's own "
+            "training-fitted argmax, summed across folds. Every session appears "
+            "exactly once, so this is a true leave-one-out cross-validated mix "
+            "over the same windows as the in-sample headline."
+        ),
+        "relative": pooled.as_dict(),
+        "flat_lower_control": pooled_flat.as_dict(),
+        "informedness_relative": informedness(pooled),
+        "informedness_flat_lower": informedness(pooled_flat),
+        "beats_flat_control_on_informedness": informedness(pooled)
+        > informedness(pooled_flat),
+        "caught_delta_vs_flat": pooled.caught - pooled_flat.caught,
+        "false_digressions_delta_vs_flat": (
+            pooled.false_digressions - pooled_flat.false_digressions
+        ),
+        "on_topic_categories_only": {
+            "categories": list(ON_TOPIC_CATEGORIES),
+            "note": (
+                "Spec 7.5 criterion 2 asks about the false-digression rate on "
+                "on-topic material; these two categories declare no digressions, "
+                "so this is that quantity, pooled out-of-sample."
+            ),
+            "relative": pooled_on_topic.as_dict(),
+            "flat_lower_control": pooled_on_topic_flat.as_dict(),
+            "false_digressions_delta_vs_flat": (
+                pooled_on_topic.false_digressions - pooled_on_topic_flat.false_digressions
+            ),
+        },
+        "in_sample_comparison": {
+            "in_sample_relative": by_rho[overall_argmax].as_dict(),
+            "in_sample_informedness": informedness(by_rho[overall_argmax]),
+            "optimism": informedness(by_rho[overall_argmax]) - informedness(pooled),
+        },
+    }
+
     fold_argmaxes = [f["argmax"] for f in per_fold]
     matching = sum(1 for a in fold_argmaxes if a == overall_argmax)
     stability = {
@@ -492,6 +663,7 @@ def grid_search(sessions, folds: str) -> GridResult:
         flat_control=flat_total,
         per_fold=per_fold,
         argmax_stability=stability,
+        pooled_cross_validated=pooled_block,
     )
 
 
@@ -590,9 +762,12 @@ def abstract_on_topic_cosines(sessions) -> dict:
     its content is on-topic while sharing little vocabulary with its topic label.
     That does not hold uniformly — sess_CAL16 ("smoking cessation") is saturated
     with smoking/cigarette/smoke, while sess_CAL19 ("reducing gambling") fits the
-    premise. A high-overlap script scores a high cosine and can never be
-    false-flagged, flattering the headline false-digression rate. This block lets
-    a reader see which of the five actually exercise the low-overlap case.
+    premise. A high-overlap script scores high cosines and is therefore very
+    rarely false-flagged, which flatters the headline false-digression rate while
+    still inflating its denominator. (Exactly: sess_CAL16 contributes 2 false
+    digressions at the argmax, from its two sub-LOWER windows — few, not none.)
+    This block lets a reader see which of the five actually exercise the
+    low-overlap case.
     """
     out = {}
     for session in sorted(
@@ -616,6 +791,56 @@ def abstract_on_topic_cosines(sessions) -> dict:
             "windows_at_or_above_UPPER": sum(1 for s in sims if s >= UPPER),
             "windows_below_LOWER": sum(1 for s in sims if s < LOWER),
         }
+    return out
+
+
+def agent_vs_real(sessions, rho, durations="synthetic") -> dict:
+    """Split the corpus by author provenance and compare relative against flat.
+
+    I-4: the entire net improvement over the flat control comes from the 10
+    real:annomi sessions — arithmetically the same window set as
+    abstract_on_topic + depressed_baseline. On the 15 agent-authored sessions the
+    relative threshold nets a small caught gain and an *extra* false digression.
+    That bears directly on whether any of this generalises, so it is recorded
+    rather than left to be derived from per_author.
+    """
+    out = {}
+    for name, authors in (("agent_authored", AGENT_AUTHORS), ("real_data", REAL_AUTHORS)):
+        members = [s for s in sessions if s.author in authors]
+        rel = evaluate(members, rho, durations=durations)
+        flat = evaluate_flat(members, durations=durations)
+        out[name] = {
+            "authors": list(authors),
+            "sessions": [s.session_id for s in members],
+            "n_sessions": len(members),
+            "categories": sorted({s.category for s in members}),
+            "relative": rel.as_dict(),
+            "flat_lower_control": flat.as_dict(),
+            "caught_delta_vs_flat": rel.caught - flat.caught,
+            "false_digressions_delta_vs_flat": (
+                rel.false_digressions - flat.false_digressions
+            ),
+            "informedness_relative": informedness(rel),
+            "informedness_flat_lower": informedness(flat),
+        }
+    out["_summary"] = {
+        "note": (
+            "The net gain of the relative threshold over the flat control is "
+            "carried by the real-data (AnnoMI) half of the corpus. On the "
+            "agent-authored half the false-digression count does not improve. "
+            "The real:annomi sessions are exactly the abstract_on_topic and "
+            "depressed_baseline categories, so this split and the per-category "
+            "split describe the same window set from two directions."
+        ),
+        "agent_false_digression_delta": out["agent_authored"][
+            "false_digressions_delta_vs_flat"
+        ],
+        "real_false_digression_delta": out["real_data"][
+            "false_digressions_delta_vs_flat"
+        ],
+        "agent_caught_delta": out["agent_authored"]["caught_delta_vs_flat"],
+        "real_caught_delta": out["real_data"]["caught_delta_vs_flat"],
+    }
     return out
 
 
@@ -711,6 +936,10 @@ def build_report(sessions) -> dict:
             "served. thr = RHO*R appears nowhere outside ground_truth/.",
             "The WER robustness leg was NOT RUN — see wer_robustness for the "
             "reason. durations=\"synthetic\" is the only path exercised.",
+            "The durations=\"timed\" path is unreachable in this file: the STT "
+            "sweep was skipped, so no real-duration transcript exists for "
+            "run_stt_sweep.timed_durations to measure. load_sessions() refuses "
+            "it rather than wiring a path that cannot be exercised.",
             "Because thr = RHO*R with RHO < 1, thr is always strictly below R, so "
             "any window with sim >= R also clears thr. The below-threshold guard "
             "is therefore a no-op across the swept grid; it bites only for "
@@ -727,6 +956,22 @@ def build_report(sessions) -> dict:
             "the session folds under a different key and carry no independent "
             "information. Both families are reported as required, but their "
             "agreement is arithmetic, not evidence.",
+            "The overall argmax is IN-SAMPLE (fitted on all 25 sessions). "
+            "Pooled leave-one-out numbers are in each family's "
+            "pooled_cross_validated block, and that is where spec 7.2's "
+            "beats-a-flat-threshold gate belongs.",
+            "The three fold families report the same overall argmax by "
+            "construction, not by replication — see "
+            "fold_family_structural_invariance.",
+            "The primary objective (informedness) and the committed secondary "
+            "(asymmetric_cost) disagree on this corpus; so do accuracy and "
+            "digression-class F1. See objective_sensitivity. The argmax is "
+            "conditional on an objective this task chose, not one the spec "
+            "pre-registered.",
+            "The net improvement over the flat control is carried entirely by "
+            "the 10 real-data (AnnoMI) sessions; on the 15 agent-authored "
+            "sessions the false-digression count does not improve. See "
+            "agent_authored_vs_real_data.",
             "The real:annomi author fold holds out 10 of the 25 sessions and "
             "contains zero declared digressions, so its held-out mix has "
             "digression_total = 0 and can only measure false digressions. Its "
@@ -745,6 +990,10 @@ def build_report(sessions) -> dict:
         },
         "excluded_windows_by_category": excluded_by_category(sessions),
         "abstract_on_topic_cosine_distribution": abstract_on_topic_cosines(sessions),
+        "agent_authored_vs_real_data": agent_vs_real(sessions, overall_argmax),
+        "objective_sensitivity": objective_sensitivity(
+            {rho: evaluate(sessions, rho) for rho in GRID}
+        ),
         "wer_robustness": WER_NOT_RUN,
     }
 
@@ -765,18 +1014,78 @@ def build_report(sessions) -> dict:
         block["predictions"] = predictions(sessions, result.overall_argmax)
         report[f"leave_one_{family}_out"] = block
 
-    report["argmax_agreement_across_fold_families"] = {
-        "argmaxes": {f: families[f].overall_argmax for f in FOLD_FAMILIES},
-        "identical": len({families[f].overall_argmax for f in FOLD_FAMILIES}) == 1,
+    # I-1: the overall argmax CANNOT vary by fold family — grid_search fits it on
+    # all sessions regardless of `folds`. Every block except `per_fold` and
+    # `argmax_stability` is byte-identical across the three families. So this is
+    # a property of the code, not corroboration from the data, and is named and
+    # annotated to make that impossible to misread. There is no cross-family
+    # agreement *finding* in this file.
+    report["fold_family_structural_invariance"] = {
+        "is_evidence": False,
+        "kind": "structural property of the implementation, not a result",
+        "overall_argmaxes": {f: families[f].overall_argmax for f in FOLD_FAMILIES},
+        "identical_by_construction": True,
+        "why": (
+            "grid_search() fits overall_argmax on every session irrespective of "
+            "the fold family, so the three values are the same computation run "
+            "three times. The grid, overall_error_mix, flat_lower_control, "
+            "per_topic, per_category, per_author, paired_changes and all "
+            "predictions rows are identical across the three family blocks; only "
+            "per_fold, argmax_stability and pooled_cross_validated differ. Do "
+            "not read this agreement as replication. (This is broader than the "
+            "separate topic-equals-session degeneracy noted in limitations.)"
+        ),
+        "what_actually_differs_by_family": [
+            "per_fold",
+            "argmax_stability",
+            "pooled_cross_validated",
+        ],
         "per_family_fold_stability": {
             f: families[f].argmax_stability for f in FOLD_FAMILIES
+        },
+        "per_family_pooled_cross_validated_informedness": {
+            f: families[f].pooled_cross_validated["informedness_relative"]
+            for f in FOLD_FAMILIES
         },
     }
     report["headline"] = {
         "argmax": overall_argmax,
+        "argmax_is_in_sample": True,
+        "in_sample_warning": (
+            "relative_error_mix_at_argmax is IN-SAMPLE: the argmax was fitted on "
+            "all 25 sessions, including the ones scored here. Use "
+            "pooled_cross_validated_by_family for the out-of-sample comparison "
+            "spec 7.2's gate asks for."
+        ),
         "relative_error_mix_at_argmax": families["session"].overall_error_mix.as_dict(),
         "flat_lower_control": families["session"].flat_control.as_dict(),
         "paired_changes_relative_vs_flat": paired_changes(rows),
+        "pooled_cross_validated_by_family": {
+            family: {
+                "argmaxes_used": sorted(
+                    {f["argmax"] for f in families[family].per_fold}
+                ),
+                "relative": families[family].pooled_cross_validated["relative"],
+                "flat_lower_control": families[family].pooled_cross_validated[
+                    "flat_lower_control"
+                ],
+                "informedness_relative": families[family].pooled_cross_validated[
+                    "informedness_relative"
+                ],
+                "informedness_flat_lower": families[family].pooled_cross_validated[
+                    "informedness_flat_lower"
+                ],
+                "beats_flat_control_on_informedness": families[
+                    family
+                ].pooled_cross_validated["beats_flat_control_on_informedness"],
+                "on_topic_categories_only": families[family].pooled_cross_validated[
+                    "on_topic_categories_only"
+                ],
+            }
+            for family in FOLD_FAMILIES
+        },
+        "objective_sensitivity_summary": report["objective_sensitivity"]["_summary"],
+        "agent_vs_real_summary": report["agent_authored_vs_real_data"]["_summary"],
     }
     report["inputs"] = [
         {"path": str(p.relative_to(_REPO_ROOT)), "sha256": _sha256(p)}
@@ -816,9 +1125,30 @@ def main(argv=None) -> int:
             f"stability={st['folds_matching_overall_argmax']}/{st['n_folds']} "
             f"identical={st['identical']} distinct={st['distinct_argmaxes']}"
         )
-    print(f"relative @ argmax {head['argmax']:.2f}: {head['relative_error_mix_at_argmax']}")
+    print(f"relative @ argmax {head['argmax']:.2f} (IN-SAMPLE): "
+          f"{head['relative_error_mix_at_argmax']}")
     print(f"flat LOWER control:  {head['flat_lower_control']}")
     print(f"paired: {head['paired_changes_relative_vs_flat']}")
+    for family, pooled in head["pooled_cross_validated_by_family"].items():
+        rel, flat = pooled["relative"], pooled["flat_lower_control"]
+        print(
+            f"pooled CV ({family}): relative caught={rel['caught']}/"
+            f"{rel['digression_total']} fd={rel['false_digressions']}/"
+            f"{rel['on_topic_total']} J={pooled['informedness_relative']:.4f} | "
+            f"flat caught={flat['caught']} fd={flat['false_digressions']} "
+            f"J={pooled['informedness_flat_lower']:.4f} | "
+            f"beats_flat={pooled['beats_flat_control_on_informedness']}"
+        )
+    obj = report["objective_sensitivity"]["_summary"]
+    print(f"objectives: primary={obj['primary_argmax']} "
+          f"secondary={obj['committed_secondary_argmax']} "
+          f"agree={obj['primary_and_secondary_agree']} "
+          f"distinct={obj['distinct_argmaxes_across_objectives']}")
+    avr = report["agent_authored_vs_real_data"]["_summary"]
+    print(f"agent vs real: agent fd_delta={avr['agent_false_digression_delta']} "
+          f"caught_delta={avr['agent_caught_delta']} | "
+          f"real fd_delta={avr['real_false_digression_delta']} "
+          f"caught_delta={avr['real_caught_delta']}")
     print(f"wrote {args.output}")
     return 0
 

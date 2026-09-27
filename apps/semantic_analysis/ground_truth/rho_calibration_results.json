@@ -35,11 +35,16 @@
  "limitations": [
   "No production evidence: this mechanism ships nothing and was never served. thr = RHO*R appears nowhere outside ground_truth/.",
   "The WER robustness leg was NOT RUN — see wer_robustness for the reason. durations=\"synthetic\" is the only path exercised.",
+  "The durations=\"timed\" path is unreachable in this file: the STT sweep was skipped, so no real-duration transcript exists for run_stt_sweep.timed_durations to measure. load_sessions() refuses it rather than wiring a path that cannot be exercised.",
   "Because thr = RHO*R with RHO < 1, thr is always strictly below R, so any window with sim >= R also clears thr. The below-threshold guard is therefore a no-op across the swept grid; it bites only for RHO > 1 and is unit-tested there.",
   "Synthetic durations (0.4 s/word) set the window boundaries, so the window population itself is an assumption, not a measurement.",
   "LIM-2: the abstract_on_topic premise (on-topic content, low vocabulary overlap with the topic label) does not hold uniformly across the five sessions — see abstract_on_topic_cosine_distribution.",
   "25 sessions / ~380 windows is a small corpus; per-fold argmax movement of a few hundredths is within its resolution.",
   "leave-one-topic-out is degenerate on this corpus: topics are distinct by construction, one per session, so the topic folds are the session folds under a different key and carry no independent information. Both families are reported as required, but their agreement is arithmetic, not evidence.",
+  "The overall argmax is IN-SAMPLE (fitted on all 25 sessions). Pooled leave-one-out numbers are in each family's pooled_cross_validated block, and that is where spec 7.2's beats-a-flat-threshold gate belongs.",
+  "The three fold families report the same overall argmax by construction, not by replication — see fold_family_structural_invariance.",
+  "The primary objective (informedness) and the committed secondary (asymmetric_cost) disagree on this corpus; so do accuracy and digression-class F1. See objective_sensitivity. The argmax is conditional on an objective this task chose, not one the spec pre-registered.",
+  "The net improvement over the flat control is carried entirely by the 10 real-data (AnnoMI) sessions; on the 15 agent-authored sessions the false-digression count does not improve. See agent_authored_vs_real_data.",
   "The real:annomi author fold holds out 10 of the 25 sessions and contains zero declared digressions, so its held-out mix has digression_total = 0 and can only measure false digressions. Its *training* argmax is fitted on the 15 agent-authored sessions alone, which is why that fold's argmax moves furthest."
  ],
  "corpus": {
@@ -253,6 +258,179 @@
    "windows_below_LOWER": 3
   }
  },
+ "agent_authored_vs_real_data": {
+  "agent_authored": {
+   "authors": [
+    "agent:opus-5",
+    "agent:sonnet-5",
+    "agent:haiku-4.5"
+   ],
+   "sessions": [
+    "sess_CAL06",
+    "sess_CAL07",
+    "sess_CAL08",
+    "sess_CAL09",
+    "sess_CAL10",
+    "sess_CAL01",
+    "sess_CAL02",
+    "sess_CAL03",
+    "sess_CAL04",
+    "sess_CAL05",
+    "sess_CAL11",
+    "sess_CAL12",
+    "sess_CAL13",
+    "sess_CAL14",
+    "sess_CAL15"
+   ],
+   "n_sessions": 15,
+   "categories": [
+    "adversarial",
+    "gradual_drift",
+    "interleaved_abuse"
+   ],
+   "relative": {
+    "caught": 52,
+    "missed": 14,
+    "false_digressions": 4,
+    "on_topic_total": 133,
+    "digression_total": 66,
+    "excluded": 9,
+    "caught_rate": 0.7878787878787878,
+    "false_digression_rate": 0.03007518796992481
+   },
+   "flat_lower_control": {
+    "caught": 50,
+    "missed": 16,
+    "false_digressions": 3,
+    "on_topic_total": 133,
+    "digression_total": 66,
+    "excluded": 9,
+    "caught_rate": 0.7575757575757576,
+    "false_digression_rate": 0.022556390977443608
+   },
+   "caught_delta_vs_flat": 2,
+   "false_digressions_delta_vs_flat": 1,
+   "informedness_relative": 0.757803599908863,
+   "informedness_flat_lower": 0.735019366598314
+  },
+  "real_data": {
+   "authors": [
+    "real:annomi"
+   ],
+   "sessions": [
+    "sess_CAL16",
+    "sess_CAL17",
+    "sess_CAL18",
+    "sess_CAL19",
+    "sess_CAL20",
+    "sess_CAL21",
+    "sess_CAL22",
+    "sess_CAL23",
+    "sess_CAL24",
+    "sess_CAL25"
+   ],
+   "n_sessions": 10,
+   "categories": [
+    "abstract_on_topic",
+    "depressed_baseline"
+   ],
+   "relative": {
+    "caught": 0,
+    "missed": 0,
+    "false_digressions": 52,
+    "on_topic_total": 156,
+    "digression_total": 0,
+    "excluded": 0,
+    "caught_rate": 0.0,
+    "false_digression_rate": 0.3333333333333333
+   },
+   "flat_lower_control": {
+    "caught": 0,
+    "missed": 0,
+    "false_digressions": 66,
+    "on_topic_total": 156,
+    "digression_total": 0,
+    "excluded": 0,
+    "caught_rate": 0.0,
+    "false_digression_rate": 0.4230769230769231
+   },
+   "caught_delta_vs_flat": 0,
+   "false_digressions_delta_vs_flat": -14,
+   "informedness_relative": -0.3333333333333333,
+   "informedness_flat_lower": -0.4230769230769231
+  },
+  "_summary": {
+   "note": "The net gain of the relative threshold over the flat control is carried by the real-data (AnnoMI) half of the corpus. On the agent-authored half the false-digression count does not improve. The real:annomi sessions are exactly the abstract_on_topic and depressed_baseline categories, so this split and the per-category split describe the same window set from two directions.",
+   "agent_false_digression_delta": 1,
+   "real_false_digression_delta": -14,
+   "agent_caught_delta": 2,
+   "real_caught_delta": 0
+  }
+ },
+ "objective_sensitivity": {
+  "informedness_primary": {
+   "argmax": 0.26,
+   "value_at_its_argmax": 0.59410716158121,
+   "value_at_primary_argmax": 0.59410716158121
+  },
+  "committed_secondary_asymmetric_cost": {
+   "argmax": 0.2,
+   "value_at_its_argmax": -0.2961885288874908,
+   "value_at_primary_argmax": -0.2998322323581839
+  },
+  "accuracy": {
+   "argmax": 0.2,
+   "value_at_its_argmax": 0.8225352112676056,
+   "value_at_primary_argmax": 0.8028169014084507
+  },
+  "digression_class_f1": {
+   "argmax": 0.2,
+   "value_at_its_argmax": 0.5987261146496815,
+   "value_at_primary_argmax": 0.5977011494252873
+  },
+  "weighted_informedness_w0.25": {
+   "argmax": 0.78,
+   "value_at_its_argmax": 0.8295847750865052,
+   "value_at_primary_argmax": 0.7394358813043934
+  },
+  "weighted_informedness_w0.50": {
+   "argmax": 0.36,
+   "value_at_its_argmax": 0.7070357554786622,
+   "value_at_primary_argmax": 0.6909929747299989
+  },
+  "weighted_informedness_w1.00": {
+   "argmax": 0.26,
+   "value_at_its_argmax": 0.59410716158121,
+   "value_at_primary_argmax": 0.59410716158121
+  },
+  "weighted_informedness_w2.00": {
+   "argmax": 0.2,
+   "value_at_its_argmax": 0.4076229422250184,
+   "value_at_primary_argmax": 0.40033553528363214
+  },
+  "weighted_informedness_w3.00": {
+   "argmax": 0.2,
+   "value_at_its_argmax": 0.2553738072769215,
+   "value_at_primary_argmax": 0.20656390898605426
+  },
+  "_parameterisation": {
+   "weighted_informedness_wK": "caught_rate - K * false_digression_rate",
+   "note": "K weights the FALSE-DIGRESSION side, so larger K is more false-accusation-averse and pulls the argmax down. A sweep parameterised the other way round (cost = false_digression_rate + W * (1 - caught_rate), i.e. weighting the MISSED side) maps as W = 1/K: W=0.25 -> K=4, W=0.5 -> K=2 (this is exactly the committed asymmetric_cost, argmax 0.20), W=1 -> K=1 (the primary, 0.26), W=2 -> K=0.5 (0.36). The two readings describe the same grid.",
+   "committed_secondary_asymmetric_cost": "false_digression_rate + 0.5 * (1 - caught_rate); equivalent to weighted_informedness with K=2"
+  },
+  "_summary": {
+   "primary_argmax": 0.26,
+   "committed_secondary_argmax": 0.2,
+   "primary_and_secondary_agree": false,
+   "distinct_argmaxes_across_objectives": [
+    0.2,
+    0.26,
+    0.36,
+    0.78
+   ],
+   "note": "The primary objective (informedness, weight 1 on the false-digression rate) and the committed secondary objective (asymmetric_cost) DISAGREE on this corpus. Accuracy and digression-class F1 also disagree with the primary. The argmax is therefore a function of the objective choice as much as of the data, and the objective was chosen by this task rather than pre-registered in the spec. Read the argmax as conditional on it."
+  }
+ },
  "wer_robustness": {
   "status": "not_run",
   "targets_planned": [
@@ -268,6 +446,7 @@
  "leave_one_session_out": {
   "folds": "session",
   "overall_argmax": 0.26,
+  "overall_argmax_is_in_sample": true,
   "overall_error_mix": {
    "caught": 52,
    "missed": 14,
@@ -278,6 +457,7 @@
    "caught_rate": 0.7878787878787878,
    "false_digression_rate": 0.19377162629757785
   },
+  "overall_error_mix_note": "IN-SAMPLE: evaluated at an argmax fitted on all sessions, including the ones being scored. Spec 7.2's gate ('if thr = RHO*R does not beat a flat threshold there is nothing to ship') belongs to pooled_cross_validated, not to this block.",
   "flat_lower_control": {
    "caught": 50,
    "missed": 16,
@@ -300,6 +480,76 @@
    ],
    "argmax_min": 0.25,
    "argmax_max": 0.36
+  },
+  "pooled_cross_validated": {
+   "definition": "Each fold's held-out sessions scored at that fold's own training-fitted argmax, summed across folds. Every session appears exactly once, so this is a true leave-one-out cross-validated mix over the same windows as the in-sample headline.",
+   "relative": {
+    "caught": 50,
+    "missed": 16,
+    "false_digressions": 61,
+    "on_topic_total": 289,
+    "digression_total": 66,
+    "excluded": 9,
+    "caught_rate": 0.7575757575757576,
+    "false_digression_rate": 0.21107266435986158
+   },
+   "flat_lower_control": {
+    "caught": 50,
+    "missed": 16,
+    "false_digressions": 69,
+    "on_topic_total": 289,
+    "digression_total": 66,
+    "excluded": 9,
+    "caught_rate": 0.7575757575757576,
+    "false_digression_rate": 0.23875432525951557
+   },
+   "informedness_relative": 0.546503093215896,
+   "informedness_flat_lower": 0.518821432316242,
+   "beats_flat_control_on_informedness": true,
+   "caught_delta_vs_flat": 0,
+   "false_digressions_delta_vs_flat": -8,
+   "on_topic_categories_only": {
+    "categories": [
+     "abstract_on_topic",
+     "depressed_baseline"
+    ],
+    "note": "Spec 7.5 criterion 2 asks about the false-digression rate on on-topic material; these two categories declare no digressions, so this is that quantity, pooled out-of-sample.",
+    "relative": {
+     "caught": 0,
+     "missed": 0,
+     "false_digressions": 57,
+     "on_topic_total": 156,
+     "digression_total": 0,
+     "excluded": 0,
+     "caught_rate": 0.0,
+     "false_digression_rate": 0.36538461538461536
+    },
+    "flat_lower_control": {
+     "caught": 0,
+     "missed": 0,
+     "false_digressions": 66,
+     "on_topic_total": 156,
+     "digression_total": 0,
+     "excluded": 0,
+     "caught_rate": 0.0,
+     "false_digression_rate": 0.4230769230769231
+    },
+    "false_digressions_delta_vs_flat": -9
+   },
+   "in_sample_comparison": {
+    "in_sample_relative": {
+     "caught": 52,
+     "missed": 14,
+     "false_digressions": 56,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7878787878787878,
+     "false_digression_rate": 0.19377162629757785
+    },
+    "in_sample_informedness": 0.59410716158121,
+    "optimism": 0.047604068365314056
+   }
   },
   "per_fold": [
    {
@@ -8831,6 +9081,7 @@
  "leave_one_topic_out": {
   "folds": "topic",
   "overall_argmax": 0.26,
+  "overall_argmax_is_in_sample": true,
   "overall_error_mix": {
    "caught": 52,
    "missed": 14,
@@ -8841,6 +9092,7 @@
    "caught_rate": 0.7878787878787878,
    "false_digression_rate": 0.19377162629757785
   },
+  "overall_error_mix_note": "IN-SAMPLE: evaluated at an argmax fitted on all sessions, including the ones being scored. Spec 7.2's gate ('if thr = RHO*R does not beat a flat threshold there is nothing to ship') belongs to pooled_cross_validated, not to this block.",
   "flat_lower_control": {
    "caught": 50,
    "missed": 16,
@@ -8863,6 +9115,76 @@
    ],
    "argmax_min": 0.25,
    "argmax_max": 0.36
+  },
+  "pooled_cross_validated": {
+   "definition": "Each fold's held-out sessions scored at that fold's own training-fitted argmax, summed across folds. Every session appears exactly once, so this is a true leave-one-out cross-validated mix over the same windows as the in-sample headline.",
+   "relative": {
+    "caught": 50,
+    "missed": 16,
+    "false_digressions": 61,
+    "on_topic_total": 289,
+    "digression_total": 66,
+    "excluded": 9,
+    "caught_rate": 0.7575757575757576,
+    "false_digression_rate": 0.21107266435986158
+   },
+   "flat_lower_control": {
+    "caught": 50,
+    "missed": 16,
+    "false_digressions": 69,
+    "on_topic_total": 289,
+    "digression_total": 66,
+    "excluded": 9,
+    "caught_rate": 0.7575757575757576,
+    "false_digression_rate": 0.23875432525951557
+   },
+   "informedness_relative": 0.546503093215896,
+   "informedness_flat_lower": 0.518821432316242,
+   "beats_flat_control_on_informedness": true,
+   "caught_delta_vs_flat": 0,
+   "false_digressions_delta_vs_flat": -8,
+   "on_topic_categories_only": {
+    "categories": [
+     "abstract_on_topic",
+     "depressed_baseline"
+    ],
+    "note": "Spec 7.5 criterion 2 asks about the false-digression rate on on-topic material; these two categories declare no digressions, so this is that quantity, pooled out-of-sample.",
+    "relative": {
+     "caught": 0,
+     "missed": 0,
+     "false_digressions": 57,
+     "on_topic_total": 156,
+     "digression_total": 0,
+     "excluded": 0,
+     "caught_rate": 0.0,
+     "false_digression_rate": 0.36538461538461536
+    },
+    "flat_lower_control": {
+     "caught": 0,
+     "missed": 0,
+     "false_digressions": 66,
+     "on_topic_total": 156,
+     "digression_total": 0,
+     "excluded": 0,
+     "caught_rate": 0.0,
+     "false_digression_rate": 0.4230769230769231
+    },
+    "false_digressions_delta_vs_flat": -9
+   },
+   "in_sample_comparison": {
+    "in_sample_relative": {
+     "caught": 52,
+     "missed": 14,
+     "false_digressions": 56,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7878787878787878,
+     "false_digression_rate": 0.19377162629757785
+    },
+    "in_sample_informedness": 0.59410716158121,
+    "optimism": 0.047604068365314056
+   }
   },
   "per_fold": [
    {
@@ -17394,6 +17716,7 @@
  "leave_one_author_out": {
   "folds": "author",
   "overall_argmax": 0.26,
+  "overall_argmax_is_in_sample": true,
   "overall_error_mix": {
    "caught": 52,
    "missed": 14,
@@ -17404,6 +17727,7 @@
    "caught_rate": 0.7878787878787878,
    "false_digression_rate": 0.19377162629757785
   },
+  "overall_error_mix_note": "IN-SAMPLE: evaluated at an argmax fitted on all sessions, including the ones being scored. Spec 7.2's gate ('if thr = RHO*R does not beat a flat threshold there is nothing to ship') belongs to pooled_cross_validated, not to this block.",
   "flat_lower_control": {
    "caught": 50,
    "missed": 16,
@@ -17426,6 +17750,76 @@
    ],
    "argmax_min": 0.25,
    "argmax_max": 0.36
+  },
+  "pooled_cross_validated": {
+   "definition": "Each fold's held-out sessions scored at that fold's own training-fitted argmax, summed across folds. Every session appears exactly once, so this is a true leave-one-out cross-validated mix over the same windows as the in-sample headline.",
+   "relative": {
+    "caught": 50,
+    "missed": 16,
+    "false_digressions": 71,
+    "on_topic_total": 289,
+    "digression_total": 66,
+    "excluded": 9,
+    "caught_rate": 0.7575757575757576,
+    "false_digression_rate": 0.24567474048442905
+   },
+   "flat_lower_control": {
+    "caught": 50,
+    "missed": 16,
+    "false_digressions": 69,
+    "on_topic_total": 289,
+    "digression_total": 66,
+    "excluded": 9,
+    "caught_rate": 0.7575757575757576,
+    "false_digression_rate": 0.23875432525951557
+   },
+   "informedness_relative": 0.5119010170913285,
+   "informedness_flat_lower": 0.518821432316242,
+   "beats_flat_control_on_informedness": false,
+   "caught_delta_vs_flat": 0,
+   "false_digressions_delta_vs_flat": 2,
+   "on_topic_categories_only": {
+    "categories": [
+     "abstract_on_topic",
+     "depressed_baseline"
+    ],
+    "note": "Spec 7.5 criterion 2 asks about the false-digression rate on on-topic material; these two categories declare no digressions, so this is that quantity, pooled out-of-sample.",
+    "relative": {
+     "caught": 0,
+     "missed": 0,
+     "false_digressions": 67,
+     "on_topic_total": 156,
+     "digression_total": 0,
+     "excluded": 0,
+     "caught_rate": 0.0,
+     "false_digression_rate": 0.42948717948717946
+    },
+    "flat_lower_control": {
+     "caught": 0,
+     "missed": 0,
+     "false_digressions": 66,
+     "on_topic_total": 156,
+     "digression_total": 0,
+     "excluded": 0,
+     "caught_rate": 0.0,
+     "false_digression_rate": 0.4230769230769231
+    },
+    "false_digressions_delta_vs_flat": 1
+   },
+   "in_sample_comparison": {
+    "in_sample_relative": {
+     "caught": 52,
+     "missed": 14,
+     "false_digressions": 56,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7878787878787878,
+     "false_digression_rate": 0.19377162629757785
+    },
+    "in_sample_informedness": 0.59410716158121,
+    "optimism": 0.0822061444898815
+   }
   },
   "per_fold": [
    {
@@ -24988,13 +25382,21 @@
    }
   ]
  },
- "argmax_agreement_across_fold_families": {
-  "argmaxes": {
+ "fold_family_structural_invariance": {
+  "is_evidence": false,
+  "kind": "structural property of the implementation, not a result",
+  "overall_argmaxes": {
    "session": 0.26,
    "topic": 0.26,
    "author": 0.26
   },
-  "identical": true,
+  "identical_by_construction": true,
+  "why": "grid_search() fits overall_argmax on every session irrespective of the fold family, so the three values are the same computation run three times. The grid, overall_error_mix, flat_lower_control, per_topic, per_category, per_author, paired_changes and all predictions rows are identical across the three family blocks; only per_fold, argmax_stability and pooled_cross_validated differ. Do not read this agreement as replication. (This is broader than the separate topic-equals-session degeneracy noted in limitations.)",
+  "what_actually_differs_by_family": [
+   "per_fold",
+   "argmax_stability",
+   "pooled_cross_validated"
+  ],
   "per_family_fold_stability": {
    "session": {
     "n_folds": 25,
@@ -25035,10 +25437,17 @@
     "argmax_min": 0.25,
     "argmax_max": 0.36
    }
+  },
+  "per_family_pooled_cross_validated_informedness": {
+   "session": 0.546503093215896,
+   "topic": 0.546503093215896,
+   "author": 0.5119010170913285
   }
  },
  "headline": {
   "argmax": 0.26,
+  "argmax_is_in_sample": true,
+  "in_sample_warning": "relative_error_mix_at_argmax is IN-SAMPLE: the argmax was fitted on all 25 sessions, including the ones scored here. Use pooled_cross_validated_by_family for the out-of-sample comparison spec 7.2's gate asks for.",
   "relative_error_mix_at_argmax": {
    "caught": 52,
    "missed": 14,
@@ -25064,6 +25473,201 @@
    "regressed": 1,
    "unchanged": 338,
    "net_correct": 15
+  },
+  "pooled_cross_validated_by_family": {
+   "session": {
+    "argmaxes_used": [
+     0.25,
+     0.26,
+     0.36
+    ],
+    "relative": {
+     "caught": 50,
+     "missed": 16,
+     "false_digressions": 61,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7575757575757576,
+     "false_digression_rate": 0.21107266435986158
+    },
+    "flat_lower_control": {
+     "caught": 50,
+     "missed": 16,
+     "false_digressions": 69,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7575757575757576,
+     "false_digression_rate": 0.23875432525951557
+    },
+    "informedness_relative": 0.546503093215896,
+    "informedness_flat_lower": 0.518821432316242,
+    "beats_flat_control_on_informedness": true,
+    "on_topic_categories_only": {
+     "categories": [
+      "abstract_on_topic",
+      "depressed_baseline"
+     ],
+     "note": "Spec 7.5 criterion 2 asks about the false-digression rate on on-topic material; these two categories declare no digressions, so this is that quantity, pooled out-of-sample.",
+     "relative": {
+      "caught": 0,
+      "missed": 0,
+      "false_digressions": 57,
+      "on_topic_total": 156,
+      "digression_total": 0,
+      "excluded": 0,
+      "caught_rate": 0.0,
+      "false_digression_rate": 0.36538461538461536
+     },
+     "flat_lower_control": {
+      "caught": 0,
+      "missed": 0,
+      "false_digressions": 66,
+      "on_topic_total": 156,
+      "digression_total": 0,
+      "excluded": 0,
+      "caught_rate": 0.0,
+      "false_digression_rate": 0.4230769230769231
+     },
+     "false_digressions_delta_vs_flat": -9
+    }
+   },
+   "topic": {
+    "argmaxes_used": [
+     0.25,
+     0.26,
+     0.36
+    ],
+    "relative": {
+     "caught": 50,
+     "missed": 16,
+     "false_digressions": 61,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7575757575757576,
+     "false_digression_rate": 0.21107266435986158
+    },
+    "flat_lower_control": {
+     "caught": 50,
+     "missed": 16,
+     "false_digressions": 69,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7575757575757576,
+     "false_digression_rate": 0.23875432525951557
+    },
+    "informedness_relative": 0.546503093215896,
+    "informedness_flat_lower": 0.518821432316242,
+    "beats_flat_control_on_informedness": true,
+    "on_topic_categories_only": {
+     "categories": [
+      "abstract_on_topic",
+      "depressed_baseline"
+     ],
+     "note": "Spec 7.5 criterion 2 asks about the false-digression rate on on-topic material; these two categories declare no digressions, so this is that quantity, pooled out-of-sample.",
+     "relative": {
+      "caught": 0,
+      "missed": 0,
+      "false_digressions": 57,
+      "on_topic_total": 156,
+      "digression_total": 0,
+      "excluded": 0,
+      "caught_rate": 0.0,
+      "false_digression_rate": 0.36538461538461536
+     },
+     "flat_lower_control": {
+      "caught": 0,
+      "missed": 0,
+      "false_digressions": 66,
+      "on_topic_total": 156,
+      "digression_total": 0,
+      "excluded": 0,
+      "caught_rate": 0.0,
+      "false_digression_rate": 0.4230769230769231
+     },
+     "false_digressions_delta_vs_flat": -9
+    }
+   },
+   "author": {
+    "argmaxes_used": [
+     0.25,
+     0.26,
+     0.36
+    ],
+    "relative": {
+     "caught": 50,
+     "missed": 16,
+     "false_digressions": 71,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7575757575757576,
+     "false_digression_rate": 0.24567474048442905
+    },
+    "flat_lower_control": {
+     "caught": 50,
+     "missed": 16,
+     "false_digressions": 69,
+     "on_topic_total": 289,
+     "digression_total": 66,
+     "excluded": 9,
+     "caught_rate": 0.7575757575757576,
+     "false_digression_rate": 0.23875432525951557
+    },
+    "informedness_relative": 0.5119010170913285,
+    "informedness_flat_lower": 0.518821432316242,
+    "beats_flat_control_on_informedness": false,
+    "on_topic_categories_only": {
+     "categories": [
+      "abstract_on_topic",
+      "depressed_baseline"
+     ],
+     "note": "Spec 7.5 criterion 2 asks about the false-digression rate on on-topic material; these two categories declare no digressions, so this is that quantity, pooled out-of-sample.",
+     "relative": {
+      "caught": 0,
+      "missed": 0,
+      "false_digressions": 67,
+      "on_topic_total": 156,
+      "digression_total": 0,
+      "excluded": 0,
+      "caught_rate": 0.0,
+      "false_digression_rate": 0.42948717948717946
+     },
+     "flat_lower_control": {
+      "caught": 0,
+      "missed": 0,
+      "false_digressions": 66,
+      "on_topic_total": 156,
+      "digression_total": 0,
+      "excluded": 0,
+      "caught_rate": 0.0,
+      "false_digression_rate": 0.4230769230769231
+     },
+     "false_digressions_delta_vs_flat": 1
+    }
+   }
+  },
+  "objective_sensitivity_summary": {
+   "primary_argmax": 0.26,
+   "committed_secondary_argmax": 0.2,
+   "primary_and_secondary_agree": false,
+   "distinct_argmaxes_across_objectives": [
+    0.2,
+    0.26,
+    0.36,
+    0.78
+   ],
+   "note": "The primary objective (informedness, weight 1 on the false-digression rate) and the committed secondary objective (asymmetric_cost) DISAGREE on this corpus. Accuracy and digression-class F1 also disagree with the primary. The argmax is therefore a function of the objective choice as much as of the data, and the objective was chosen by this task rather than pre-registered in the spec. Read the argmax as conditional on it."
+  },
+  "agent_vs_real_summary": {
+   "note": "The net gain of the relative threshold over the flat control is carried by the real-data (AnnoMI) half of the corpus. On the agent-authored half the false-digression count does not improve. The real:annomi sessions are exactly the abstract_on_topic and depressed_baseline categories, so this split and the per-category split describe the same window set from two directions.",
+   "agent_false_digression_delta": 1,
+   "real_false_digression_delta": -14,
+   "agent_caught_delta": 2,
+   "real_caught_delta": 0
   }
  },
  "inputs": [

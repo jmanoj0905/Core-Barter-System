@@ -220,3 +220,84 @@ def test_evaluate_rejects_a_durations_mode_the_sessions_were_not_scored_with():
     assert isinstance(evaluate([s], rho=0.45, durations="synthetic"), ErrorMix)
     with pytest.raises(ValueError):
         evaluate([s], rho=0.45, durations="timed")
+
+
+def test_fold_argmax_is_fitted_on_training_sessions_not_the_held_out_ones():
+    """The fold invariant: no leakage of the held-out sessions into the fit.
+
+    `test_grid_search_reports_argmax_per_fold` only asserts membership in the
+    grid, so a mutant that refits each fold on its *held-out* sessions passes it.
+    This pins the real contract: for every fold, the reported argmax equals the
+    argmax computed on the training sessions, and the corpus is constructed so
+    that at least one fold's training-fitted and held-out-fitted argmaxes
+    provably differ — otherwise the assertion would be vacuous.
+    """
+    sessions = [
+        # one digression window that only a high rho can catch (thr = rho*0.36
+        # must exceed 0.10, so rho > 0.278)
+        session([0.10], ["off_topic"], session_id="high", topic="t_high",
+                author="agent:opus-5"),
+        # one on-topic window that only a low rho keeps unflagged (rho <= 0.4167)
+        session([0.15], ["on_topic"], session_id="low", topic="t_low",
+                author="agent:sonnet-5"),
+        # one digression window any rho in the grid catches
+        session([0.05], ["off_topic"], session_id="easy", topic="t_easy",
+                author="agent:haiku-4.5"),
+    ]
+
+    result = grid_search(sessions, folds="session")
+    differing_folds = 0
+    for fold in result.per_fold:
+        held_out = [s for s in sessions if s.session_id in fold["held_out_sessions"]]
+        training = [s for s in sessions if s.session_id not in fold["held_out_sessions"]]
+        training_argmax = rc.argmax_rho({r: evaluate(training, r) for r in rc.GRID})
+        held_out_argmax = rc.argmax_rho({r: evaluate(held_out, r) for r in rc.GRID})
+        assert fold["argmax"] == training_argmax, (
+            f"fold {fold['fold']}: reported {fold['argmax']}, training-fitted "
+            f"{training_argmax}, held-out-fitted {held_out_argmax} — a mismatch "
+            "here means the held-out sessions leaked into the fit"
+        )
+        if training_argmax != held_out_argmax:
+            differing_folds += 1
+    assert differing_folds >= 1, (
+        "the fixture failed to make training- and held-out-fitted argmaxes "
+        "differ anywhere, so the assertion above cannot detect leakage"
+    )
+
+
+def test_pooled_cross_validated_block_pools_every_session_exactly_once():
+    sessions = [
+        session([0.50, 0.04], ["on_topic", "off_topic"], session_id="s1", topic="t1",
+                author="agent:opus-5"),
+        session([0.45, 0.03], ["on_topic", "off_topic"], session_id="s2", topic="t2",
+                author="agent:sonnet-5"),
+        session([0.20, 0.01, 0.40], ["on_topic", "off_topic", None], session_id="s3",
+                topic="t3", author="real:annomi"),
+    ]
+    result = grid_search(sessions, folds="session")
+    pooled = result.pooled_cross_validated
+    total_on_topic = sum(1 for s in sessions for g in s.gold if g == "on_topic")
+    total_off_topic = sum(1 for s in sessions for g in s.gold if g == "off_topic")
+    total_excluded = sum(1 for s in sessions for g in s.gold if g is None)
+    assert pooled["relative"]["on_topic_total"] == total_on_topic
+    assert pooled["relative"]["digression_total"] == total_off_topic
+    assert pooled["relative"]["excluded"] == total_excluded
+    # the pooled flat control covers exactly the same windows
+    assert pooled["flat_lower_control"] == evaluate_flat(sessions).as_dict()
+    assert isinstance(pooled["beats_flat_control_on_informedness"], bool)
+
+
+def test_objective_sensitivity_reports_an_argmax_per_objective():
+    sessions = [
+        session([0.50, 0.04, 0.10], ["on_topic", "off_topic", "on_topic"],
+                session_id="s1", topic="t1"),
+        session([0.12, 0.60, 0.02], ["off_topic", "on_topic", "off_topic"],
+                session_id="s2", topic="t2"),
+    ]
+    by_rho = {rho: evaluate(sessions, rho) for rho in rc.GRID}
+    sensitivity = rc.objective_sensitivity(by_rho)
+    for name in rc.ALTERNATIVE_OBJECTIVES:
+        assert sensitivity[name]["argmax"] in rc.GRID, name
+    summary = sensitivity["_summary"]
+    assert summary["primary_argmax"] == rc.argmax_rho(by_rho)
+    assert isinstance(summary["primary_and_secondary_agree"], bool)
