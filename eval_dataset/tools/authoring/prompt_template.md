@@ -60,10 +60,12 @@ numbering). Give the numbers as a comma-separated list, and use a dash for a run
 consecutive turns, e.g. "5-9, 14" means turns 5 through 9 and turn 14. Only list
 turns spoken by the teacher — a learner turn should never appear in this line, since
 it only ever describes what the teacher was doing. Ranges must be written from the
-lower number to the higher number. If the teacher never leaves the stated topic,
-write:
-
-DIGRESSION: (none)
+lower number to the higher number. If the teacher never leaves the stated topic for
+the entire session, do not write a DIGRESSION line at all — leave it out completely.
+Do not write a placeholder value of any kind for this case: no "none", no "n/a", no
+empty value, and no bare "DIGRESSION:" with nothing after it. The only two valid
+outcomes are a DIGRESSION line with real turn numbers on it, or no DIGRESSION line in
+the script whatsoever.
 
 Be precise and honest about exactly which turns count as off-topic — this record is
 what makes the script usable by people studying these examples later, so it needs to
