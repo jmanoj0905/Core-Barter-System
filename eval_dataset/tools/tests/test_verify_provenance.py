@@ -116,11 +116,12 @@ def test_a_single_altered_word_fails(tmp_path):
     line1 = "Okay, today I want to get you past the syntax and into the thing that actually  makes Node different."
     line2 = "I keep hearing non-blocking but honestly I don't know what it's not blocking."
     # Change exactly one word in the middle of the second line: "honestly"
-    # -> "truly". Length-only or prefix-only checks would miss this.
+    # -> "actually" — same length (8 chars), so a length-only comparison
+    # would NOT catch this. Only genuine content comparison does.
     script_path = _write_script(
         tmp_path,
         [("C", "Okay, today I want to get you past the syntax and into the thing that actually makes Node different."),
-         ("D", "I keep hearing non-blocking but truly I don't know what it's not blocking.")],
+         ("D", "I keep hearing non-blocking but actually I don't know what it's not blocking.")],
     )
     span1 = _find(SOURCE_TEXT, line1)
     span2 = _find(SOURCE_TEXT, line2)
@@ -254,3 +255,92 @@ def test_provenance_file_missing_raises(tmp_path):
 
     with pytest.raises(ProvenanceError, match="not found"):
         verify(script_path, missing_provenance_path)
+
+
+def test_malformed_script_raises_provenance_error_not_value_error(tmp_path):
+    """A script that fails to parse (bad CATEGORY, missing header field, no
+    dialogue turns, etc.) must surface as ProvenanceError, not let the
+    underlying ValueError from parse_script escape uncaught. Task 11 drives
+    verify() over 10 scripts catching ProvenanceError to decide which to
+    re-extract; an escaping ValueError would crash that loop instead of
+    giving a clean per-script diagnostic."""
+    bad_script_path = tmp_path / "sess_bad.txt"
+    bad_script_path.write_text(
+        "TOPIC: X\nTEACHER: C\nLEARNER: D\nCATEGORY: not_a_real_category\n\n"
+        "C: hi\n",
+        encoding="utf-8",
+    )
+    provenance_path = _write_provenance(
+        tmp_path, dataset="annomi", records=["rec_1"], spans=[("rec_1", 0, 2)], seams=[]
+    )
+    loader = _make_loader({"rec_1": "hi"})
+
+    with pytest.raises(ProvenanceError, match="could not be parsed"):
+        verify(str(bad_script_path), provenance_path, source_loader=loader)
+
+
+def test_malformed_span_arity_raises_provenance_error_not_type_error(tmp_path):
+    """A span tuple with the wrong arity (e.g. missing char_end) must raise
+    ProvenanceError, not a bare TypeError/ValueError from unpacking it deep
+    inside verify()."""
+    line1 = "Okay, today I want to get you past the syntax and into the thing that actually makes Node different."
+    script_path = _write_script(tmp_path, [("C", line1)])
+    provenance_path = tmp_path / "prov.json"
+    provenance_path.write_text(
+        json.dumps(
+            {
+                "dataset": "annomi",
+                "records": ["rec_1"],
+                "spans": [["rec_1", 0]],  # missing char_end
+                "seams": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    loader = _make_loader({"rec_1": SOURCE_TEXT})
+
+    with pytest.raises(ProvenanceError, match="malformed"):
+        verify(script_path, str(provenance_path), source_loader=loader)
+
+
+def test_case_only_divergence_fails(tmp_path):
+    """A line differing from its source ONLY by capitalisation must raise.
+    Pins normalisation as collapse-whitespace-only: a future maintainer
+    adding .lower() would let a reworded line pass, defeating the module's
+    purpose, and this test would catch that."""
+    line1 = "Okay, today I want to get you past the syntax and into the thing that actually makes Node different."
+    script_path = _write_script(tmp_path, [("C", line1.upper())])
+    span1 = _find(SOURCE_TEXT, SOURCE_LINE_1)
+    provenance_path = _write_provenance(
+        tmp_path,
+        dataset="annomi",
+        records=["rec_1"],
+        spans=[("rec_1", *span1)],
+        seams=[],
+    )
+    loader = _make_loader({"rec_1": SOURCE_TEXT})
+
+    with pytest.raises(ProvenanceError, match="not a verbatim excerpt"):
+        verify(script_path, provenance_path, source_loader=loader)
+
+
+def test_punctuation_only_divergence_fails(tmp_path):
+    """A line differing from its source ONLY by punctuation must raise.
+    Pins normalisation as collapse-whitespace-only: a future maintainer
+    stripping punctuation "for robustness" would let a reworded line pass,
+    and this test would catch that."""
+    line1 = "Okay, today I want to get you past the syntax and into the thing that actually makes Node different."
+    stripped = line1.replace(",", "").replace(".", "")
+    script_path = _write_script(tmp_path, [("C", stripped)])
+    span1 = _find(SOURCE_TEXT, SOURCE_LINE_1)
+    provenance_path = _write_provenance(
+        tmp_path,
+        dataset="annomi",
+        records=["rec_1"],
+        spans=[("rec_1", *span1)],
+        seams=[],
+    )
+    loader = _make_loader({"rec_1": SOURCE_TEXT})
+
+    with pytest.raises(ProvenanceError, match="not a verbatim excerpt"):
+        verify(script_path, provenance_path, source_loader=loader)

@@ -99,6 +99,10 @@ def _load_provenance(provenance_path: str) -> Provenance:
         raise ProvenanceError(
             f"provenance file {provenance_path} is missing required field {exc}"
         ) from exc
+    except TypeError as exc:
+        raise ProvenanceError(
+            f"provenance file {provenance_path} has a malformed shape: {exc}"
+        ) from exc
 
 
 def _default_source_loader(record_id: str) -> str | None:
@@ -142,12 +146,42 @@ def verify(
     to the real AnnoMI loader; tests inject a synthetic one so they never
     need the fetched corpus.
     """
-    script = parse_script(script_path)
+    try:
+        script = parse_script(script_path)
+    except (ValueError, KeyError, OSError) as exc:
+        raise ProvenanceError(
+            f"{script_path}: script could not be parsed: {exc}"
+        ) from exc
+
     provenance = _load_provenance(provenance_path)
     loader = source_loader or _default_source_loader
 
     turns = script.turns
     spans = provenance.spans
+
+    # Validate structural shape up front, before anything unpacks these
+    # tuples — a malformed span/seam must surface as ProvenanceError, not
+    # as a bare ValueError/TypeError escaping from an unpacking assignment
+    # or comparison deep in the checks below.
+    for idx, span in enumerate(spans):
+        if len(span) != 3:
+            raise ProvenanceError(
+                f"{script_path}: span {idx} {span!r} is malformed — expected "
+                "exactly (record_id, char_start, char_end), got "
+                f"{len(span)} element(s)"
+            )
+        record_id, start, end = span
+        if not isinstance(start, int) or not isinstance(end, int):
+            raise ProvenanceError(
+                f"{script_path}: span {idx} {span!r} is malformed — "
+                "char_start and char_end must both be integers"
+            )
+    for idx, seam in enumerate(provenance.seams):
+        if not isinstance(seam, int):
+            raise ProvenanceError(
+                f"{script_path}: seam {idx} {seam!r} is malformed — seam "
+                "turn indices must be integers"
+            )
 
     if len(spans) != len(turns):
         raise ProvenanceError(
