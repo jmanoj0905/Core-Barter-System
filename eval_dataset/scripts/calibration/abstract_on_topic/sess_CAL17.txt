@@ -1,0 +1,80 @@
+TOPIC: weight loss
+SCOPE: 
+TEACHER: A
+LEARNER: B
+CATEGORY: abstract_on_topic
+AUTHOR: real:annomi
+SOURCE: eval_dataset/provenance/sess_CAL17.provenance.json
+
+A: So you shared that you're, um, here today because you're having some dissatisfaction with your body and your confidence and your mood and your energy. And you're looking for, um, some different patterns to kind of turn things around for yourself. And what I like to do as I get to know clients is-is let them know a little bit about my philosophies, about health and wellbeing. Um, but first, I'd love to hear what are your philosophies about health and wellbeing?
+B: Um, I definitely, uh, you know, I-I strive to be physically healthy, but I also have in my life seeing how that impacts me mentally. Um, so I think if I'm- if I'm able to do the things that I wanna do and, um, you know, that I'm feeling good about where I'm at mentally, then that's kind of my end goal, always. Um, yeah, so this body dissatisfaction piece has really just kinda thrown a wrench in that and it's been enough of a challenge that I thought I should seek out someone who can really help me through that piece.
+A: Yeah. Well, I'm so glad that you reached out for help, um, and just know that you're not alone. And-and so, yeah, is that okay if I share a little bit about, um, how I tend to work with clients on that topic?
+B: Yes, please.
+A: Yeah. Well, um, first of all, I really am passionate about looking at the whole picture, um, physical health and emotional wellbeing and what I found in working with clients in the past is when, um, we make a focus of weight loss, sometimes, uh, physical health improves, but at the cost of emotional wellbeing.
+B: Mm-hmm.
+A: Um, many people find that when then- when they are restricting their intake or starting some, uh, ac-activity patterns that are really rigorous, that, um, a piece of their mental health suffers because they start to obsess, um, more than they'd like to be about those things. So, my approach with clients is just a more holistic approach. Looking at certainly some behavior changes that you could make to be more physically active, improve your energy levels.
+A: Um, and also look at activities that enhance your mood. We can also take a look at some dietary patterns and see if-if there are ways you could tweak how you're fueling your body throughout the day, but at the same time, sort of letting go of what happens on the scale. Letting go of, um, the final, you know, weight outcome of that, and really focusing instead on healing your relationship with food and also adopting sustainable physical activity patterns. What do you make of all that?
+B: So, like, for example, having like a-a set out meal plan, um, you know, where I'm eating certain food groups or certain macronutrients, for example, that wouldn't necessarily follow that same approach.
+A: Yeah, I-I found in the past when working with clients that creating a prescriptive meal plan, um, tends to work for a few days, but then clients usually get really tired of the foods on there. Um, and so instead, I'm really more interested in equipping you to learn how to space your meals and snacks out in a way that makes your body feel energized. Um, and then I can also support you, you know, in looking at the grocery shopping patterns and the meal planning patterns that come alongside all of that. Um, so really teaching you how to do more of your own meal planning, um, to fuel your body in a way that gives you energy, but also in a way where you're really still enjoying food.
+B: Mm-hmm.
+A: Food is meant to be enjoyed, and it's a source of pleasure. So I'd want to help you certainly look for ways to add more fruits and vegetables and-and things that nourish your body, but also look for ways to add pleasure-
+B: Mm-hmm.
+A: -to your meals and snacks.
+B: Okay, yeah.
+A: Think about all of that.
+B: Well, I think it makes sense, especially like-like you said, to be sustainable. Um, yeah, I definitely wouldn't wanna try something where I'm going to crash and burn for days in.
+A: Yeah.
+B: Um, when you talk about activity and you mentioned like really, um, like rigorous activity types, um, like I go to a gym and I enjoy going to the gym when I was active.
+A: Mm-hmm.
+B: Um, would that be kind of against that philosophy too or I guess, can you explain that a bit more?
+A: Yeah, I'm all about trying to help you figure out what types of physical activity bring you the most joy because those are the things that you'll make time for.
+B: Mm-hmm.
+A: So if-if the gym is what brings you the most joy, then we can work with that, but if you, um, start to think about it and discover there other activities that you're more excited to attend and you're more, um, you're looking at rear-rearranging your schedule too because you really want to be there-
+B: Mm-hmm.
+A: -um, then we can pursue those things. So it's really just about what brings you joy in terms of how you move your body and I'm just here to help you figure that out.
+B: Cool, so both with the foods and the activity, we would be working to find things that I like to do-
+A: Yeah.
+B: -that I could do for longer periods versus more of like you said, the prescriptive approach.
+A: Exactly. Yeah. So helping you find changes that feel sustainable because they bring you both nourishment health, but also pleasure.
+B: Mm-hmm. Yeah, no, I think that-that all sounds good. Um, you know, I still would want to lose weight.
+A: Mm-hmm.
+B: Um, and I know you said weight loss isn't really the goal, so I-
+A: Sure.
+B: -I just want to be upfront about that part with me and maybe that changes or maybe it doesn't, but what do you think about that.
+A: Absolutely, I appreciate you sharing that piece with me and you absolutely get to have that desire. And, um, we certainly are bombarded all day long with messages about how a body is supposed to look and so we all, um, certainly have moments of feeling dissatisfied with how our bodies look. And so you're absolutely, um, welcome to hold that and we can have space for that and you can certainly talk about that in these sessions. And I'll check in with you as we're going through the process of behavior change, um, to see how your body confidence is, um, as we talk more.
+B: Great. Yeah, now that sounds good.
+A: Fantastic. Thanks, Natalie.
+A: So, Liz, what's something that you'd like to change or maybe that you're feeling two ways about right now?
+B: Um, I really want to start working out again. Definitely wanna get back in it, have a routine, and just be healthy.
+A: Okay, and-and why would you want to make this change?
+B: Um, I'm sick of feeling the way I do. I feel kinda sluggish. Especially with the winter coming, I think I want to have more energy.
+A: Mm-hmm.
+B: Um, I don't like the way my clothes fit or don't fit me.
+A: Mm-hmm.
+B: Just, I don't feel comfortable.
+A: Yeah. So, you're not feeling comfortable with the way that, you said, your clothes fit.
+B: Mm-hmm.
+A: What are some of the reasons why, um, it would be good for you to kinda make this change?
+B: Um, I know exercise is-- in the past, has always made me feel good. I felt good about myself, and just in general, exercise, I know, makes me feel good. I want to be a good example for my kids. I want them to feel like that's a part of life-
+A: Mm-hmm.
+B: -exercising. So, I want-- I really just want to go get back in a routine.
+A: So, to heal-- feel healthy for yourself as well be a good role model for your kids?
+B: Yeah.
+A: So, if you did decide to get exercising more into your daily routine, how would you go about doing it?
+B: Um, I don't know. I'd probably have to sit down maybe with my husband and try to figure out a good time for me to be able to do that, where he'd be home with the kids and I'd be going to do that, whether it's morning-time, evening, maybe the weekends.
+A: Mm-hmm.
+B: Just to find the time to be able to do it, or what works in our schedule.
+A: So, it's that balance of doing something for yourself, but it sounds like you don't want that schedule to affect too much into your family routine.
+B: Right, yeah.
+A: So, on a scale from 1 to 10, 1 being not important and 10 being very important, where would you rate yourself on how important it is to start exercising more?
+B: Mm, I would like to say a seven or an eight, that that's how important it is to me.
+A: Okay, and how come not at like a five or a six?
+B: Because I'm really sick of being overweight.
+A: Mm-hmm.
+B: Not ha-- I just don't like being unhealthy. It doesn't make me feel good, so I'm motivated to change, it's just getting there.
+A: So, to summarize, it's important for you to do this. You're starting to feel sluggish, you're not feeling healthy, and you know that you've got other people in your family watching you, and you want to be a good role model for them to know that this is gonna be just a part of your life, is your exercise. Yet for you, you're struggling just a little with the logistics of when to schedule time for you so it doesn't interfere too much with your family.
+B: Exactly, yeah.
+A: So, knowing this, what do you think you'll do next?
+B: Mm, I'll probably, I don't know, find-- Now, while it's still somewhat okay outside, maybe pick days I'm gonna go for walks or runs, um, maybe look for a gym close to the house so that I know I can go there quickly or maybe that has daycare, um, yeah, maybe I'll just start to look for that, and find ways I can do it first.
+A: That's great. It sounds like you've got some options and leads on how- on how to get that done.
+B: Yeah.

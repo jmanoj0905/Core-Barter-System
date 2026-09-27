@@ -1,0 +1,129 @@
+TOPIC: compliance with rules
+SCOPE: 
+TEACHER: A
+LEARNER: B
+CATEGORY: abstract_on_topic
+AUTHOR: real:annomi
+SOURCE: eval_dataset/provenance/sess_CAL18.provenance.json
+
+B: For me.
+A: So, um, everyone that comes on the South Whisky program, we'd like them to pick at least three goals that they'd like to work on in the next 30 days. Because what we will do is we will monitor you and we'll check in 30 days to see how you're going with your goals. So with that being said, we want you to pick something that is relevant for you, something that you're willing to work on. So with that being said, is there anything that you would like to change your work on either at home or school, um, [unintelligible 00:00:30]?
+B: Um, I have to start getting the school on time for my first hour. I always miss that class.
+A: Okay, so for you getting on time for first hour is something you'd like to work on the next 30 days?
+B: Yes.
+A: Okay. What a great goal. So why do you want to make this goal for yourself?
+B: Uh, so people will get off my back.
+A: And who are these people?
+B: My mom she's always saying, you know, get to school. My PO will be like, you know, if you don't get the school on time, I can bring you back in for sanctions and I don't want to go back in.
+A: So that's something you definitely wanna avoid?
+B: Yes.
+A: Okay. So getting to school for your first hour is something that you're going to work on as your goal.
+B: I will try.
+A: So what are some specific steps you would need to take to get to school on time for first hour?
+B: I can't ever get up in the morning. So that's hard and then by the time I do get up, and then I get ready and get dressed, I miss the bus. So then I usually end up walking or see if I can find a ride. So it could be a bunch of different reasons why I'm late.
+A: Okay, so it's not just one major thing?
+B: No.
+A: So knowing that a couple of things can really get in your way, what do you think would work best for you to get to school on time? What do you know you need to do?
+B: Get up on time would probably be a good start of making me get there on time.
+A: What time would you need to get up then?
+B: [sighs] If I'm gonna catch the bus I'll probably need to be up by 6:15 and sometimes that's just so hard to do, 'cause I go to bed so late and I don't know if I can do it.
+A: So you're still kind of unsure if this is something that you could do yet you're saying you really wanna do it because you don't wanna go back for sanctions.
+B: Right. I could try-
+A: Okay.
+B: - and see how it goes.
+A: Okay, so you're willing to at least attempt it?
+B: Yes.
+A: So what time would you have to go to bed at night to make sure you're up by 6:15?
+B: I go about midnight now, so if I tried maybe 11:00. I can try 11:00.
+A: Okay. Okay, so you're willing to go to bed at 11:00 and then you're going to set your alarm for 6:15 the next morning?
+B: Yes.
+A: When would be a great day for you to start this?
+B: Uh, either tomorrow or the next day.
+A: Okay, so if I would write down here, um, what do you think- what would you want me to write? Tomorrow or the next day?
+B: Let's start tomorrow.
+A: Tomorrow. Okay, great. So who would be able to help you get to bed on time and make sure you're up on time by 6:15?
+B: My mom.
+A: Your mom.
+B: Mm-hmm.
+A: Okay. Anything that your mom could do to help you with that?
+B: [sighs] She can after my alarm goes off, if I don't get up, she could come in and wake me up and remind me that I said to you that I'm going to get up so that I have to do it.
+A: So it's almost like you want your mom to make it say that this is for you. It's not because your mom's making you get up like you want your mom to remind you, "Hey, remember, this is something that you want for yourself is to be in time for first-hour class".
+B: Exactly. Yup.
+A: Great. What could maybe get in the way of you not getting up by 6:15?
+B: [sighs] Not going to bed on time.
+A: Not going to bed on time.
+B: Yup, that's gonna be a struggle for me.
+A: Okay. So if you are feeling tempted to stay up later-
+B: Mm-hmm.
+A: - how could you respond instead?
+B: Just go to bed and turn off the lights, don't have my phone.
+A: Okay, so a phone is a distraction for you. So keeping your phone away-
+B: Oh, yeah.
+A: - and even actually turning the lights off and making sure that it's dark?
+B: Yes.
+A: Kind of a reminder it's time to go to bed.
+B: Have my mom check on me to make sure everything's put away.
+A: And-and also the support of your mom too.
+B: Mm-hmm.
+A: Great. So how will you know that you-your plan is working?
+B: When I'm at school on time, when the bell rings and I'm in class.
+A: So for you being in your class, when that bell rings, then you know, this is the goal.
+B: Absolutely.
+A: So what I've been hearing so far- what again, what a great goal. You've already had some insight of how to do this. So for you, it's really important that you're getting to your first hour because you don't want to go back to sanction days. You don't having- like having all these extra people checking up on you and all those things.You've already have a plan of going to bed by 11:00, turning off the lights, putting your cell phone away. Even the support of your mom is really gonna be helpful for you, um, getting up at 6:15 in the morning with that alarm. I know that seems really early in the morning, but you seem willing to do it. And if you're not able to do it, your mom's gonna help you out as well.
+B: Well, yeah, I hope so.
+A: What a great plan and you said you're going to start tomorrow.
+B: I'll give it a try.
+A: Great. Well, thank you.
+B: You're welcome.
+A: Hi, Mary, how was your day?
+B: Fine. Where do you want me to sign?
+A: Well, you can sign right there. Seems like you're not in the mood to talk today.
+B: Not really.
+A: Okay. You know it seems like you had uh, a day at school. I noticed that uh, you missed your first hour of class today as well.
+B: Yeah, whatever. I just, yeah.
+A: It seems like that doesn't-isn't really a concern for you at this time?
+B: It's just like the same thing every day like, I don't really know why. Like um, so I signed your paper, why are asking me all these questions?
+A: So you're kind of wondering what the point of these visits are, me coming to your house.
+B: Yup.
+A: Okay. Would it be okay with you if I kind of explained again kind of what this program is about?
+B: I guess so.
+A: You know that I will be stopping by every day just to make sure that you're here and following and-and responding to your GPS and making sure that that's charged up every day and that, um, if you're leaving the house without permission, that we will be aware of that as well. Um, and kinda just to get to know you as well when I come for these visits 'cause, um, you know that's kind of my role as your caseworker is just to-to monitor your day-to-day stuff.
+B: So you just wanna know my business?
+A: It does kinda come off as nosy at times I'm sure.
+B: Mm-hmm.
+A: I know uh, some clients have struggled with understanding that I really do care about you. And you know that when we first met that you had expressed a goal of, um, getting off this program as quickly as possible.
+B: Mm-hmm.
+A: So I know just kinda being here when you need to be here is one way of doing that.
+B: Mm-hmm.
+A: Yet you still can seem kind of annoyed that this is something that we still have to do.
+B: Yeah. I mean I guess I'll be here if I have to be but I can't make any promises that I won't leave.
+A: So you're still kinda concerned that you're not quite sure if you will be able to do this successfully?
+B: No, 'cause this just kinda feels like why do you need to know my business? Why do you care?
+A: Um, and-and I'm sure that does seem kind of confusing too 'cause I'm sure you've got a lot of other people involved in your life right now with the courts I'm sure, I know that your mom is concerned about you as well and there's this one other person kinda checking in on you as well.
+B: Mm-hmm.
+A: I'm sure it's pretty overwhelming.
+B: It's just like a lot.
+A: Mm-hmm.
+B: And you feel like there's all these rules.
+A: Yeah. And there is and I'm sure that it is really struggling at times too.
+B: Mm-hmm.
+A: Um, and I know some clients have expressed just really valuing their freedom. They didn't realize how much they really valued that until it was gone.
+B: Right, I think that's the only thing that I wish I had now.
+A: Your freedom?
+B: Mm-hmm.
+A: What would be some ways you could go about being able to get your freedom back?
+B: I guess like your sign your papers.
+A: Mm-hmm, yup that's one step, just sign the papers when I come by. Even though it seems like it's kinda annoying at times, it is something that we're contracted to do.
+B: Mm-hmm.
+A: What are some other ways you feel like you can get your freedom back?
+B: Not do this again so that I don't ever have to be here and be stuck in my house and all of these people coming to visit me and know my business.
+A: So that's something that will motivate you to not do what you did, not commit that crime, and, um, 'cause you do not like when we stop by?
+B: Yup.
+A: That's okay. Well, I know that you are making an effort. I do appreciate then and when-when I do stop by that you still sign the paperwork even though you feel like it's annoying at times. So, thank you for, uh, at least doing that.
+B: Mm-hmm.
+A: Okay. Um, before I leave today is there anything else you'd like to add or-or need to share with me?
+B: Not really.
+A: Okay, well just so you know, again, I do have to come back so I'll see you later today then.
+B: All right.
+A: All right.
+B: Bye.

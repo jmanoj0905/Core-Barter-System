@@ -1,0 +1,256 @@
+TOPIC: avoiding DOI
+SCOPE: 
+TEACHER: A
+LEARNER: B
+CATEGORY: depressed_baseline
+AUTHOR: real:annomi
+SOURCE: eval_dataset/provenance/sess_CAL23.provenance.json
+
+A: That's fine. Okay. Um, so, what about the, uh- the first DUI, could you tell me a little bit about that? This was your second one?
+B: Yeah.
+A: And so, that's sort of why I was asking about it earlier in your life if that was a--
+B: It seems like every time that I, uh, do drink more than a couple of drinks, I tend to get in trouble. And, the two times that I did, I got in trouble both times. [crosstalk]
+A: It was those two times. Yeah.
+B: Yeah, pretty much. I mean, it's-- It sounds strange, I know, but, uh--
+A: It sounds like bad luck.
+B: Yeah. Actually, that-that's followed me around pretty much my whole life, the bad luck thing.
+A: Yeah.
+B: But the-the-the-the-the alcohol hasn't really at all.
+A: Oh, okay.
+B: Yeah.
+A: But just that bad luck?
+B: Yeah.
+A: Yeah. Is there alcohol with the- with-- Goes hand in hand with the bad luck or just--
+B: Sure seems like it. Yeah. It sure seems like that.
+A: Yeah. Oh, okay. So-so, what about that? The-- Is there other incidences that you could think of that seems, uh, um, alcohol was there, and then your luck just sorta took a-a turn, or it was just those two times?
+B: Um, you know, I don't really, um-- I-I don't really, uh, get into a situation where I-I-I drink too much. Um, you know, again, I-I realize it's my second DUI, but,, um, uh-uh, it isn't something that, um, is like a normal everyday process for me.
+A: Mm-hmm.
+B: Um, you know, normally when I drink, I drink one or two drinks and then I stop. Um, so, it's not like it's, um-- You know, it's not like it's something that has become a problem in my life, you know.
+A: Oh, good. Oh, good. And-and so, where do you usually, um, have your drinks? Is it at home or, uh, out-out for, uh- after work, social drinking?
+B: Um, it's normally social.
+A: Mm-hmm.
+B: Yeah. It's normally social. It would be, you know, maybe in events or something like that is normally when I would, um, maybe drink more than one or two.
+A: Mm-hmm.
+B: I guess I should probably just call a taxi cab or something, you know. That way, I wouldn't have this problem.
+A: Would that help?
+B: Um, probably, I think that would help. I think that would be something that I should, uh- I should work on.
+A: So, it sounds like you've already been thinking about, uh, ways to-to get around safely.
+B: Yeah. Yeah, or I can just stay home probably too. If I was gonna drink, I could probably stay home, then I wouldn't get in trouble either.
+A: You have been giving this a lot of thought.
+B: Yeah, a little bit.
+A: Yeah, good.
+B: Yeah, obviously, because I just don't-- You know, I don't like getting in trouble, and I don't, uh--
+A: Trouble's not fun.
+B: Yeah.
+A: No.
+B: Yeah.
+A: Yeah. So, tell-tell me a little bit more about, um, when you fi-- If you'd find yourself, and then that-that thought comes about maybe doing something other than getting in the- in the car, does that come and go, or-or is it something that you think you-- Next time you might do?
+B: Um, oh, I'll never get in the car when I'm drinking again. That-- Yeah. I-I would never do that again.
+A: This, it-- What-what-what was different?
+B: Uh, I don't want to lose my license, you know.
+A: Hmm.
+B: I don't, uh, you know, I don't wanna lose my license.
+A: Wow. You-you need your license-
+B: Yeah.
+A: -to get around. You need your license for work.
+B: Well, and then I-I sell cars for a living too, so--
+A: Oh.
+B: -um, you know, that would be, um-- You know, I don't wanna lose my job either. You know, I think those would kind of be connected together.
+A: Mm-hmm.
+B: And, you know, I-- You're not gonna call my work or anything for this, are you?
+A: No.
+B: Oh, okay.
+A: No, no. That's--
+B: All right.
+A: That would be entirely up to you, um, to-to have that.
+B: Okay. I just didn't know how that worked.
+A: Oh, no.
+B: Because I think if they found out, I might, you know, be in jeopardy with my job. So--
+A: Well, you're here. And-and-and I have you give, uh-uh, credit for that. It took a lot to come in today and, um, when, um- when somebody is actually talking safety for themselves, which I-I hear you saying, um, calling a taxi or-or staying home.
+B: Yeah.
+A: So, what does staying home look like for you? Is that something that-- You know, you-you talked about drinking at an event. Would staying home be--
+B: Well, you know, the Super Bowl is coming up, and that might be an opportunity where, you know, I might-- I could see myself maybe drinking that day, you know.
+A: Mm-hmm.
+B: So, maybe I would just, uh-- I think I'll just have people come over to my house instead of going somewhere else, you know.
+A: That would work for you?
+B: Yeah, I think so, and probably a smarter thing to do. I don't wanna go through this again, you know.
+A: Yeah, yeah.
+B: Yeah.
+A: Uh, so, uh, would people come and drink at your house, and then they would be fine with that?
+B: I think so.
+A: Yeah.
+B: Sure.
+A: Yeah.
+B: Yeah.
+A: So, an event at your house.
+B: There you go.
+A: Yeah, good. That sounds good. Mike, has there even been, if any, um, a time in your life when you've thought about, um, not drinking at all?
+B: For my first DUI, I did, uh-- I didn't drink at all for about six months. And, um, I-I-I just didn't think that, um, I really had a problem with it, so, you know, I-I did start drinking again. But, you know, again, it wasn't uh-- You know, it was a little different last time, because I was drinking a little more last time than, you know, now. I don't really drink as-as much as I used to drink, you know, um, and, you know, after you know, I quit for six months, so I kind of knew that I didn't really have a problem.
+A: Right. Six months. That's a long time.
+B: Yeah.
+A: What were those six months like for you?
+B: Um, I know it was kind of strange. My friends didn't really hang out with me too much. Um--
+A: Friends?
+B: Yeah. You know, I, uh.
+A: Whi-which? If you don't mind me asking, which friends were those? I don't mean to get too personal, but, the friends that normally drank with you or just your-
+B: No, my friends.
+A: -social circles. Okay.
+B: Just my social circle, I guess, uh--
+A: Wha-wha-what do you think made-made them n-not hang out with you?
+B: Probably 'cause I didn't- I wasn't drinking with them, I guess. I don't really know. I mean, it seemed, uh--
+A: Did you ask them?
+B: Um, no. I really couldn't because my girlfriend really wouldn't let me hang with them. You know? I mean, it was, uh-- She said that if I, you know, kept hanging out with them guys, that she wasn't gonna be with me anymore. And I just thought that it was better for me to, you know, calm down for a little bit and, uh, maybe things would get better with us, you know.
+A: And your girlfriend's important to you-
+B: Sure.
+A: -and that relationship was important to you.
+B: Well, it was until she left, you know.
+A: At the time it was important, yeah.
+B: Yeah.
+A: Is it-- Why'd she leave?
+B: Uh, she left when I started drinking again.
+A: Oh, after the six months.
+B: After the six months, she, uh-- You know, it's kinda, I dunno, she just said that it wasn't gonna work out, and, uh, she decided not to continue with the relationship.
+A: Oh, okay. So-so, um, you started drinking again, and then she left?
+B: Uh, it was about the same time. I really don't know which came first. It was about the same time. Uh, we were getting in a lot of arguments. I just didn't quite feel myself. You know, I-I-I wasn't-- My friends weren't around. I, uh-- You know, I missed going out with them.
+A: You felt isolated?
+B: Yeah. It was kind of weird 'cause I felt like she was trying to control me, and, uh- and uh, you know, I, uh-- And she was telling me what to do all the time, and I just, uh, didn't feel right about the whole situation. So, it was pretty much, we both decided, you know, that it just wasn't the right thing to do, so.
+A: And, so you're-you're an independent guy-
+B: Sure.
+A: -and, no one's going to tell you what to do.
+B: Well, I guess. Sure. Yeah.
+A: Yeah. So, have, uh-- So then, you started drinking again, and that was-- If you could just kind of give me a little timeframe of how long ago that was, that-that six months of complete--
+B: [clear throat] Well, let's see. The first one was, uh, three years ago, and then, um, this one was a few weeks ago, so, um, it's been a few years, you know.
+A: Absolutely. Yeah.
+B: Yeah. It's been a few years
+A: So, in-in what ways has, uh, drinking, um, sort of, uh-- What is kind of the good things about drinking since those couple of- those couple of years, and then-then maybe not so good things?
+B: I don't really know that I can really compare good or bad. I just, uh-- You know, I just drink to be social, you know, I don't know that it really changes anything about me. It just, uh-- You know, I just drink to be social, you know.
+A: Mm-hmm. And those friends that were not hanging around with you, did they come back?
+B: Yeah, absolutely. Yeah. As soon as my girlfriend left, I could go out with them again, you know. [laughter]
+A: Did they not get along with your girlfriend?
+B: Well, she didn't want me going out with them.
+A: Yeah.
+B: She thought that they really--
+A: She was separate then from your other friends and-
+B: Yeah.
+A: -those relationships just didn't come together?
+B: She blamed the first DUI on them. She said, you know, because I was out with them, that it was pretty much, you know, they-they made me drink too much that night.
+A: And what do you think?
+B: I think she was right on that. Yeah, absolutely.
+A: So, you-you--
+B: I mean, if they wouldn't have gave me those shots, you know, towards the end of the night, I would've been all right. You know, I could have drove, and I wouldn't have, uh- I wouldn't have hit that mailbox.
+A: You would have been fine if they didn't- if they didn't give you those-those shots. Yeah.
+B: Yeah.
+A: Oh, so, the-the-the mailbox, where did that come in? That was the-
+B: That was--
+A: -first DUI that got you.
+B: Yeah. I was on-- It was like I was a couple of blocks away from the house and I, uh, rolled up on the neighbor's lawn and I took out their mailbox.
+A: That must have been scary.
+B: I don't really remember too much of that night.
+A: Oh, that was blackout type?
+B: Uh, I don't know if I was blacked out, but I just don't remember a lot of it.
+A: Right. Yeah.
+B: I wouldn't really call it a blackout. I just don't really-
+A: Oh, okay.
+B: -remember how that happened.
+A: I'm-I'm sorry. I didn't mean to assume that-
+B: Yeah.
+A: -it was blackout that-- Forgive me for that.
+B: Yeah. Yeah. It's all right.
+A: Um, so, that it was sort of after that that the girlfriend-- Your girlfriend, I don't know, well, her name. Um, your girlfriend decided-- The mailbox and she's--
+B: Yeah, Mary-Mary, just [crosstalk] Well, after-after I got the-the-- After I hit the mailbox-
+A: Mm-hmm.
+B: -um, I stopped drinking for, you know, like about six months, and, uh, you know, and we were trying to work things out, but it just didn't-
+A: Yeah.
+B: -it just didn't work.
+A: Oh.
+B: I think she became a little too possessive at that point.
+A: Yeah. You felt like she was the only person that, um, you had in your life, you needed your friends and--
+B: Um, I think she just wanted to control me and I was tired of being controlled.
+A: No one likes to be controlled, uh, yeah. Yeah. Uh, and, in what ways, well, did you feel that, um, uh, at any time, did you feel controlled by your friends. You said they-they made you drink those shots. That-that sounded like maybe you felt a little controlled? But-- [crosstalk]
+B: No, I was-- They just-- No, they weren't- they weren't really controlling me. They just-- They shouldn't have given me the last couple shots, 'cause you, they-they knew I was pretty, you know, uh, messed up before that. So-
+A: Yeah.
+B: -you know, that when they- when they-- You know, when they gave me the last, you know, couple shots, that kind of put me over the edge.
+A: Right, they weren't looking out for your best interest at that point.
+B: Pretty much, pretty much.
+A: And then sent you out in your car.
+B: Yeah. I mean I guess it was my decision to take the, uh- you know, the other shots, but I-I just-- I don't know. I really don't really remember too much.
+A: It's a hindsight again.
+B: Yeah.
+A: Yeah.
+B: Yeah. You can blame hindsight a little bit. I mean, that works for me. [laughter]
+A: Hindsight? Oh, yeah, they'll-- it'll take the- it'll take the blame. Um, so, you still-- Do you still, uh, you know, you started drinking again, and then, um, the second DUI, what-- Is it the same circle of social-social circle, same friends?
+B: Yeah. [crosstalk]
+A: Same type of situation. [crosstalk]
+B: I mean, they've been my friends since, you know, uh, since high school.
+A: So, they're important to you?
+B: Yeah, absolutely.
+A: Mm-hmm. Yeah. And-and sometimes, um, people have friends who are friends, but then there's friends who would stay on in our lives and are constant. So, these would be your constant core--
+B: Sure, absolutely.
+A: Yeah, okay.
+B: Yeah.
+A: Have you ever had, um, uh, interest outside, um, the social drinking, the friends, um, like, what do you do when you're not with them?
+B: Uh, well, like I'll do stuff around the house, you know, uh, cut the grass and stop, do yard work, other than that, um, I don't know.
+A: Yeah. And any other relationship, if you don't mind me asking-- [crosstalk]
+B: Uh, no, I'm single now, so, you know, I don't really, uh-- [crosstalk]
+A: How's that going?
+B: It's all right, you know, I date a little bit but, uh, you know, I just don't wanna get serious right now.
+A: Oh what-- So, what does serious look like? Um--
+B: Um, I just don't want to date someone in a regular basis. I don't really feel like I want to be in a committed relationship.
+A: Yeah. That's all right, yeah. That's good. It sounds like you know yourself pretty well.
+B: Sure, absolutely.
+A: Okay. Right. So, um, now that we-we are looking at, um, your second DUI and, um-- Well, so now, Mike, if you don't mind me asking, what would you do differently, um-um, from here on now?
+B: Well, I think I would like really think about--
+A: Since the co- the court sent you and we have to sort of explore what would happen if you went out and did this again.
+B: Yeah. Well, I mean I-I, uh- I, uh- I wouldn't drink as much, and if I- if I did, I would call, uh, a taxi or, um, you know, get some kind of a ride home, I think, 'cause, uh, you know, I just, uh-- I-I just don't wanna get in trouble, you know.
+A: Yeah. Is there somebody that you could call?
+B: Uh, I don't really think about that. I guess I would have to think about that, because if I was gonna go out and drink, I would have to think about that. Yeah.
+A: Right.
+B: I guess I could call it taxi cab or something, I don't know.
+A: They'll come.
+B: Yeah. I think that will be something.
+A: Yeah. They'll come. As long as you got the money, they'll come and get you. Yeah.
+B: Yeah. I think maybe if I take some money, I'll put it like in my wallet-
+A: Yeah.
+B: -and I'll like put it in there for emergency, and that way, I'll have money. In case I get drunk, I can just call a cab, and I'll use that money to get home.
+A: Oh, so, when you use your-your bar money, it would be somewhere else?
+B: What's that?
+A: Your bar money would be somewhere else, not in your wallet?
+B: Probably in my front pocket, I guess.
+A: There you go. Okay, yeah. So, that, y-yeah.
+B: Yeah.
+A: That makes- that makes a lot of sense. So then you'd have your money tucked away someplace different.
+B: Yeah. Well, if I put, uh- if I put it away, then I wouldn't spend it though, you know, [unintelligible 00:18:48] have it.
+A: Mm-hmm.
+B: There-there would be a plan that I would have to-
+A: Sounds like a good plan.
+B: -to get home. Yeah.
+A: Yeah. So, uh, how often do you think you'll be needing that plan in the--
+B: It'd probably be my wallet for a while, I would think, 'cause I-- Like I said, I don't really think I have a problem with, uh- with the drinking, you know. I just-
+A: Right.
+B: -think that, you know, it was an isolated incident.
+A: Mm-hmm.
+B: And-and I, uh-- You know, I just, uh--
+A: And then-- Yeah, and then also you said if you're going to have people, uh, you're gonna be drinking for the Super Bowl. Was is it Super Bowl?
+B: Yeah.
+A: I'm sorry, I'm not a football fan but it's Super Bowl coming up, right?
+B: Yeah, well, you gotta have some people over at the Super Bowl, you know.
+A: So, you'd have them in and, um, I'm just curious about the folks who are leaving your house, would they-- Would-would you be concerned about them, there'll be a taxi. Sometimes designated drivers I--
+B: I don't really hang out with people that really drink a lot though. I mean, they're-they're not like-- I wouldn't call them drunks, so, I mean, they can, you know, they can handle their-- [crosstalk]
+A: So, it would be up to them?
+B: Sure, I would think, yeah.
+A: Mm-hmm.
+B: Yeah.
+A: It sounds like you have-- You've thought about this, and you're-you're willing to put some things in place, the-the wallet, um, money in the wallet and-and for the taxi-
+B: Yeah.
+A: Have folks in to-to socialize for an event, and that you still have your-your social-- Your friends and your core group and-and, uh, just be careful. What was the six months of not drinking like for you? If you were to choose to not drink.
+B: You know, it was a- it was, uh- it was pretty good. I just didn't feel like I had my friends around, and-and it just-- It seemed kinda boring. I mean, I felt good physically and, uh, you know, I, uh- I was more on time to work, I was doing really good at work and so forth, um, but, you know, it just, um-- The hard part for me was I just, uh- I just didn't have any friends around. I just kinda-- I felt isolated. I just didn't- I just didn't feel comfortable, you know.
+A: Six months is a- is a long time. There was, um-- Try to think back, were there- were there other people? Was it- was it just you?
+B: Well, my-my girl- my girlfriend and I were trying to work it out. But it just seemed like we were arguing all the time, you know. It just didn't seem like-- You know what I mean? Like the not-drinking part was good, but it just didn't seem like anything else had changed.
+A: All right.
+B: You know.
+A: So-so, if you were not to-- If you were to go with the plan of maybe not drinking, which you mentioned-
+B: Yeah.
+A: -um, uh, your girlfriend Mary is-is not a part of your life-
+B: No-
+A: -right now.
+B: -and I really don't see that working out really well.

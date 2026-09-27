@@ -1,0 +1,177 @@
+TOPIC: reducing gambling
+SCOPE: 
+TEACHER: A
+LEARNER: B
+CATEGORY: abstract_on_topic
+AUTHOR: real:annomi
+SOURCE: eval_dataset/provenance/sess_CAL19.provenance.json
+
+A: So, one of the things that we started to touch on, last time, was this issue of gambling, and, um, you were talking, last time, about how the gambling had, sort of, got you into trouble with your family.
+B: Mm-hmm.
+A: Yeah. So, thinking about, like, you know, last time, you-you started to say that, well, you thought it was-- you deserved it and there was some thinking around that, so I'm, sort of, wondering how open you are to-to exploring that from some different angles?
+B: Yeah. I'm happy to explore it, so to speak. [chuckles]
+A: Yeah. Yeah.
+B: Yeah.
+A: Yeah. Yeah.
+B: Yeah.
+A: Yeah, so how-how-- You know, like-- 'Cause, sometimes, when we start to open things up, and then you think, "Oh, it feels a bit uncomfortable." So, how do you manage things when you get uncomfortable? How have you managed those in the past?
+B: Hmm. I don't know, I probably lock off a wee bit. [chuckles]
+A: Yeah. Yeah. So, how would I know if we were talking and you were blocking off? What would I notice, uh, in our session together?
+B: Yeah, um. I'm sure you've already noticed. [chuckles] Um, I don't know, probably fidget.
+A: Yeah?
+B: That's why I am still a bit—
+A: Yeah, that's okay.
+B: [chuckles]
+A: So-so, what would be really helpful maybe because I might miss it, you know, so, like, could you tell me? It would be really helpful if—
+B: When I'm feeling uncomfortable?
+A: Yeah, yeah. If you could just say, "Ken, hi, I am starting to, you know, tune it out here, starting to get uncomfortable," that would be really helpful.
+B: Okay.
+A: Yeah?
+B: Mm-hmm.
+A: Yeah, thanks for that, okay. So, let's think about the-- It has to do with how you just sorted out the thing around the gambling 'cause last time you were here, you told me that you get a buzz, you know, it seemed like you were gambling a bit more than your girlfriends were aware of, and-and you said you owe one of your friends some money.
+B: Mm.
+A: So, um, how serious do you think this issue is to sort?
+B: [sighs] I suppose it's really serious if I wanna get out of my-my-my debt.
+A: Yeah, okay.
+B: Credit comes out of my ears, and mom and dad aren't bailing me out anymore, so-
+A: Yeah.
+B: -I suppose, I've gotta sort it out myself.
+A: Okay. So, again, on a scale of 1 to 100, how serious-- how important is it to sort it out? Yeah.
+B: About 80. [chuckles]
+A: About 80? Right up there, yeah, yeah? And another question that's, sort of, related to that, how confident are you that you can, you know, you can actually get it sorted and get on with life?
+B: I'm gonna say, I'm completely confident.
+A: Yeah? But, what would-
+B: Yes.
+A: -your level be on a scale of 1 to 100? Where does your confidence sit?
+B: What, on my confidence to stop? [chuckles]
+A: Well, to get it sorted. Not necessarily to stop. But we don't- we don't know whether-whether stopping's the right answer here, I don't know, but-but, your confidence to sort it out.
+B: It's hard when it's part of your lifestyle, you know?
+A: Mm.
+B: When I went with my girlfriends to the pub last night and I went and hit a bit of a flutter-
+A: Hmm.
+B: -so, you know, I think I'm a bit weird if I just sit-sit at the bar on my own. [chuckles]
+A: Yeah. Yeah, so-so, you fluttered last night with them?
+B: Yeah.
+A: Yep. Okay, okay. And-and when they stopped fluttering, were you still fluttering or did you stop with them? Where-where were you with—
+B: Oh, I had to stop halfway 'cause I'd ran out of money. [chuckles]
+A: Okay. Okay. Okay. Yeah, yeah. So, you were saying before that, you know, there was, you know, money you couldn't really afford-
+B: Mm-hmm.
+A: -'cause you owed your mom and dad some money, and they weren't bailing you out anymore, and you had to go out and find some money, I think?
+B: Yeah.
+A: Yeah? Yeah. Yep. So, it seems like almost, like, you're still in the behavior, you know, still creating some problems?
+B: Mm-hmm.
+A: Yeah? Yeah.
+B: Yeah.
+A: There's some feelings when you, kind of, think about that?
+B: I don't know, but I'd like to get back on track, but—
+A: Yeah.
+B: Not really planning on spending my life in debt. [chuckles]
+A: Mm.
+B: I don't mind traveling, and, you know, I've got friends that are saving for the [unintelligible 00:18:27] and I'm 25 and working in retail, and got four credit cards-
+A: Yeah.
+B: -so I won't be doing any traveling any time soon.
+A: Okay. So, again, that, sort of, sounds really important. So, what's-what's your dreams? What are your dreams? Where do you wanna be in five years' time? Where does Catherine wanna be? What do you wanna be doing? What are your dreams?
+B: Maybe I wanna have traveled and found the man of my dreams. [chuckles]
+A: Yeah, yeah.
+B: I don't know. Kids maybe, but-
+A: Okay.
+B: -I'm not gonna- [sighs] I'm not gonna make a decent mom the way I am, at the moment, am I? So I probably need to get on track at some stage. [chuckles] I'll be pushing 30 and still in debt, at this rate.
+A: Okay, okay. So, it seems like you're-you're, kind of, in a state in your life of considering your next steps.
+B: Yeah.
+A: Yeah? Yeah. "Do I continue with the, you know, my little current lifestyle," and you are so much the party girl you used to be-- I was speaking to last time-
+B: [chuckles]
+A: -wasn't that-- Is that right? Yeah? So, "Do I live a party lifestyle-- party-girl kind of lifestyle, or am I got some other dreams to follow?" So, they're hard calls to make. And-and it all-- And there are no three ways. We will have to make those calls at some point.
+B: Mm.
+A: And, my sense, is that some of the challenge for you, at the moment? Yeah?
+B: Yeah.
+A: When you think five years ahead, which-which position do you wanna be in? Which-which feels best? Party girl still, you know, with those four credit cards maxed out major, or would you wanna be actually, you know, thinking about having traveled and, you know, maybe, starting a family, those other things? Which-which direction feels best for you at this point?
+B: Party girl at 30s is a bit sad, really, isn't it? [chuckles]
+A: I don't know.
+B: I don't know. It's been fun up to now-
+A: What's your hunch? Yeah.
+B: -but I really do wanna travel, so.
+A: Yeah, yeah. Where in particular? You've got any ideas about what—
+B: Um, Egypt, always been, yeah.
+A: Egypt?
+B: Yeah.
+A: Uh, what's that about Egypt, that, uh?
+B: Oh, I just think it's just fascinating.
+A: Yeah?
+B: Yeah. Just the, um, the outlook, and the culture and the history and-
+A: Oh.
+B: -somewhere I've always wanted to go.
+A: Yeah.
+B: It's not the safest place at the moment, mind you, but [chuckles].
+A: No, that's true.
+B: Yeah.
+A: But for obvious times.
+B: Yep.
+A: It could be very different.
+B: Mm-hmm.
+A: Yeah. Okay, so you've been-- How long have you had this-this idea for that that's what you'd like and that's where you'd like to go?
+B: Oh, since I was young, early teens.
+A: Oh, yeah?
+B: Yeah.
+A: Mm. So how much does the kind of, uh, current lifestyle rob you of that, you know, take away from that dream?
+B: Yeah, well, I suppose with the amount of money I've spent over the last five years I probably could have gone to Egypt and back five times by now. [chuckles]
+A: Yeah. Well, yeah.
+B: Mm.
+A: There you go. So there's some decisions to make around, uh, which dream, which path you wanna follow.
+B: Mm.
+A: Hmm. What do you reckon to be the-the hardest bit of taking that pathway to-to traveling and realizing the-the dream? What would be the tough things that you'd have to confront?
+B: I believe then to cut off some of my friendships. Um, 'cause since you see that's, you know, part of their lifestyle.
+A: Yeah.
+B: Yeah. It will be a big change.
+A: Mm-hmm, mm-hmm. So I see this is- this is something you've been thinking about for a while. So how far away do you think you are from that change? You know, 'cause obviously it can-can be on the never, never, but how far away are you from it, making some decisions about that?
+B: Seems like a bit of an unrealistic dream. Um, and I'd like to take the first step but, uh, that's gonna be easy.
+A: No, no. That'll be easy. So what is the first step for you?
+B: Probably, um, [chuckles] cutting up the credit cards for a starter, and trying to restrain myself, and not to be led into temptation, I suppose, so.
+A: Okay.
+B: You know, if the pokies are at the pubs, just don't go to the pub. [chuckles]
+A: Yeah, it's hard, isn't it? It's hard being in the pub thing, in that environment.
+B: Mm-hmm.
+A: We'd-we'd-we'd have an illustration for them, I suppose. We call those high-risk situations. You know, it's that-- so you might learn some language about some sort of the way that we describe-
+B: Mm. [chuckles]
+A: -it and stuff, but, you know, being at the pub, you know, you want to sort of get the buzz of, you know, gambling, you know, horror situation, really easy to just go against what you decide that you wanted to do. Yeah?
+B: Mm.
+A: Yeah? So how today have you sort of found some ways to manage that?
+B: Um, I haven't managed it to-to this point, so [chuckles] I don't know.
+A: Mm.
+B: Um, I suppose I've just got to get tougher with myself.
+A: Yeah. I think somewhat being tough with yourself, what-- yeah, people often say that, but, you know, it's not-- I think there are some things that you can do, and you've already-already identified a really good strategy.
+B: What? Cutting off some of my friendships?
+A: Well, it's a couple of ideas. O-one, thinking about who your friends are and will your friends support you to realize your dream of traveling to Egypt.
+B: Mm.
+A: Um, and the other idea you talked about before was, actually, cutting up your credit cards. So kind of amazing what that thing makes there on different cards isn't it?
+B: Mm-hmm.
+A: It's very helpful and healthy. So, yeah, a couple of really good ideas already you've got, guess so?
+B: Mm-hmm.
+A: Yeah. So that's-that's some work that we can continue to work with. Yeah? Yeah?
+B: Yeah.
+A: So 'cause-'cause I asked the question before, is what might be the hardest thing, and you'd identified that your friends, you know, could be one of the habits.
+B: Mm.
+A: Yep, yep. Could that mean that some of your friends are probably moving around some similar sort of stuff like you, wondering about where they're going and-
+B: Mm-hmm.
+A: -what they want to further their dreams, yeah?
+B: Mm. Yeah.
+A: Okay, so we talked about sort of where things you-w-- Where you might be in five years and which path you wanna take, yep, yep? And you seemed very clear about it.
+B: Mm-hmm.
+A: Yeah, yeah. Something we can- we can do over the next while is-is really get some very concrete things in place to support you to do that.
+B: Yeah.
+A: Yeah. So what's one thing you can do between now and the next time we meet?
+B: Find the scissors. [laughs]
+A: Yeah, find the scissors.
+B: Cut out the girls.
+A: Yeah, yeah, yeah.
+B: Then, um, I don't know if the debts are still gonna be there or not but I-I've gotta find-
+A: Yeah.
+B: -a way to pay them off and-
+A: Truly.
+B: -I don't know how I'm gonna do that.
+A: Yeah. Okay, so sounds like so-some budget to buy stuff will be helpful.
+B: Mm-hmm.
+A: Yeah, and of the things that-that we often put people in touch with here is some budget advice service, it's a great service here, um, and something that you can get to.
+B: Mm.
+A: So let's talk about how we can organize a-a meeting with them.
+B: Mm-hmm, that will be good.
+A: Okay.

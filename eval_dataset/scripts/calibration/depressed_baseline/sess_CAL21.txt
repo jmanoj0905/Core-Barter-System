@@ -1,0 +1,220 @@
+TOPIC: diabetes management
+SCOPE: 
+TEACHER: A
+LEARNER: B
+CATEGORY: depressed_baseline
+AUTHOR: real:annomi
+SOURCE: eval_dataset/provenance/sess_CAL21.provenance.json
+
+A: Okay. I don't know if it'd be helpful for you if you'd like to know a little bit more about some of the factors involved in time Type II diabetes.
+B: Well.
+A: If that would help.
+B: If there's something that you think that-- Yes. Yes, of course.
+A: Well, I'll perhaps share with you what I know from working with other people and some of the things I've experienced in working with people.
+B: Okay.
+A: And see what you make of it. See if it fits a little bit more with where you're at. We know that there is a strong family factor or hereditary factor, so that's one aspect. So also it tends to happen a little bit later in life, rather than something you might get when you're a teenager, this type of diabetes. So-so it's a later onset. It takes a bit of time for it to develop maybe. And the main reason I think, um, the main aspect of it is that it, have you heard about insulin.
+B: I've heard of it yeah.
+A: So that's a hormone or a chemical, it allows you to utilize sugar in your body.
+B: Right.
+A: All right. And Type II diabetes typically people have a resistance or a resistance to insulin in their cells, in their fat cells or their muscle cells or liver cells. They can't use insulin. And so sugar builds up in your system.
+B: Are you saying that they-they like they can't digest insulin or is that?
+A: You need insulin in your cells, individual cells in muscle or in fat or wherever to, um, use up excess sugar or to utilize sugar.
+B: Oh, I see. So-so it's like a-it's like a balance.
+A: That's right.
+B: So insulin you-you.
+A: Kind of, as your.
+B: You have yourself draws bar.
+A: Yap.
+B: Or something, and then what balances that out in the body is the insulin taking off the excess.
+A: Yeah.
+B: Or-or digesting? Should I say the excessive sugars?
+A: That's a good way to think.
+B: Is that what happened?
+A: Exactly. And what's happening in Type II diabetes is your-your fat cells and liver cells and muscle cells are resistant to insulin. It's almost like they're saying we can't use that.
+B: Why?
+A: And if-- Well, there's a number of-- We're not entirely sure, there's a lot of research still going on as to how this happens and how that could be modified. But what we do know is that, um, one of the key things in managing it is to try and modify or modulate, control the amount of sugar that are in your system.
+B: Right. Okay.
+A: Yeah. So there's a couple of things that we know that people with Type II diabetes have to look after and have to think about if they want to control the amount of sugar that's in their system, which is the main issue that's causing some of the health problems that people have with Type II diabetes. Too much sugar, and if it's not able to be utilized in the blood cell, in the fat cells, or liver cells, and the muscle cells stays in your bloodstream. And that can cause problems with your circulation. So too high blood sugar and too low a blood sugar can be a problem. So sugar is the main concern in Type II- Type II diabetes.And you mentioned earlier on, a couple of things that the doctor-- You've mentioned some signs that he was kind of a little bit concerned about. Well, what things did you notice over the-over the last month or so?
+B: You mean, personally?
+A: Yeah.
+B: Well, I didn't know. I mean, the thing is you see that-- I mean, I did think about this a little bit and I thought, well, over time, if things happen slowly, you don't really notice.
+A: Yeah.
+B: As you get older.
+A: Yeah.
+B: I mean, I don't-I don't leap over five bar gates like I used to, you know, um, as opposed to, uh, running with the backs now, I tend to spend more time, you know, with my old mates in the bar.
+A: Yeah.
+B: At the rugby club and-and-and the such like, yeah. And, um, the fish I'm hooking, I'm not after the kings anymore, I go for the snapper now, it's a bit easier, you know.
+A: A slightly more sedate lifestyle.
+B: Yeah, absolutely. You just do.
+A: Yeah.
+B: You just do. Um, so you're less demanding, I guess, on your-on your body, you realize, and you don't really want to do these things anyway. You know, you let the youngsters get home.
+A: Yeah.
+B: Been there, done that. So you don't really notice. So I'm coming back to this diagnosis I had from my GP and him saying, "You've got diabetes 2," well, I should feel like that, shouldn't I?
+A: Yeah. It should feel like there's something really wrong with you.
+B: Yeah, I mean.
+A: What's-how have you been feeling over the last month? So, you say you're very busy you're doing a lot of work.
+B: Yeah, I mean I'm a busy person. All right? I uh, my work uh, I work in insurance, so I'm always hopping from one place to another place.
+A: Yeah.
+B: Um, I haven't noticed.
+A: Mh-hmm.
+B: I really haven't noticed how, um, okay I get a bit--I suppose I get a bit out of breath sometimes.
+A: Okay.
+B: If I rush too much that-that's true. Um, I suppose, um, I don't go upstairs two at a time anymore, I use one at a time.
+A: So a little bit sort of energy is not quite there sometimes? The vitality.
+B: Oh, certainly the energy I have is-is not what I-what I had. I mean I do need to, you know, I'm busy but I do need to sit down, um, uh, I do need to sit down and relax with a cup of coffee, you know, and, uh, things.
+A: Yeah, Mh-hmm.
+B: Um, more than I would normally.
+A: Yeah.
+B: But that would be, that would be about it.
+A: Mh-hmm.
+B: Um, is it getting worse? I don't know. I-I-I suppose. What worse? Is it-is it increasing? Well, to say, I don't really notice it.
+A: You haven't noticed it. So it's a progressive, you know, you've just seen this, as-as you got older, things have slowed down. You know those activities you used to do, but that's kind of like what happens.
+B: Yeah, yeah. Um, at least, that's what I think. I mean I don't know if you're telling me that I should be more active or my GP is saying I should be more active.
+A: Mh-hmm.
+B: Um, as I say, uh, you know I-I don't do any regular form of exercise, I have to say, not anymore.
+A: Yeah.
+B: Um.
+A: Okay.
+B: But maybe I-maybe I don't know.
+A: Hmm, a bit of a mystery there.
+B: I mean I've got uh, well I-I mean I've got a great lifestyle. I mean if it's very-it-it's very good. I mean I've got all my mates in down at the rugby club. And I've got uh, you know even in the summer when that's a bit damn. I used to coach rugby and I coached cricket when I finished playing. So-so I've got the-the guys in the cricket club, um, you know, for the-for the, uh, for the summer evenings. And, uh, and then, uh, the-then, of course, we've got the fishing, and that's all of us combined. We're a big gang, really.
+A: Really? So what I'm hearing is there's actually a lot of aspects in your life which are really good.
+B: Oh, I think my life yeah. My life is great.
+A: From your perspective, things are going well?
+B: My life is great, and then you turn around and say, "Hey you've got-- you-you're ill, you're sick.
+A: Yeah. It doesn't fit.
+B: And um, no I'm not. But you see, he said to me that he's gonna put me on some sort of, uh, a daily monitoring of, is it sugar levels?
+A: Mh-hmm.
+B: And I'm gonna have to take regular pills.
+A: Right.
+B: Well frankly, the only pills I take are sort of paracetamols.
+A: Yeah. When you get uh, a headache.
+B: For a bit of the head in the morning, you know.
+A: Yeah.
+B: Um.
+A: So the idea of having to test-test your blood sugar and take medications is kinda like off--
+B: Come on, you know.
+A: And you know that's a bit too-
+B: Well, life is too short.
+A: Too much.
+B: You know it's the truth.
+A: Yeah. Okay.
+B: I mean you know—
+A: And you're here today and that's probably something in you you've thought well I'll follow this through, you know I'll-I'll come along and see what-see what they've got to say. And I'm just wondering for this session, for the time we have today, there's a number of things we could talk about. You mentioned a couple of things about your lifestyle and, um, medication is one thing you've been told by the doctor you might need to do that. And a number of things that we could talk about today. Which-which area would you think would be useful for you to focus on?
+B: Well there is-there is something that you sort of prompted me to think about, and, um, I split up-- My wife and I, we split up several years ago now. And, um, you know we've been married for many many years.
+A: Hmm.
+B: And um, I think she used to look after me because she used to do the cooking and-and-and stuff like that.
+A: Okay.
+B: And I have to say that I'm not the best cook in the world.
+A: Mh-hmm.
+B: Um, and-and being on the run all the time and you know once I get back home, it's, you know, it's time to go down to the rugby club or whatever it might be, uh, we're out with the mates. And, uh, I-I do I suppose my food is not as healthy perhaps as it used to be when she was around. She's moved down to Hamilton to live with her mother, if you've met her mother. Anyway, but, um.
+A: So then, since you've been on your own since you've separated, divorced and you've noticed that the things you eat and how you eat has changed.
+B: Yeah, I mean mates and their wives are pretty cool about it sometimes.
+A: Hmm.
+B: Because, you know, they'll invite me for dinner and so on.
+A: Yeah, yeah.
+B: And, yeah, yeah, yeah. I guess, you know, that's when you, well, or whatever reason, you split up in life.
+A: Hmm.
+B: You start looking at the home life of somebody else, you're thinking, "Hmm, I use d to have this."
+A: Hmm. Yeah, yeah.
+B: And you think, " This is nice food, " isn't it? and you know.
+A: Yeah. And your-- part of your wife used to do a lot of that for you?
+B: Oh, she would do all the cooking. Yeah, yeah,
+A: Yeah.
+B: I mean, I never bothered to boil an egg in the water, you know.
+A: And so she would kinda look after what you ate and healthy things that you had, spread in front of you and off you go.
+B: Totally. I mean, I was just in charge of the wine, you know.
+A: Mm-hmm. And now you have to think about what you might eat and sometimes you don't eat the best.
+B: Well I-- This is what I'm saying. Maybe I'm not thinking about it. Maybe that's the thing.
+A: Okay.
+B: Maybe I'm just—
+A: Hmm.
+B: You know, because it-- you know this-- the pizza shop's just on the road.
+A: Yeah.
+B: And then there's-- I mean, okay, I confess that lunchtime, occasionally, it's uh, I'm hungry and McDonald's is very convenient
+A: Yeah.
+B: -or Kentucky Fried or whatever.
+A: Very appealing, isn't it?
+B: You know, it's very easy. and then, um, then you think to yourself, well-- I mean, I do think of myself that maybe I should have a few vegetables around here or whatever. But then you go out into the supermarkets, you know, and you can pick up, uh, your- one of your TV dinners.
+A: Mm-hmm, Mm-hmm.
+B: So you bring those in and you open them up and put them in the microwave and there's vegetables there.
+A: Yeah they look pretty good on the plate, don't they?
+B: Yeah, it looks- it looks fine, you know, et cetera. I mean, so that will happen occasionally if I've got a night in. But cooking-wise, no, I haven't cooked anything, um, other than boil the water for the kettle for a cup o coffee.
+A: Yeah.
+B: -for ages.
+A: They're food choices in what you eat and what's in your diet it's not what-something you actually you've actually been aware of or had to think about in the past.
+B: Yeah. I do miss her breakfast. I have to say, we used to have get a nice breakfast.
+A: So one thing that you noticed is diet and the eating patterns and-
+B: Well—
+A: -when you eat. That's one aspect. What other aspects do you think you've-- you would be--?
+B: Well, I used to be quite a heavy smoker, right? I mean, I'd smoke a pack in a half a day. And I knew that wasn't doing me any good.
+A: Right.
+B: I mean the thing is when you're a-- I mean, I've always smoked. So, but when you're young and you're a sportsman, you know—
+A: You kinda juggle those two things and kinda--
+B: Well, the two things they balance out, you know and everybody else is
+A: You still run and have a cigarette?
+B: You know, you pass a cigarette down the backline almost, don't you? You know, just before the game gets—
+A: Hmm. Hmm. Yeah, part of the culture.
+B: Yeah, part of the of the whole thing. And it's changed a bit now, because in my day when we were playing, of course, it was a very much more of a social game, which was spent-spent in the rugby club.
+A: Yeah.
+B: That's why you played and it was a big buddy-buddy thing.
+A: Yeah.
+B: That was rugby and cricket was the same really.
+A: Hmm.
+B: Um, but now—
+A: But over the years, you've actually reduced your smoking or you've stopped altogether or at times?
+B: Well I-I, yeah. I was getting a bit sort of-- I was getting a bit, you know, a bit wheezy and I thought, "I'll cut this out."
+A: Hmm.
+B: But I enjoy smoking. I really do enjoy it. So I cut it down to I suppose it's about 10 a day now.
+A: Okay, so you meant to reduce.
+B: Yeah, yeah.
+A: You were noticing that it's having an impact on your breathing and health wasn't so good.
+B: Yeah.
+A: When you related that to your smoking, so you managed to reduce your smoking.
+B: Yeah, yeah. I sort of—
+A: So you've made our decision to do that?
+B: it-it-it's-- you know, she will, "Why don't you give up? You've gone so far, why don't you just stop?" But I don't want to.
+A: Hmm.
+B: It's-it's-- I-I enjoy it, um—
+A: Yeah, and it's hard to get to stop something you enjoy, isn't it?
+B: Well, yeah. I mean, you know, the thing is that you get to, you know, you've got to-- when you get down to that, you, uh, you have to regulate sort of-
+A: Hmm.
+B: You know, you have to be quite strong-willed about, I suppose, in a way.
+A: Yeah.
+B: So you say, "Okay, well, you don't have a cigarette unless you have a cup of coffee. [laughs]
+A: Hmm.
+B: Of course, that's a double-edged sword a bit, because then I found I was drinking more coffee, you know.
+A: But they go together so well. And sugar in the coffee?
+B: Oh, yeah, yeah. I have two sugars. A couple of sugar in coffee. Yeah, yeah.
+A: Hmm.
+B: So we cut that down as I say.
+A: Hmm.
+B: But the problem goes that coffee, we're up to 8 or so, 10 cups of coffee a day now.
+A: You're drinking more coffee. So what I've heard you say so far is, if I can just start right back from the beginning and you used to come in and sais, "I went to the doctor." You went for-- it sounds like you went for just a checkup.
+B: No, you know, there's a friend of mine, one of the guys down the rugby club, he said- he said, "I'm going for my annual, you know-
+A: MIT.
+B: -warranty of fitness, sort of thing, you know. And I thought, now that's an idea, not been to one of those.
+A: Got to check out, why not?
+B: So I'm 55, and you read in the papers, you know, it's that at 55 you will-- you know, heart disease is more prevalent
+A: Hmm.
+B: -and all these sorts of things that you get around this middle-age time. So I thought, "Well, I'll go and have one." And frankly, when I went along, I was very confident. I thought, you know, the doctor is going to saying, "Hmm, I wish I was as healthy as you," sort of thing.
+A: Yeah.
+B: Um, but unfortunately, uh, he-he came up with this. And it's the only thing I think he really came up with. I think-
+A: So everything else looked pretty good?
+B: My cholesterol is quite good, not too bad.
+A: Cholesterol good, your weight is good.
+B: Yeah-yeah. Not too bad.
+A: Um, you are smoking, but you've managed to reduce that.
+B: Well, yeah, I've cut it down, yeah. I mean, that's been three years, mind.
+A: And anything else, you know, you go ticking down the list. The tire is good, oil good.
+B: Absolutely.
+A: So we're looking good.
+B: And then we come to this-
+A: And ah, hang on.
+B: -too much sugar in the tank, or something. I don't know.
+A: Yeah, there's something wrong with the, uh, with this bit.
+B: So, yeah.
+A: And it doesn't quite fit with how you see your own lifestyle.
+B: No.
+A: Because you've-- it sounds like what you've been doing, you've made some conscious effort to be aware of some of those things you might think are important.
+B: I mean, yeah. I mean, you know, the thing is, you see, the thing is, and I mean, and probably you've-- I think you've heard this before, but people, they turn around, oh, uh, you know, doom and gloom prophets, you shouldn't drink.

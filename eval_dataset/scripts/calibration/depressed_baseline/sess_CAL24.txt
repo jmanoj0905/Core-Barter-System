@@ -1,0 +1,188 @@
+TOPIC: reducing alcohol consumption
+SCOPE: 
+TEACHER: A
+LEARNER: B
+CATEGORY: depressed_baseline
+AUTHOR: real:annomi
+SOURCE: eval_dataset/provenance/sess_CAL24.provenance.json
+
+A: Okay. Can you tell me a little bit about how alcohol fits into your overall social scene?
+B: Um, I pretty much just have a drink to just have it like, so it looks like I'm drinking, even though I'm not.
+A: Hm.
+B: So maybe people won't bug me about drinking or something.
+A: Okay, you're kinda getting pressure from other people who are drinking, and it feels easier for you to-
+B: Yeah just-
+B: -kinda hold a drink.
+B: -have one there and pretending to have it.
+A: Okay.
+B: Yeah.
+A: And, do you think that, um, this is most weekends or occasionally? How-
+B: Um.
+A: -often do you think that you are around alcohol.
+B: Maybe one or two weekends a month at the most?
+A: Okay.
+B: Not really much.
+A: So, one or two weekends a month you're in a situation where there is alcohol?
+B: Yeah.
+A: Okay. And what sort of situations are you in?
+B: Well, just I guess, at a party or something, someone's house.
+A: Uh-huh.
+B: Or, even if it's not a party, like a small social gathering, maybe there'll be like a few beers around-
+A: Hm.
+B: -or something.
+A: So, mainly, just kinda hanging out with friends.
+B: Pretty much, yeah.
+A: Are you ever, um, places where there are parents around or-
+B: Um—
+A: -or mostly just-just with the kids?
+B: Mostly just with us, but, sometimes I'll go to like a close friend's house and like I'm close to a family as well. So, we'll all just hang out.
+A: Mm-hmm. And, what about driving?
+B: Um, like drunk driving?
+A: Yeah. Do you ever go anywhere in a car after you've had any alcohol?
+B: Um, definitely not. I've never drunk-driven, and I've never been in a car with a drunk driver.
+A: Okay. So, that's something that you've sort of made a decision about. It sound like you—
+B: Yeah, because I know that's extremely dangerous, so.
+A: Okay. What do you know about how that's dangerous?
+B: Um, well, alcohol definitely impairs your judgment. So, I mean, driving under the influence of alcohol can lead to like crashes and accidents and things like that, so I'd rather not be in that situation.
+A: So, you're really are trying to be safe and-and make sure that-
+B: Yeah.
+A: -you're not putting yourself-
+B: Yeah, definitely.
+A: -in those situations? That's great. You know, it's-it's tough to do sometimes, and I really commend you for being able to-to stick with that.
+B: Thank you.
+A: So, you mentioned, you pretty much will like hold a drink or maybe have a drink or two. What do you thinks is the most alcohol you've ever had in-in one day?
+B: Not more than two drinks.
+A: Okay. So, the-the absolute most-
+B: Yeah.
+A: -was two? Okay. And, what kinds of things do you like about alcohol?
+B: Um, I've never really been drunk-
+A: Uh-huh.
+B: -so, I can't really say that I like that feeling or not, but, it's just like-- I mean, you're just in a good mood.
+A: Mm-hmm.
+B: So.
+A: So, it just kind of makes you feel relaxed or?
+B: Yeah, yeah, relaxed.
+A: Okay. Uh, anything else?
+B: Um, no, not really. Like I said, I don't drink that much-
+A: Mm-hmm.
+B: So, I-I wouldn't be able to tell you.
+A: Okay. And, any not-so-good things about alcohol?
+B: Um, definitely, yeah. I mean, when I'm at parties and stuff and it's getting a little later, some people, um, that drink-- Like, drank too much, they start throwing up, or they get hurt, or they're really loud and obnoxious, and that's not fun for anybody.
+A: Mm-hmm. So, you've seen a lot of other kids who-
+B: Yeah.
+A: -had some consequences-
+B: Yeah.
+A: -and decided that's not for you?
+B: Yeah.
+A: Got it. I-I can understand that. [chuckles] Uh, any other things that you can think of?
+B: Um, no, I mean, I've never, you know, been friends with anybody that's gotten into like a serious accident and stuff. It's just-
+A: Mm-hmm.
+B: -very, like, obnoxious things.
+A: Okay. Well, so, you know, as someone who's not 21 yet, it is-- Underage drinking is something that's not legal-
+B: Yeah.
+A: -and it is something that is considered pretty risky. So, I wonder what you think about that, just in terms of how it fits into your life.
+B: Um, I know it's definitely risky, but, I mean, I guess, we still do it. [chuckles]
+A: Uh-huh. So, it's kind of something that you're—
+B: It's just there.
+A: It's just there? Okay. And, I'm curious, you mentioned, you know, your friends are important to you, and your family's important to you, and, sort of fitting in is important to you. How does alcohol play a role with that?
+B: Um, well, definitely not in my family life, because my parents don't really condone-
+A: Okay.
+B: -alcohol use, but, friendships, I mean, when I'm hanging out with my friends, or we're at a party or something, there's usually alcohol involved.
+A: Okay. So, from your family perspective, the drinking is not something that fits very well?
+B: Yeah.
+A: And with friends, you feel like it's easier to-to hang out with alcohol, or maybe you wouldn't have as much fun, or your friends wouldn't like you as much or?
+B: I guess, I mean, since it's just there.
+A: Okay.
+B: So-
+A: Got it.
+B: -it ties in with the whole belonging thing.
+A: Okay. Well, when you think about your drinking and, sort of, looking forward in 5 years or 10 years, how do you think that drinking might fit in with your life?
+B: Um, it probably will have a very small role, if any-
+A: Mm-hmm.
+B: -in my life, considering I have big plans for my future. So.
+A: Okay. Can you expand on that a little bit more? What do you mean?
+B: I mean, I don't think I would be, you know, drinking as much or going to parties as much if I'm studying for school, or in college, or trying to get in law school and things like that.
+A: Okay, so, the-the alcohol is something that might make it harder to reach your goals?
+B: Yeah, definitely.
+A: Um, so, when you're sort of looking ahead, how often do you think you might be drinking, say, when you get to college?
+B: Um, maybe less than I am now. I mean, I don't drink much anyway, so-
+A: Mm-hmm.
+B: -maybe, like, one drink every once in a blue moon.
+A: Okay. So, you sort of have a plan to cut back on-
+B: Yeah, definitely.
+A: -your drinking eventually?
+B: For sure.
+A: How might that go?
+B: Well, I mean, I guess right now I would try to stop in high school, and once I get older, maybe just like, socially once in a while, but not anything big or anything.
+A: Yeah, so, you don't feel the need to make any major changes, but you feel like you could make some adjustments that would make it easier or—
+B: Definitely, yeah. That's a good word.
+A: Okay. How important is it to you to make some adjustments to your drinking, on a scale of 1 to 10? Where 1 is not at all important, not something you're thinking about, and 10 is most important thing.
+B: Maybe a five or six.
+A: And why did you say five or six rather than like two or three?
+B: Because, um, it's not something I do not care about at all, but it's not something that's just constantly on my mind that I want to change about myself.
+A: Okay. So, it is something you have thought about or something.
+B: Yeah, yeah. Definitely.
+A: Okay. And, how confident are you that you could make a change if you decide you wanted to on that same scale?
+B: Um, I'm pretty confident that I can considering that I'm not really an alcohol user per se.
+A: Mm-hmm.
+B: I'm not really into that whole scene, so, it's-it's not gonna bedifficult for me.
+A: So, what number do you think you'd say?
+B: Um, on a scale of 1 to 10-
+A: Mm-hmm.
+B: -if I can quit or not?
+A: Yeah.
+B: Maybe like an 8 or 9.
+A: Okay, and why'd you say 8 or 9 rather than even like 5 or 6?
+B: Because, like I said, it's not a big part of my life. So, it's not really that difficult
+A: Okay. All right. Well, kind of keeping that in mind, it sounds like, um, you do have sort of a-a vague plan to make some adjustments in your drinking at some point-
+B: Yes.
+A: -and, it's moderately important to you. It's something you would like to do because you have these big goals for yourself, and you actually feel very confident that you could be successful with it. What sort of goal do you think might be good to set for today?
+B: Um, probably to stop, maybe next party I go to, not have a drink at all.
+A: Okay. Um, do you feel pretty confident that you could just stop completely?
+B: Yeah. I mean, I can just tell my friends-- My pa-- My friends aren't really that pressuring.
+A: Uh-huh.
+B: It's just like outside people that I don't really know that well.
+A: Okay.
+B: So, I could just tell them, "Hey, I don't feel like having a drink today."
+A: What-what might be some benefits of following through with that goal?
+B: Um, definitely, I'll have like all my senses there and I'll be aware of everything that's going on.
+A: Uh-huh. Anything else?
+B: Um, health concerns, I guess. I know alcohol is bad for your health.
+A: Mm-hmm.
+B: So, that would be one.
+A: Okay. So, it's-- It sounds like you're actually pretty comfortable with setting a goal of not drinking anymore a-at least at the next part? and seeing how it goes.
+B: Yeah.
+A: Okay. Do you think it would be all right if we met again to kinda check in on how it goes and-and see if it's working out for you?
+B: Yeah, that would be okay.
+A: All right, great. And then, i-it sounds like some of the benefits you're expecting are, um, health benefits-
+B: Yeah.
+A: -having an easier time with achieving your academic and career goals, and just sort of not having to deal with some of the consequences that your peers do.
+B: Right.
+A: Okay. Well, very good. Um, is there anything else that you think would be important for me to know?
+B: Um, how would you, um, advise me to like get maybe my friends to stop drinking?
+A: Oh, that's a great question. So, a lot of times, kids who are trying to cut back, it's harder if their friends are still drinking, and one of the easiest things is trying to have more activities that don't involve alcohol, but-
+B: Okay, yeah.
+A: -of course, that's harder if you're not the one planning. So, some of the things that can be useful if you're at a party say, um, and there's already alcohol there, and there are other kids that maybe aren't your closest friends, um, some of the things that I would recommend since you're interested are, you know, carrying around a different drink that looks like it has alcohol in it. So, you know, even carrying an empty beer bottle or beer can or, you know, if people are having a mixed drink, just having the coke, say-
+B: Oh okay.
+A: -without any alcohol mixed into it. Um, often, having anything in your hand is a good barrier for people who are trying to offer you alcohol, because you already have something in your hand-
+B: Yeah, that's a good idea.
+A: -and it-it kinda, um, prevents them from trying to stuff something else in there. Do you think any of those things might work for you?
+B: Yeah, for sure.
+A: Okay. What about in terms of talking to your friends about it, have you thought about how you might approach with them or is that something else you'd like some tips about, about telling them about your plan to-
+B: I mean-
+A: -to stop drinking.
+B: -I was just planning on telling them that I don't really want to drink anymore. That wasn't me.
+A: Uh-huh.
+B: So.
+A: Your friends would be pretty comfortable with that?
+B: Yeah. I mean, at least my closest friends, for sure.
+A: Okay, great. Any other concerns or questions? Anything else I can help with?
+B: No. No, I think I'm okay.
+A: Okay. So then, like I said, um, I'll try and see if we can meet up maybe in a few weeks and see how it's going-
+B: Okay.
+A: -and then, um, if things are going great, then fantastic, and if you run into any stumbling blocks, then we can maybe problem-solve together.
+B: Okay, great. Thanks.
+A: That sound okay?
+B: Yeah.
+A: All right. Thanks so much.
+B: No problem.

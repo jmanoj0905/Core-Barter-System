@@ -1,0 +1,109 @@
+TOPIC: smoking cessation
+SCOPE: 
+TEACHER: A
+LEARNER: B
+CATEGORY: abstract_on_topic
+AUTHOR: real:annomi
+SOURCE: eval_dataset/provenance/sess_CAL16.provenance.json
+
+A: Good morning. It's really nice that you've come along to see me to talk about stopping smoking.
+B: Good morning.
+A: What have you got in mind, what do you want from us?
+B: Well, I need some medication if you can offer me some.
+A: Absolutely, we're in the right place for that.
+B: And, uh, whatever else you can do just to get me to go smoke-free.
+A: Okay. Well, just remind me again why it is you want to stop.
+B: It's, uh, just these days-- I think these days I'm-I'm finding that, um, I'm smoking 20, 30 a day, I'm getting sick of it. It's, you know, I've seen my friends have stopped smoking too and it's kind of they're looking at me weird these days like I'm the only one left who's still smoking.
+A: Oh, good, and so feeling under pressure here.
+B: Especially the other night I was at the restaurant, it was a bit-- you know, it was a bit embarrassing I'm the only one walk walking out.
+A: And so that-that can't feel a little uncomfortable being by yourself. So that sounds like one of the reasons you have to quit is it's a little getting smelly and it's getting embarrassing.
+B: Mm-hmm.
+A: Any other reasons?
+B: Um, it's expensive these days.
+A: How much does it actually cost you a week?
+B: It's-it's about-- Um, I'll buy and go through a pack a day, so it's almost £7.
+A: £7 a week or a day?
+B: £7 a day today, so-
+A: So your pack a day—
+B: -you're talking about £40, uh—
+A: £50 a week.
+B: £50 a week.
+A: Even more mess, you see.
+B: Yeah.
+A: Okay. So we're talking about spending £50 a week-
+B: Yeah.
+A: -being one of the few left smoking in your crowd, and not liking the smell. That sounds like three reasons.
+B: Mm-hmm.
+A: Do you think that's enough to make you say goodbye to cigarettes?
+B: Yeah.
+A: Great, okay. So have you got a date in mind when you'd like to stop smoking?
+B: Well, what you do-- What do you suggest?
+A: Generally, it works well if you find a time when you're not under a huge amount of other stresses and strains.
+B: Mm-hmm.
+A: What are the main reasons why you actually smoke? What do you enjoy most about it?
+B: Um, it's just entertainment. Something, um, when I bored, it's got-- I've got-- I smoke-
+A: Mm-hmm.
+B: -or sometimes I go out, but as I said, I'm the only one kind of outside.
+A: Okay. What do you think you'll miss most about it?
+B: The-- Um, it takes away a lot of my stresses.
+A: Mm-hmm, what sort of stresses?
+B: Just, uh, when I- when I go down, uh, for-for a break at work.
+A: Mm-hmm.
+B: I never go down, I just need a break away from it all, just shut off. So, uh, I-I really enjoyed that. The cigarette just helps me calm down.
+A: Yeah. And what is your favorite cigarette of the day?
+B: It's definitely the one at the end of the evening.
+A: Okay, so the end of the day-
+B: Yeah.
+A: -the thing that helps you just unwind, put an end to the work section and move into your own time.
+B: Yeah.
+A: Okay. So after you've had the quit date, what do you think you might do when it it's the first day at work and it's time to go home if you're not gonna have a cigarette?
+B: I guess, um, I'll just- I'll just have, you know, some fresh air as well, but this time without a cigarette in my hand but to try and give myself regular breaks maybe, I don't know.
+A: Okay.
+B: It's one of those tough things.
+A: Have you managed to stop smoking in the past?
+B: I've managed for a couple of weeks.
+A: Okay. And what got you back?
+B: It was, um-- To be honest, it was stress from an argument with my partner I remember.
+A: So something just happened-
+B: Yeah.
+A: -so it took you back into it. All right. Let me just make sure I've understood what's going on here. You really want to stop smoking because you're kind of the last guy in your group still smoking, it costs a lot of money, and you don't really like the smell.
+B: Mm-hmm.
+A: The main reason that you smoke is because, at the end of the day, it gives you a kind of relaxation, and if there's quite a little stress that's going on which you're using cigarettes to help you cope with.
+B: Mm-hmm.
+A: What you'd like to do is stop and you'd like to sort of like choose a time to quit when it's going to be there's not as much stress around as possible. When do you think would be a good time for you to choose to be your quit date?
+B: I guess, um, at the weekend I've got a party coming up.
+A: Okay.
+B: So, uh, maybe Monday morning.
+A: So Monday morning after the party will be a good day, and that's next week. Okay. Now, one of the things that we do in the pharmacy is recommend that you use medication to help you. You know this increases your chance of success and it makes it more likely that can manage any cravings that come along. A lot of people like using nicotine replacement therapy which comes in a variety of formats like patches, gum, you've probably seen people using any of these products. And other options are tablets which you can get from the GP.
+B: Mm-hmm.
+A: So, yeah, again-- Um, so have you something in mind that you might like to use to help you through managing the cravings?
+B: Yeah. I'm thinking, um, one of these patches.
+A: Okay. So a patch is something you've already seen, and-
+B: Yeah.
+A: -and, again, I'll get some out and I'll show you what they look like. This course of medication lasts for 10 to 12 weeks. And we strongly recommend that people stay on the whole course of medication and that that gives you the best chance of success. Stopping smoking is not easy but it's possible and with the type of support that we offer here in the pharmacy, you absolutely make your chance of success four times greater than trying on your own, so, that's why it's really good that you've come to see me. Now, what you said is you really want to do it and that next week sounds like a good day for you to start because the party is over and done with.
+B: Mm-hmm.
+A: You've got the time at the end of the day when you finish work, which might be the first time you've gone without a cigarette. So, what I'd like to recommend is that you use two products perhaps and I'm thinking of you're having a patch and then suggesting that you might use something that you can top up with. Often, a person who smokes knows exactly what it feels like when they're craving for a cigarette. What does it feel like to you, when you can't have a cigarette and you want one?
+B: I just get irritable.
+A: Okay.
+B: Yeah.
+A: And that's exactly one of the symptoms of nicotine withdrawal that I'm looking to stop happening to you.
+B: Hmm.
+A: So, I would strongly recommend that you have the patch. I'll talk to you about how to use that and that we have another product that I leave you to use as when any of those feelings of irritation are coming up, particularly in that first week.
+B: Okay.
+A: So, you're happy with the date for [unintelligible 00:06:16]?
+B: Yeah, absolutely.
+A: Okay and would you like to come back and see me again?
+B: Well, definitely.
+A: And what would you like me to do if you don't come back?
+B: A nice phone call.
+A: I'd be very happy to do that.
+A: Hi, Sandra.
+B: Hi.
+A: Thanks for coming in and talking with me for a couple of minutes. I understand you don't have very much time, but I really appreciate you stopping by.
+B: Well, I came today because my daughter's in the hospital as well. I think it's important to quit, but I enjoy smoking. I'm not ready to give it up right now. My life is too much in turmoil.
+A: So I get the impression that there are some things that you're concerned about, but that overall, coming in here wasn't necessarily the first thing that was on your mind when you came to the hospital with your daughter. Um, so can you tell me, what was it that made it possible for you to even come in? What-what were some of the things you were thinking about?
+B: I think it's important because I've-- I feel I'm a bad role model for my children, and my daughter's turning 12, and already, some of her friends have tried smoking, so I don't want her to think it's a good thing.
+A: So the last thing you'd want is for your daughter to start smoking.
+B: I smoked when I was young, and I certainly don't want it for her.
+A: Hmm. And it sounds like your smoking, setting an example, those are some things that-that you're also, uh, a bit concerned about, um, but as you said earlier, not-not really ready to put down your cigarettes immediately.
+B: Well, that's true. It seems so hard. I'm just not ready for this right now.

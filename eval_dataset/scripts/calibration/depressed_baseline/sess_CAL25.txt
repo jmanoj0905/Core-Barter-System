@@ -1,0 +1,173 @@
+TOPIC: changing approach to disease
+SCOPE: 
+TEACHER: A
+LEARNER: B
+CATEGORY: depressed_baseline
+AUTHOR: real:annomi
+SOURCE: eval_dataset/provenance/sess_CAL25.provenance.json
+
+A: Okay. Okay. And have there been any times over the last four years that you've noticed any significant changes in your symptoms? For example, have there been any times when things have been better for you?
+B: Um, well, last year, um, my son got married-
+A: Right.
+B: - and I-I have to say I was worried that, um, that I wouldn't be able to cope with it.
+A: Mm-hmm.
+B: That I-I wouldn't be feeling well enough, but surprisingly enough, um, I was in good form, and I think it was about three weeks in the summer, getting ready for it-
+A: Mm-hmm.
+B: - and the whole hoo-ha of the wedding.
+A: Mm-hmm.
+B: But I was in good- in really good form for that. Yeah.
+A: Right.
+B: That was a good time.
+A: Right. And how were you tummy symptoms then?
+B: I hardly noticed them.
+A: Right. Okay.
+B: Yeah, it, uh, it seemed to, uh, clear up.
+A: Right. Right.
+B: Which was good.
+A: Right. That's interesting.
+B: Mm.
+A: And are there any times when your-your tummy symptoms bother you more? Seem particularly bad?
+B: Um, well, it's- I'm-I'm having a bit of a bad patch at the moment.
+A: Right.
+B: It's particularly, um, uncomfortable. Um, I have to say I do notice it when my husband's away. He-
+A: Right.
+B: - he travels with his job, and he-
+A: Right.
+B: - can be away a couple of times a month.
+A: Uh-huh.
+B: Um, and that's not-- It-it's very often not good then, I have to say.
+A: Right. So you notice it's a bit worse when your husband's not around? Okay.
+B: Mm. Maybe I'm thinking about it a bit more, I don't know, when he's not there.
+A: Right. I know you've been seeing Dr. Brown about this for the last few years.
+B: Mm.
+A: What is it that he's said that he thinks might be wrong with you?
+B: Well, he's-he thinks it's all in my head.
+A: Right.
+B: You know, he's- he says it's stress.
+A: Right. Okay.
+B: Mm.
+A: And what do you think?
+B: Well, I mean, it can't all be in my head. I get too much physical pain-
+A: Right.
+B: - for it to be in my head. I mean, it's real. It's-it's real pain.
+A: Mm-hmm.
+B: Um—
+A: And have you had any thoughts yourself about what you think might be causing it?
+B: Well, I mean, I-I did think that perhaps it was an infection that hadn't cleared up-
+A: Mm-hmm.
+B: - in the early stages, but, um, I think, um, I-I mean, sometimes I think it's IBS. A friend of mines has got that and it sounds similar, and then-
+A: Right.
+B: - other times I'll think, "I wonder if it's an ulcer."
+A: Right.
+B: Um, on a really bad day, I start to think it might be cancer.
+A: Right.
+B: Um, my mother-in-law- my mother-in-law died of cancer last year and she had a, um, a growth that-
+A: Mm-hmm.
+B: - the-the doctor didn't investigate.
+A: Right.
+B: But by the time they'd found it, it was the size of a football-
+A: Oh, dear.
+B: - and it was- it was too late to operate then.
+A: Right. Right.
+B: So, you know, when I go to bed at night now, um, I just feel to make sure there's nothing different going on.
+A: Right.
+B: And, uh, yeah, I worry about that.
+A: So you're- you-you're kind of prodding, having a feel at night?
+B: Oh, yes.
+A: To see if you can feel anything?
+B: Yes.
+A: Right.
+B: I just want to make sure there's nothing changing down there, you know?
+A: Right. Okay.
+B: Mm.
+A: Okay. So just to-to make sure that I've got the-the story straight, you've-you've seen Dr. Brown for a couple of years.
+B: Mm.
+A: You've-you've tried a variety of medications-
+B: Mm.
+A: - some prescribed, some-
+B: Mm.
+A: - from the-the herbal shop. None of them really made a great deal of difference. You've had some investigations-
+B: Mm-hmm.
+A: - but you perhaps feel you've not had enough investigations. And at times, you worry that this could be something quite serious like a-
+B: Mm.
+A: - a cancer. Is that-- Have I got the-
+B: Yes.
+A: - story right?
+B: Yes. Yeah.
+A: Okay.
+B: I'd say so.
+A: Okay. Barbara, what was it that you were hoping that I'd do for you today?
+B: Well, I thought, you know, you're a new doctor here-
+A: Mm-hmm.
+B: - and you've just finished your medical training. I wondered whether, you know, with new eyes and a new way of looking at-at the problem-
+A: Right.
+B: - um, you-you probably know about different tests, new tests, that my doctor doesn't know about, you know, new developments.
+A: Right.
+B: So perhaps you could send me for some different tests.
+A: Right. Right. So you were hoping that I'd send you for more tests?
+B: Mm.
+A: Okay.
+B: Well, I think there's-there's got to be something that a test might-
+A: Right.
+B: - might reveal.
+A: Right. Okay. Well, I think, Barbara, having-having heard your story, and heard about the symptoms, I'm not sure that actually sending you for more tests at this point would be the most useful thing that we could do for you. And the reason for that is because you've-you've had some of the main investigations in the last couple of years, and-and they've not shown anything. And your symptoms haven't really changed that much. So it's very unlikely that if we were to send you for more tests now that-that they'd show anything different than what we already know. So a bit-- I think it would be a waste of time for you to go for more tests.
+B: So-so like, do you think it's all in my head then? You're gonna be like Dr. Brown. You think I'm imagining all of this?
+A: Uh, no. I think that you clearly have pain, and clearly you have lots of physical symptoms, and they're clearly getting in the way of-
+B: Mm.
+A: -your life and causing you a lot-
+B: Mm.
+A: -of disability.
+B: Mm.
+A: I guess- I guess the way I think about these things is that they're not necessarily either all in the mind or all in the body.
+B: Mm.
+A: Sometimes these things can go together. Uh, I guess I'm thinking about how you told me that last year, when your son got married, uh, and you were very busy-
+B: Mm.
+A: - and quite happy, that somehow your symptoms seemed less.
+B: Mm.
+A: And, uh, when your husband's away, which is something you don't like very much, sometimes, somehow, your symptoms then will seem greater. So, I guess what I'm wondering, Barbara, is if there might be some kind of a link with you between how you're feeling in your mind, and what's going on in your life, and-and how much your symptoms trouble you. Do you think that's a possibility?
+B: Well, I can't see that my mind can be causing this amount of pain.
+A: Mm. I'm not saying that the pain's in your mind. Um, I guess what I'm saying is that sometimes the way that we feel, and the way that our lives are going, can impact how we notice our symptoms. Given that we've tried medication for you, and we've tried investigations, and we've drawn a blank really, with those, none of those have really helped you-
+B: No.
+A: - I guess I'm wondering whether now it would be a good idea to try a different approach to your problems.
+B: What-what sort of approach?
+A: Well, I guess, thinking a little bit about those other areas of your life, um, uh, I'm thinking about the fact that over the last four years, your life's really changed. It seems to have really shrunk down.
+B: Mm.
+A: And it sounds as though you're not doing lots of the things that you used to do. That you-
+B: No.
+A: - used to get pleasure out of. Is that right?
+B: Well, I just can't do them.
+A: Yeah.
+B: I can't- I can't do them anymore.
+A: Yeah. And I guess I wonder-- Uh, it sounds as though you've-you've dropped doing those things because you felt you couldn't do them, but I wonder if, in a funny way, what's happened is the fact that you're not doing those pleasurable things now, has kind of fed into you feeling-
+B: Mm.
+A: - unhappy with the way that-that your life is at the moment. And-and I guess I wonder whether that can then make your symptoms worse for you.
+B: Oh, I don't know.
+A: Mm.
+B: I don't know.
+A: Well, I guess what I'd be wondering is whether one of the approaches we need to be using now is thinking about what you do with your life, and what you do with your day, and maybe trying to bring back some of those pleasurable things, you know, even if it's just meeting up-
+B: Mm.
+A: - with your-your female friends once a week, and whether actually doing those sorts of things might generally-
+B: Mm.
+A: - improve your quality of life. I'm also thinking about the tablets that you're taking.
+B: Mm-hmm.
+A: And the fact that you-you seem to be taking quite a lot of them, and I'm wondering whether it's worth, though, sitting and looking at them and-and maybe trying to rationalize them a little bit, and really decide which are helping you, which are doing nothing, and which may actually be making some of your symptoms worse, I guess.
+B: Hmm. Yeah.
+A: What would you think about trying that slightly different approach for say-say two or three months, just to see whether or not it makes any difference?
+B: Well, two or three months is a long time if there is something going on. I mean, that's what happened to my mother-in-law, you know.
+A: Right.
+B: They-they left her and-
+A: Mm-hmm.
+B: - didn't spot it and—
+A: Well, I guess if we- if we did decide to-to work together like this-
+B: Mm-hmm.
+A: - in this new approach, I'd be seeing you regularly. We can keep an eye on your symptoms, and if they change, then we can investigate as appropriate. But if they stay the same, then, you know, we can be-
+B: Mm.
+A: - pretty clear that there's nothing new happening that-that we're missing.
+B: Mm.
+A: How would that sound?
+B: So, uh, what are you saying then? That I should come back and see you?
+A: I think that would be a good idea. I think we've only just begun to talk about it-
+B: Mm.
+A: - and I think perhaps you need to have a bit of time to think about it and then perhaps come back. Perhaps if you're booked in for a double slot next week, and that would give us a good chunk of time to think about this new approach.
+B: Mm-hmm.
+A: And perhaps if you could also bring your-your tablets in or-or make a list of them, we can look at what you're taking and perhaps go from there. How would that sound, Barbara?
