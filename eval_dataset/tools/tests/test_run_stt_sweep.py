@@ -28,6 +28,7 @@ def test_module_imports_without_boto3_at_module_scope():
 
 
 def test_check_polly_access_raises_on_access_denied():
+    pytest.importorskip("boto3", reason="requires system python3, not apps/semantic_analysis/venv")
     from botocore.exceptions import ClientError
 
     client = MagicMock()
@@ -41,6 +42,7 @@ def test_check_polly_access_raises_on_access_denied():
 
 
 def test_check_polly_access_passes_through_other_errors():
+    pytest.importorskip("boto3", reason="requires system python3, not apps/semantic_analysis/venv")
     from botocore.exceptions import ClientError
 
     client = MagicMock()
@@ -54,6 +56,7 @@ def test_check_polly_access_passes_through_other_errors():
 
 
 def test_check_polly_access_succeeds_when_call_does_not_raise():
+    pytest.importorskip("boto3", reason="requires system python3, not apps/semantic_analysis/venv")
     client = MagicMock()
     client.describe_voices.return_value = {"Voices": []}
     check_polly_access(client)  # must not raise
@@ -183,6 +186,7 @@ def _mocked_boto3_client_factory(transcript):
 
 
 def test_wer_variants_are_deterministic_for_a_fixed_seed(tmp_path, monkeypatch):
+    pytest.importorskip("boto3", reason="requires system python3, not apps/semantic_analysis/venv")
     monkeypatch.chdir(tmp_path)
     _write_calibration_script(tmp_path, "sess_CALTEST")
 
@@ -237,6 +241,7 @@ def test_wer_variants_are_deterministic_for_a_fixed_seed(tmp_path, monkeypatch):
 
 
 def test_sweep_skips_a_session_whose_wav_already_exists(tmp_path, monkeypatch):
+    pytest.importorskip("boto3", reason="requires system python3, not apps/semantic_analysis/venv")
     monkeypatch.chdir(tmp_path)
     _write_calibration_script(tmp_path, "sess_CALTEST")
 

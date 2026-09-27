@@ -16,6 +16,11 @@ windows, max consecutive `incorrect` run) rather than as emitted warnings.
 
 import pytest
 
+pytest.importorskip(
+    "sentence_transformers",
+    reason="requires apps/semantic_analysis/venv/bin/python, not system python3",
+)
+
 from eval_dataset.tools.embed_windows import score_windows
 from eval_dataset.tools.replay import replay, synthetic_durations
 from eval_dataset.tools.script_parser import parse_script

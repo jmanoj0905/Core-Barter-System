@@ -1,6 +1,13 @@
 import importlib.util
 from pathlib import Path
 
+import pytest
+
+pytest.importorskip(
+    "sentence_transformers",
+    reason="requires apps/semantic_analysis/venv/bin/python, not system python3",
+)
+
 from eval_dataset.tools.embed_windows import WindowScore, score_windows
 from eval_dataset.tools.replay import ReplayWindow
 

@@ -67,3 +67,13 @@ the repo for the calibration corpus as a result. `timed_durations()` (word
 per-turn timing file, since `transcribe.py` emits no speaker labels) is
 implemented and unit-tested against synthetic fixtures, ready for Task 13
 to consume once the sweep has actually produced real transcripts.
+
+## Running the tests
+
+`python3 -m pytest eval_dataset/tools/tests/ -q` runs everything except the
+`sentence_transformers`-dependent tests (`test_conformance_oracle.py`,
+`test_embed_windows.py`), which skip under system `python3`. Run those under
+`apps/semantic_analysis/venv/bin/python -m pytest eval_dataset/tools/tests/ -q`
+instead — that venv lacks `boto3`, so the 5 boto3-dependent tests in
+`test_run_stt_sweep.py` skip there instead. Both commands exit 0,
+green-with-skips; each skip reason names the interpreter that runs it.
