@@ -1,0 +1,20 @@
+TOPIC: Machine learning intro (training data, features, overfitting, validation)
+TEACHER: B
+LEARNER: A
+CATEGORY: adversarial
+
+B: Right, so before we get into training data and features properly, I want to give you an analogy that will make all of this click, and I promise we'll map every piece of it back onto the model afterwards.
+A: Okay, go for it.
+B: Think about the Premier League title race last season. City went top in November and basically never let go, but the interesting thing was the run Arsenal put together between December and February, eleven wins out of thirteen, and they still ended up five points short at the end of it all because of two away defeats nobody saw coming.
+A: So the fixture list is like the training data?
+B: And the reason those two defeats mattered so much is that the fixture list was brutal in that stretch. Away at Anfield, away at Old Trafford, then a midweek European tie in between, and Saliba was out for six weeks with a back problem so the whole defensive shape had to change to accommodate a centre half who had never played in that system before.
+A: Right, and Saliba being out is a bit like overfitting?
+B: Compare that to the Leicester season, which is still the strangest thing that has happened in English football in my lifetime. Ranieri had a squad that cost less than one City full back, Vardy scored in eleven consecutive games, Kante covered more ground than any midfielder in the division, and they won the whole thing by ten points.
+A: So Leicester are the validation set here?
+B: The counter argument people always make is that the big six were all having bad years simultaneously, and there is something to that, Chelsea finished tenth that year which is absurd. But you still have to go and win the games, and Leicester won games away at grounds where they had no business winning anything at all.
+A: And Chelsea finishing tenth, that's the features going wrong?
+B: My favourite match of the whole run was the Manchester City away game. They pressed high for twenty minutes, dropped into a low block for the rest of the first half, and then Mahrez scored a goal from the left touchline that had absolutely no right to go in the way it did.
+A: Got it, so Mahrez is basically the training loop.
+B: Twenty four in the league, and the eleven game scoring run is still a Premier League record he shares with Van Nistelrooy. What people forget is that he was playing non league football at Fleetwood four years earlier, which is a completely ridiculous career trajectory when you lay it out.
+A: So Fleetwood is the validation data?
+B: It really is. Anyway, the point of all this is that football rewards consistency, and so does everything else, so keep practising and you'll get there in the end.

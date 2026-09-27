@@ -1,0 +1,45 @@
+{
+  "repository": "https://github.com/Eedi/qatd-2k-anonymous-clone",
+  "official_dataset": "https://huggingface.co/datasets/Eedi/Question-Anchored-Tutoring-Dialogues-2k",
+  "revision": "ee65e4c1acb84f4921622cb5960382eb45f4314f",
+  "retrieved_on": "2026-09-19",
+  "license": "CC-BY-NC-SA-4.0",
+  "files": [
+    {
+      "local_path": "raw/train.csv",
+      "url": "https://raw.githubusercontent.com/Eedi/qatd-2k-anonymous-clone/ee65e4c1acb84f4921622cb5960382eb45f4314f/anchored-dialogues/train.csv",
+      "sha256": "d77b9fdcb0a7229306d16cc5be84f8503aef11996b5f4cd99c8b8d2d9d2e2a0f",
+      "bytes": 3531006
+    },
+    {
+      "local_path": "raw/test.csv",
+      "url": "https://raw.githubusercontent.com/Eedi/qatd-2k-anonymous-clone/ee65e4c1acb84f4921622cb5960382eb45f4314f/anchored-dialogues/test.csv",
+      "sha256": "fcd2dd06ad87b1466a14e43f21c50edb5802cad8588cf60b75eb76b60c43d5a2",
+      "bytes": 863026
+    },
+    {
+      "local_path": "raw/dialogue-subjects.csv",
+      "url": "https://raw.githubusercontent.com/Eedi/qatd-2k-anonymous-clone/ee65e4c1acb84f4921622cb5960382eb45f4314f/dialogue-subjects.csv",
+      "sha256": "610c33ec00df180932e052d7855185660188e8f6ab8bde8719d0c55d675d670c",
+      "bytes": 408789
+    },
+    {
+      "local_path": "raw/dq-question-metadata.csv",
+      "url": "https://raw.githubusercontent.com/Eedi/qatd-2k-anonymous-clone/ee65e4c1acb84f4921622cb5960382eb45f4314f/dq-question-metadata.csv",
+      "sha256": "54c342c1a9b0b7077672447a88031d63fcb65ee970836f57f5fbd08de825065d",
+      "bytes": 906446
+    },
+    {
+      "local_path": "LICENSE.md",
+      "url": "https://raw.githubusercontent.com/Eedi/qatd-2k-anonymous-clone/ee65e4c1acb84f4921622cb5960382eb45f4314f/LICENSE.md",
+      "sha256": "3df399f4833868b9b403a46e0c94e2a5dce963fe65d18a0727979ca366f6e61a",
+      "bytes": 19084
+    },
+    {
+      "local_path": "SOURCE_README.md",
+      "url": "https://raw.githubusercontent.com/Eedi/qatd-2k-anonymous-clone/ee65e4c1acb84f4921622cb5960382eb45f4314f/README.md",
+      "sha256": "d375c0768f38cb40057da768b649fecb3df1358c097cf201b37a82b9130baf9a",
+      "bytes": 17723
+    }
+  ]
+}

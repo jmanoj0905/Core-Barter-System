@@ -1,0 +1,4592 @@
+{
+  "mode": "corpus",
+  "corpus_dirs": [
+    "/Users/manojj/Documents/CSE-Projects/core-barter-system/apps/video_engagement/datasets/head_pose_image_database",
+    "/Users/manojj/Documents/CSE-Projects/core-barter-system/apps/video_engagement/datasets/closed_open_eyes"
+  ],
+  "grid_step": 0.05,
+  "plateau_tolerance": 0.005,
+  "holdout_fraction": 0.3,
+  "evidence_free_signal": "gaze_centered",
+  "evidence_free_floor": 0.05,
+  "evidence_free_floor_applied": true,
+  "plateau_size": 29,
+  "label_targets": {
+    "attentive": 1.0,
+    "eyes_closed": 0.0,
+    "looking_away": 0.0,
+    "gaze_off": 0.0,
+    "absent": null
+  },
+  "objective": "max mean per-split ROC-AUC; within plateau_tolerance of the best, keep w_gaze >= evidence_free_floor, then max min per-split balanced accuracy, then lowest w_gaze, then widest class mean separation",
+  "coverage": {
+    "frames_total": 3440,
+    "used": 3272,
+    "no_detection_on_scoring_label": 168,
+    "absent_correctly_undetected": 0,
+    "absent_falsely_detected": 0,
+    "per_label_total": {
+      "attentive": 900,
+      "looking_away": 2040,
+      "eyes_closed": 500
+    },
+    "per_label_detected": {
+      "attentive": 900,
+      "looking_away": 1872,
+      "eyes_closed": 500
+    },
+    "per_split_used": {
+      "head_pose_image_database": 2172,
+      "closed_open_eyes": 1100
+    },
+    "fit_samples": 2295,
+    "holdout_samples": 977,
+    "holdout_groups": [
+      [
+        "closed_open_eyes",
+        "dataset_004"
+      ],
+      [
+        "closed_open_eyes",
+        "dataset_005"
+      ],
+      [
+        "closed_open_eyes",
+        "dataset_998"
+      ],
+      [
+        "closed_open_eyes",
+        "dataset_999"
+      ],
+      [
+        "head_pose_image_database",
+        "person12"
+      ],
+      [
+        "head_pose_image_database",
+        "person13"
+      ],
+      [
+        "head_pose_image_database",
+        "person14"
+      ],
+      [
+        "head_pose_image_database",
+        "person15"
+      ]
+    ]
+  },
+  "chosen": {
+    "weights": [
+      0.55,
+      0.4,
+      0.05
+    ],
+    "threshold": 0.612330347779761,
+    "mean_split_auc": 0.9893960743801653,
+    "pooled_auc": 0.9805069812229177,
+    "balanced_accuracy": 0.9568584496870487,
+    "separation": 0.38295339373362586,
+    "pearson_r": 0.7769395701151808,
+    "tpr": 0.9758064516129032,
+    "fpr": 0.06208955223880597,
+    "mean_score_per_label": {
+      "attentive": 0.8702567872541179,
+      "eyes_closed": 0.33482311214074817,
+      "looking_away": 0.5205718185487997
+    },
+    "per_split": {
+      "closed_open_eyes": {
+        "n": 700,
+        "auc": 0.99985,
+        "balanced_accuracy": 0.9929166666666667,
+        "separation": 0.5474413359488133,
+        "pearson_r": 0.9165857168923376,
+        "threshold": {
+          "threshold": 0.5472314407938255,
+          "youden_j": 0.9858333333333333,
+          "tpr": 0.9925,
+          "fpr": 0.006666666666666667,
+          "balanced_accuracy": 0.9929166666666667,
+          "accuracy": 0.9928571428571429
+        },
+        "mean_score_per_label": {
+          "attentive": 0.8822644480895615,
+          "eyes_closed": 0.33482311214074817
+        }
+      },
+      "head_pose_image_database": {
+        "n": 1595,
+        "auc": 0.9789421487603306,
+        "balanced_accuracy": 0.9599090909090909,
+        "separation": 0.32785285809542086,
+        "pearson_r": 0.6691729436633653,
+        "threshold": {
+          "threshold": 0.6702403566832478,
+          "youden_j": 0.9198181818181819,
+          "tpr": 0.9772727272727273,
+          "fpr": 0.05745454545454545,
+          "balanced_accuracy": 0.9599090909090909,
+          "accuracy": 0.9473354231974922
+        },
+        "mean_score_per_label": {
+          "attentive": 0.8484246766442206,
+          "looking_away": 0.5205718185487997
+        }
+      }
+    },
+    "per_split_at_pooled_threshold": {
+      "closed_open_eyes": {
+        "n": 700,
+        "threshold": 0.612330347779761,
+        "tpr": 0.9675,
+        "fpr": 0.0,
+        "balanced_accuracy": 0.98375,
+        "accuracy": 0.9814285714285714
+      },
+      "head_pose_image_database": {
+        "n": 1595,
+        "threshold": 0.612330347779761,
+        "tpr": 0.990909090909091,
+        "fpr": 0.07563636363636364,
+        "balanced_accuracy": 0.9576363636363636,
+        "accuracy": 0.9335423197492163
+      }
+    },
+    "plateau_size": 29
+  },
+  "holdout": {
+    "n": 977,
+    "mean_score_per_label": {
+      "attentive": 0.8757786740576565,
+      "eyes_closed": 0.31850726854194084,
+      "looking_away": 0.5297758393025945
+    },
+    "at_fitted_threshold": {
+      "n": 977,
+      "threshold": 0.612330347779761,
+      "tpr": 0.975,
+      "fpr": 0.05164992826398852,
+      "balanced_accuracy": 0.9616750358680057,
+      "accuracy": 0.9559877175025588
+    },
+    "auc": 0.9886170321787251,
+    "per_split": {
+      "closed_open_eyes": {
+        "n": 400,
+        "at_fitted_threshold": {
+          "n": 400,
+          "threshold": 0.612330347779761,
+          "tpr": 0.965,
+          "fpr": 0.01,
+          "balanced_accuracy": 0.9775,
+          "accuracy": 0.9775
+        },
+        "auc": 0.99665
+      },
+      "head_pose_image_database": {
+        "n": 577,
+        "at_fitted_threshold": {
+          "n": 577,
+          "threshold": 0.612330347779761,
+          "tpr": 1.0,
+          "fpr": 0.06841046277665996,
+          "balanced_accuracy": 0.96579476861167,
+          "accuracy": 0.9410745233968805
+        },
+        "auc": 0.9852867203219315
+      }
+    }
+  },
+  "all_results": [
+    {
+      "weights": [
+        0.5,
+        0.5,
+        0.0
+      ],
+      "mean_split_auc": 0.989838326446281,
+      "min_split_auc": 0.980601652892562,
+      "min_split_balanced_accuracy": 0.9603636363636363,
+      "pooled_auc": 0.9819383726528647,
+      "pooled_balanced_accuracy": 0.9569788155994222,
+      "separation": 0.3994837301765511,
+      "pearson_r": 0.8112659913356773,
+      "threshold": 0.569726764919005,
+      "per_split_auc": {
+        "closed_open_eyes": 0.999075,
+        "head_pose_image_database": 0.980601652892562
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.45,
+        0.05
+      ],
+      "mean_split_auc": 0.9897834366391185,
+      "min_split_auc": 0.9809752066115702,
+      "min_split_balanced_accuracy": 0.9591818181818181,
+      "pooled_auc": 0.9813880597014926,
+      "pooled_balanced_accuracy": 0.9536952335098701,
+      "separation": 0.3965516614380045,
+      "pearson_r": 0.8083029889317146,
+      "threshold": 0.5630768252046555,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9985916666666667,
+        "head_pose_image_database": 0.9809752066115702
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.35,
+        0.05
+      ],
+      "mean_split_auc": 0.9897151515151515,
+      "min_split_auc": 0.9795636363636364,
+      "min_split_balanced_accuracy": 0.9575454545454545,
+      "pooled_auc": 0.9801073663938372,
+      "pooled_balanced_accuracy": 0.9569475204622051,
+      "separation": 0.36935512602924714,
+      "pearson_r": 0.729985259409379,
+      "threshold": 0.6478719804924558,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998666666666667,
+        "head_pose_image_database": 0.9795636363636364
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.4,
+        0.1
+      ],
+      "mean_split_auc": 0.9897082644628099,
+      "min_split_auc": 0.9812165289256198,
+      "min_split_balanced_accuracy": 0.9573636363636364,
+      "pooled_auc": 0.9809027443428021,
+      "pooled_balanced_accuracy": 0.9507053442465094,
+      "separation": 0.39361959269945807,
+      "pearson_r": 0.8042142376541458,
+      "threshold": 0.597594852796437,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9982,
+        "head_pose_image_database": 0.9812165289256198
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.4,
+        0.0
+      ],
+      "mean_split_auc": 0.9895994490358127,
+      "min_split_auc": 0.9793322314049587,
+      "min_split_balanced_accuracy": 0.9611818181818181,
+      "pooled_auc": 0.9807501203659124,
+      "pooled_balanced_accuracy": 0.9599325950890708,
+      "separation": 0.3722871947677936,
+      "pearson_r": 0.7354208348468413,
+      "threshold": 0.6539469409905161,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998666666666667,
+        "head_pose_image_database": 0.9793322314049587
+      }
+    },
+    {
+      "weights": [
+        0.65,
+        0.35,
+        0.0
+      ],
+      "mean_split_auc": 0.9895388085399449,
+      "min_split_auc": 0.9792859504132232,
+      "min_split_balanced_accuracy": 0.9588181818181818,
+      "pooled_auc": 0.976435243139143,
+      "pooled_balanced_accuracy": 0.9558690418873375,
+      "separation": 0.35868892706341504,
+      "pearson_r": 0.6786457895925065,
+      "threshold": 0.6988087354433036,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997916666666666,
+        "head_pose_image_database": 0.9792859504132232
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.3,
+        0.1
+      ],
+      "mean_split_auc": 0.9895357782369145,
+      "min_split_auc": 0.9792132231404959,
+      "min_split_balanced_accuracy": 0.9587272727272728,
+      "pooled_auc": 0.9791887337506018,
+      "pooled_balanced_accuracy": 0.9492753972075108,
+      "separation": 0.3664230572907007,
+      "pearson_r": 0.7236075454764137,
+      "threshold": 0.6519540721023531,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998583333333333,
+        "head_pose_image_database": 0.9792132231404959
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.35,
+        0.1
+      ],
+      "mean_split_auc": 0.9894729683195592,
+      "min_split_auc": 0.9790876033057851,
+      "min_split_balanced_accuracy": 0.9591818181818181,
+      "pooled_auc": 0.9799061145883485,
+      "pooled_balanced_accuracy": 0.951391429947039,
+      "separation": 0.3800213249950794,
+      "pearson_r": 0.7715596694633373,
+      "threshold": 0.6345937001189866,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998583333333333,
+        "head_pose_image_database": 0.9790876033057851
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.35,
+        0.15
+      ],
+      "mean_split_auc": 0.9894088154269973,
+      "min_split_auc": 0.9810842975206612,
+      "min_split_balanced_accuracy": 0.955,
+      "pooled_auc": 0.9800226287915262,
+      "pooled_balanced_accuracy": 0.9463432835820895,
+      "separation": 0.39068752396091144,
+      "pearson_r": 0.7990008660412323,
+      "threshold": 0.625014829007117,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9977333333333334,
+        "head_pose_image_database": 0.9810842975206612
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.4,
+        0.05
+      ],
+      "mean_split_auc": 0.9893960743801653,
+      "min_split_auc": 0.9789421487603306,
+      "min_split_balanced_accuracy": 0.9599090909090909,
+      "pooled_auc": 0.9805069812229177,
+      "pooled_balanced_accuracy": 0.9568584496870487,
+      "separation": 0.38295339373362586,
+      "pearson_r": 0.7769395701151808,
+      "threshold": 0.612330347779761,
+      "per_split_auc": {
+        "closed_open_eyes": 0.99985,
+        "head_pose_image_database": 0.9789421487603306
+      }
+    },
+    {
+      "weights": [
+        0.65,
+        0.3,
+        0.05
+      ],
+      "mean_split_auc": 0.9893083333333333,
+      "min_split_auc": 0.9788,
+      "min_split_balanced_accuracy": 0.9581818181818182,
+      "pooled_auc": 0.9762450649975927,
+      "pooled_balanced_accuracy": 0.9537794896485315,
+      "separation": 0.3557568583248685,
+      "pearson_r": 0.6724722018721917,
+      "threshold": 0.6980650384070594,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998166666666667,
+        "head_pose_image_database": 0.9788
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.3,
+        0.15
+      ],
+      "mean_split_auc": 0.9892454545454545,
+      "min_split_auc": 0.9786909090909091,
+      "min_split_balanced_accuracy": 0.958,
+      "pooled_auc": 0.9788594126143476,
+      "pooled_balanced_accuracy": 0.94565719788156,
+      "separation": 0.3770892562565328,
+      "pearson_r": 0.7651261928575053,
+      "threshold": 0.6503296580736764,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998,
+        "head_pose_image_database": 0.9786909090909091
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.45,
+        0.0
+      ],
+      "mean_split_auc": 0.9892043388429752,
+      "min_split_auc": 0.9785586776859504,
+      "min_split_balanced_accuracy": 0.9607272727272727,
+      "pooled_auc": 0.9810515166104959,
+      "pooled_balanced_accuracy": 0.9597544535387579,
+      "separation": 0.3858854624721724,
+      "pearson_r": 0.7812485891518656,
+      "threshold": 0.6132024734577903,
+      "per_split_auc": {
+        "closed_open_eyes": 0.99985,
+        "head_pose_image_database": 0.9785586776859504
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.25,
+        0.15
+      ],
+      "mean_split_auc": 0.9890250344352617,
+      "min_split_auc": 0.9781917355371901,
+      "min_split_balanced_accuracy": 0.9546363636363636,
+      "pooled_auc": 0.9776355320173327,
+      "pooled_balanced_accuracy": 0.9416827154549832,
+      "separation": 0.363490988552154,
+      "pearson_r": 0.7163168769660263,
+      "threshold": 0.698758349764532,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998583333333333,
+        "head_pose_image_database": 0.9781917355371901
+      }
+    },
+    {
+      "weights": [
+        0.65,
+        0.25,
+        0.1
+      ],
+      "mean_split_auc": 0.9890132575757575,
+      "min_split_auc": 0.9782181818181818,
+      "min_split_balanced_accuracy": 0.9553636363636364,
+      "pooled_auc": 0.975079922965816,
+      "pooled_balanced_accuracy": 0.9435628310062589,
+      "separation": 0.352824789586322,
+      "pearson_r": 0.6655245321351266,
+      "threshold": 0.7234355992681492,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998083333333333,
+        "head_pose_image_database": 0.9782181818181818
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.3,
+        0.2
+      ],
+      "mean_split_auc": 0.9889175964187328,
+      "min_split_auc": 0.9803768595041322,
+      "min_split_balanced_accuracy": 0.9517272727272728,
+      "pooled_auc": 0.9787371208473761,
+      "pooled_balanced_accuracy": 0.9417766008666346,
+      "separation": 0.387755455222365,
+      "pearson_r": 0.7926779920165176,
+      "threshold": 0.6201952016409558,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9974583333333333,
+        "head_pose_image_database": 0.9803768595041322
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.25,
+        0.2
+      ],
+      "mean_split_auc": 0.9885088154269972,
+      "min_split_auc": 0.9774842975206611,
+      "min_split_balanced_accuracy": 0.9514545454545456,
+      "pooled_auc": 0.9764299470389985,
+      "pooled_balanced_accuracy": 0.9409701492537313,
+      "separation": 0.3741571875179863,
+      "pearson_r": 0.7576693469327448,
+      "threshold": 0.6549105601907368,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9995333333333334,
+        "head_pose_image_database": 0.9774842975206611
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.25,
+        0.25
+      ],
+      "mean_split_auc": 0.9882083333333334,
+      "min_split_auc": 0.9792,
+      "min_split_balanced_accuracy": 0.9473636363636364,
+      "pooled_auc": 0.9770597014925373,
+      "pooled_balanced_accuracy": 0.9381945113143958,
+      "separation": 0.38482338648381864,
+      "pearson_r": 0.7852745451531888,
+      "threshold": 0.6200632540829834,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9972166666666666,
+        "head_pose_image_database": 0.9792
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.2,
+        0.2
+      ],
+      "mean_split_auc": 0.9881316115702479,
+      "min_split_auc": 0.9764132231404958,
+      "min_split_balanced_accuracy": 0.9493636363636364,
+      "pooled_auc": 0.9755016851227732,
+      "pooled_balanced_accuracy": 0.9363095811266249,
+      "separation": 0.36055891981360755,
+      "pearson_r": 0.7081526955927323,
+      "threshold": 0.6957599385267628,
+      "per_split_auc": {
+        "closed_open_eyes": 0.99985,
+        "head_pose_image_database": 0.9764132231404958
+      }
+    },
+    {
+      "weights": [
+        0.65,
+        0.2,
+        0.15
+      ],
+      "mean_split_auc": 0.9881273071625345,
+      "min_split_auc": 0.9764462809917356,
+      "min_split_balanced_accuracy": 0.9506363636363636,
+      "pooled_auc": 0.9730519980741454,
+      "pooled_balanced_accuracy": 0.9355609051516611,
+      "separation": 0.34989272084777545,
+      "pearson_r": 0.657837020886783,
+      "threshold": 0.7330055406834273,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998083333333333,
+        "head_pose_image_database": 0.9764462809917356
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.2,
+        0.25
+      ],
+      "mean_split_auc": 0.9874421143250689,
+      "min_split_auc": 0.9756925619834711,
+      "min_split_balanced_accuracy": 0.9450000000000001,
+      "pooled_auc": 0.9743952816562349,
+      "pooled_balanced_accuracy": 0.9342826191622533,
+      "separation": 0.3712251187794398,
+      "pearson_r": 0.7492315466254131,
+      "threshold": 0.6537958309271257,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9991916666666667,
+        "head_pose_image_database": 0.9756925619834711
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.2,
+        0.3
+      ],
+      "mean_split_auc": 0.9871548209366391,
+      "min_split_auc": 0.9772429752066115,
+      "min_split_balanced_accuracy": 0.9432727272727273,
+      "pooled_auc": 0.9749653346172364,
+      "pooled_balanced_accuracy": 0.9292079922965817,
+      "separation": 0.38189131774527213,
+      "pearson_r": 0.7768326145135173,
+      "threshold": 0.6159754125230543,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9970666666666667,
+        "head_pose_image_database": 0.9772429752066115
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.15,
+        0.25
+      ],
+      "mean_split_auc": 0.9866167011019283,
+      "min_split_auc": 0.97339173553719,
+      "min_split_balanced_accuracy": 0.9432727272727273,
+      "pooled_auc": 0.9727583052479538,
+      "pooled_balanced_accuracy": 0.9278623013962446,
+      "separation": 0.3576268510750612,
+      "pearson_r": 0.6991637376325033,
+      "threshold": 0.6871852700630019,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998416666666666,
+        "head_pose_image_database": 0.97339173553719
+      }
+    },
+    {
+      "weights": [
+        0.7,
+        0.3,
+        0.0
+      ],
+      "mean_split_auc": 0.9861535468319559,
+      "min_split_auc": 0.9725487603305785,
+      "min_split_balanced_accuracy": 0.9561818181818182,
+      "pooled_auc": 0.9726615310544053,
+      "pooled_balanced_accuracy": 0.9531511795859413,
+      "separation": 0.34509065935903627,
+      "pearson_r": 0.6165905994427291,
+      "threshold": 0.7297942270638365,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997583333333333,
+        "head_pose_image_database": 0.9725487603305785
+      }
+    },
+    {
+      "weights": [
+        0.7,
+        0.25,
+        0.05
+      ],
+      "mean_split_auc": 0.9858923898071625,
+      "min_split_auc": 0.9720264462809918,
+      "min_split_balanced_accuracy": 0.9503636363636364,
+      "pooled_auc": 0.9713408762638421,
+      "pooled_balanced_accuracy": 0.9470606644198363,
+      "separation": 0.3421585906204896,
+      "pearson_r": 0.6100957820940682,
+      "threshold": 0.7335213619014035,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997583333333333,
+        "head_pose_image_database": 0.9720264462809918
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.15,
+        0.3
+      ],
+      "mean_split_auc": 0.9858747245179064,
+      "min_split_auc": 0.9728661157024794,
+      "min_split_balanced_accuracy": 0.9403636363636363,
+      "pooled_auc": 0.971604718343765,
+      "pooled_balanced_accuracy": 0.9284328358208955,
+      "separation": 0.36829305004089335,
+      "pearson_r": 0.739866322704916,
+      "threshold": 0.6412511701745066,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9988833333333333,
+        "head_pose_image_database": 0.9728661157024794
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.15,
+        0.35
+      ],
+      "mean_split_auc": 0.9857465909090909,
+      "min_split_auc": 0.9746181818181818,
+      "min_split_balanced_accuracy": 0.9389090909090909,
+      "pooled_auc": 0.9716297544535387,
+      "pooled_balanced_accuracy": 0.9233582089552239,
+      "separation": 0.3789592490067257,
+      "pearson_r": 0.7674063558230266,
+      "threshold": 0.595134304905252,
+      "per_split_auc": {
+        "closed_open_eyes": 0.996875,
+        "head_pose_image_database": 0.9746181818181818
+      }
+    },
+    {
+      "weights": [
+        0.65,
+        0.15,
+        0.2
+      ],
+      "mean_split_auc": 0.9852289256198348,
+      "min_split_auc": 0.9706578512396694,
+      "min_split_balanced_accuracy": 0.9433636363636364,
+      "pooled_auc": 0.9694650938854117,
+      "pooled_balanced_accuracy": 0.9283654309099663,
+      "separation": 0.3469606521092289,
+      "pearson_r": 0.6494510701877232,
+      "threshold": 0.7331670269044939,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998,
+        "head_pose_image_database": 0.9706578512396694
+      }
+    },
+    {
+      "weights": [
+        0.7,
+        0.2,
+        0.1
+      ],
+      "mean_split_auc": 0.9850403581267217,
+      "min_split_auc": 0.9703140495867768,
+      "min_split_balanced_accuracy": 0.9398181818181819,
+      "pooled_auc": 0.9694573904670197,
+      "pooled_balanced_accuracy": 0.9363986519017814,
+      "separation": 0.33922652188194313,
+      "pearson_r": 0.6029977177326272,
+      "threshold": 0.7493320952194051,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997666666666667,
+        "head_pose_image_database": 0.9703140495867768
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.1,
+        0.3
+      ],
+      "mean_split_auc": 0.9846307162534436,
+      "min_split_auc": 0.9694280991735538,
+      "min_split_balanced_accuracy": 0.937,
+      "pooled_auc": 0.9693919114106885,
+      "pooled_balanced_accuracy": 0.925127587867116,
+      "separation": 0.3546947823365145,
+      "pearson_r": 0.6894068061518182,
+      "threshold": 0.6191475091692906,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9998333333333334,
+        "head_pose_image_database": 0.9694280991735538
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.1,
+        0.4
+      ],
+      "mean_split_auc": 0.98382217630854,
+      "min_split_auc": 0.9710776859504132,
+      "min_split_balanced_accuracy": 0.9363636363636363,
+      "pooled_auc": 0.9685185363505056,
+      "pooled_balanced_accuracy": 0.9187602311025518,
+      "separation": 0.37602718026817905,
+      "pearson_r": 0.7570605202915645,
+      "threshold": 0.5902069158530221,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9965666666666667,
+        "head_pose_image_database": 0.9710776859504132
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.1,
+        0.35
+      ],
+      "mean_split_auc": 0.9838203168044077,
+      "min_split_auc": 0.9691239669421488,
+      "min_split_balanced_accuracy": 0.9350909090909091,
+      "pooled_auc": 0.9683538757823784,
+      "pooled_balanced_accuracy": 0.9232378430428503,
+      "separation": 0.3653609813023468,
+      "pearson_r": 0.7296368910421063,
+      "threshold": 0.6335339126223907,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9985166666666667,
+        "head_pose_image_database": 0.9691239669421488
+      }
+    },
+    {
+      "weights": [
+        0.7,
+        0.15,
+        0.15
+      ],
+      "mean_split_auc": 0.9833369490358126,
+      "min_split_auc": 0.9669322314049587,
+      "min_split_balanced_accuracy": 0.9337272727272727,
+      "pooled_auc": 0.96569523350987,
+      "pooled_balanced_accuracy": 0.9270606644198363,
+      "separation": 0.33629445314339657,
+      "pearson_r": 0.5953298210632244,
+      "threshold": 0.7288247358429414,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997416666666666,
+        "head_pose_image_database": 0.9669322314049587
+      }
+    },
+    {
+      "weights": [
+        0.65,
+        0.1,
+        0.25
+      ],
+      "mean_split_auc": 0.9829553374655647,
+      "min_split_auc": 0.9661190082644628,
+      "min_split_balanced_accuracy": 0.9362727272727273,
+      "pooled_auc": 0.9657607125662012,
+      "pooled_balanced_accuracy": 0.9238709677419354,
+      "separation": 0.3440285833706823,
+      "pearson_r": 0.6404142955721017,
+      "threshold": 0.6677336822524629,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997916666666666,
+        "head_pose_image_database": 0.9661190082644628
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.45,
+        0.1
+      ],
+      "mean_split_auc": 0.9822828168044078,
+      "min_split_auc": 0.9799239669421488,
+      "min_split_balanced_accuracy": 0.9562727272727273,
+      "pooled_auc": 0.9788430428502648,
+      "pooled_balanced_accuracy": 0.9474217621569572,
+      "separation": 0.40721786040383684,
+      "pearson_r": 0.8188357811919665,
+      "threshold": 0.5591229915178083,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9846416666666666,
+        "head_pose_image_database": 0.9799239669421488
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.5,
+        0.05
+      ],
+      "mean_split_auc": 0.9821494834710743,
+      "min_split_auc": 0.9795239669421487,
+      "min_split_balanced_accuracy": 0.9570000000000001,
+      "pooled_auc": 0.9799427058257102,
+      "pooled_balanced_accuracy": 0.9498411169956669,
+      "separation": 0.41014992914238335,
+      "pearson_r": 0.8215830798967405,
+      "threshold": 0.5520845071261462,
+      "per_split_auc": {
+        "closed_open_eyes": 0.984775,
+        "head_pose_image_database": 0.9795239669421487
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.05,
+        0.35
+      ],
+      "mean_split_auc": 0.9820881887052342,
+      "min_split_auc": 0.9646347107438017,
+      "min_split_balanced_accuracy": 0.9308181818181818,
+      "pooled_auc": 0.9652975445353876,
+      "pooled_balanced_accuracy": 0.9194872412132884,
+      "separation": 0.3517627135979682,
+      "pearson_r": 0.6789453441402248,
+      "threshold": 0.6036944888737015,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9995416666666667,
+        "head_pose_image_database": 0.9646347107438017
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.4,
+        0.15
+      ],
+      "mean_split_auc": 0.9819139462809917,
+      "min_split_auc": 0.9800528925619835,
+      "min_split_balanced_accuracy": 0.9538181818181819,
+      "pooled_auc": 0.9773899855560905,
+      "pooled_balanced_accuracy": 0.9442537313432835,
+      "separation": 0.4042857916652903,
+      "pearson_r": 0.8149796729977317,
+      "threshold": 0.5944173909575845,
+      "per_split_auc": {
+        "closed_open_eyes": 0.983775,
+        "head_pose_image_database": 0.9800528925619835
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.55,
+        0.0
+      ],
+      "mean_split_auc": 0.9818796487603305,
+      "min_split_auc": 0.9790842975206612,
+      "min_split_balanced_accuracy": 0.9566363636363636,
+      "pooled_auc": 0.9804997592681752,
+      "pooled_balanced_accuracy": 0.9515430909966298,
+      "separation": 0.4130819978809299,
+      "pearson_r": 0.8232357031757401,
+      "threshold": 0.5567478532856796,
+      "per_split_auc": {
+        "closed_open_eyes": 0.984675,
+        "head_pose_image_database": 0.9790842975206612
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.05,
+        0.45
+      ],
+      "mean_split_auc": 0.9817359159779615,
+      "min_split_auc": 0.9671801652892562,
+      "min_split_balanced_accuracy": 0.9333636363636364,
+      "pooled_auc": 0.9649431872893597,
+      "pooled_balanced_accuracy": 0.9136856042368802,
+      "separation": 0.3730951115296326,
+      "pearson_r": 0.7458686898444216,
+      "threshold": 0.5800293850862333,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9962916666666667,
+        "head_pose_image_database": 0.9671801652892562
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.05,
+        0.4
+      ],
+      "mean_split_auc": 0.9815164600550964,
+      "min_split_auc": 0.9648495867768595,
+      "min_split_balanced_accuracy": 0.9307272727272727,
+      "pooled_auc": 0.964560905151661,
+      "pooled_balanced_accuracy": 0.9183148772267693,
+      "separation": 0.3624289125638003,
+      "pearson_r": 0.718614464498529,
+      "threshold": 0.6053236768531496,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9981833333333333,
+        "head_pose_image_database": 0.9648495867768595
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.35,
+        0.2
+      ],
+      "mean_split_auc": 0.9812002410468319,
+      "min_split_auc": 0.9797421487603306,
+      "min_split_balanced_accuracy": 0.9525454545454546,
+      "pooled_auc": 0.9763105440539239,
+      "pooled_balanced_accuracy": 0.9418030813673568,
+      "separation": 0.40135372292674387,
+      "pearson_r": 0.810013690497466,
+      "threshold": 0.6156790077409418,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9826583333333333,
+        "head_pose_image_database": 0.9797421487603306
+      }
+    },
+    {
+      "weights": [
+        0.7,
+        0.1,
+        0.2
+      ],
+      "mean_split_auc": 0.9808146349862259,
+      "min_split_auc": 0.9618876033057852,
+      "min_split_balanced_accuracy": 0.9280909090909091,
+      "pooled_auc": 0.9617241213288397,
+      "pooled_balanced_accuracy": 0.9218969667790082,
+      "separation": 0.3333623844048501,
+      "pearson_r": 0.5871300178719495,
+      "threshold": 0.7191057945254747,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997416666666666,
+        "head_pose_image_database": 0.9618876033057852
+      }
+    },
+    {
+      "weights": [
+        0.65,
+        0.05,
+        0.3
+      ],
+      "mean_split_auc": 0.9802445936639118,
+      "min_split_auc": 0.960697520661157,
+      "min_split_balanced_accuracy": 0.9301818181818182,
+      "pooled_auc": 0.9613582089552238,
+      "pooled_balanced_accuracy": 0.918649494463168,
+      "separation": 0.34109651463213586,
+      "pearson_r": 0.6307794391268969,
+      "threshold": 0.6508376520464247,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997916666666666,
+        "head_pose_image_database": 0.960697520661157
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.3,
+        0.25
+      ],
+      "mean_split_auc": 0.9802,
+      "min_split_auc": 0.9788,
+      "min_split_balanced_accuracy": 0.9468181818181818,
+      "pooled_auc": 0.9747881559942224,
+      "pooled_balanced_accuracy": 0.935565719788156,
+      "separation": 0.3984216541881973,
+      "pearson_r": 0.8039501881049689,
+      "threshold": 0.594021887413787,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9816,
+        "head_pose_image_database": 0.9788
+      }
+    },
+    {
+      "weights": [
+        0.5,
+        0.0,
+        0.5
+      ],
+      "mean_split_auc": 0.9791751377410468,
+      "min_split_auc": 0.9623669421487603,
+      "min_split_balanced_accuracy": 0.9302727272727273,
+      "pooled_auc": 0.9568680789600386,
+      "pooled_balanced_accuracy": 0.9111506981222918,
+      "separation": 0.370163042791086,
+      "pearson_r": 0.733911317765698,
+      "threshold": 0.5451615132554797,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9959833333333333,
+        "head_pose_image_database": 0.9623669421487603
+      }
+    },
+    {
+      "weights": [
+        0.6,
+        0.0,
+        0.4
+      ],
+      "mean_split_auc": 0.9791207300275482,
+      "min_split_auc": 0.9590247933884297,
+      "min_split_balanced_accuracy": 0.9275454545454546,
+      "pooled_auc": 0.956564756860857,
+      "pooled_balanced_accuracy": 0.9164347616754935,
+      "separation": 0.3488306448594215,
+      "pearson_r": 0.6678478822073626,
+      "threshold": 0.6277760011275514,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9992166666666666,
+        "head_pose_image_database": 0.9590247933884297
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.25,
+        0.3
+      ],
+      "mean_split_auc": 0.9788857093663912,
+      "min_split_auc": 0.9776297520661157,
+      "min_split_balanced_accuracy": 0.9429090909090909,
+      "pooled_auc": 0.9729980741454021,
+      "pooled_balanced_accuracy": 0.9302816562349543,
+      "separation": 0.39548958544965085,
+      "pearson_r": 0.7968148459452945,
+      "threshold": 0.5882761193321142,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9801416666666667,
+        "head_pose_image_database": 0.9776297520661157
+      }
+    },
+    {
+      "weights": [
+        0.55,
+        0.0,
+        0.45
+      ],
+      "mean_split_auc": 0.978743044077135,
+      "min_split_auc": 0.9596694214876033,
+      "min_split_balanced_accuracy": 0.9278181818181819,
+      "pooled_auc": 0.9561497351949928,
+      "pooled_balanced_accuracy": 0.9147327876745306,
+      "separation": 0.35949684382525393,
+      "pearson_r": 0.7068763999998536,
+      "threshold": 0.5905525110368515,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9978166666666667,
+        "head_pose_image_database": 0.9596694214876033
+      }
+    },
+    {
+      "weights": [
+        0.7,
+        0.05,
+        0.25
+      ],
+      "mean_split_auc": 0.9778096074380165,
+      "min_split_auc": 0.9558942148760331,
+      "min_split_balanced_accuracy": 0.9247272727272727,
+      "pooled_auc": 0.9561497351949928,
+      "pooled_balanced_accuracy": 0.9159003370245546,
+      "separation": 0.33043031566630354,
+      "pearson_r": 0.5784399787971659,
+      "threshold": 0.7008376520464248,
+      "per_split_auc": {
+        "closed_open_eyes": 0.999725,
+        "head_pose_image_database": 0.9558942148760331
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.2,
+        0.35
+      ],
+      "mean_split_auc": 0.9771482093663912,
+      "min_split_auc": 0.9756297520661157,
+      "min_split_balanced_accuracy": 0.9390909090909091,
+      "pooled_auc": 0.9706311988444872,
+      "pooled_balanced_accuracy": 0.9233582089552239,
+      "separation": 0.3925575167111042,
+      "pearson_r": 0.7886461300335419,
+      "threshold": 0.5676351652586984,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9786666666666667,
+        "head_pose_image_database": 0.9756297520661157
+      }
+    },
+    {
+      "weights": [
+        0.75,
+        0.25,
+        0.0
+      ],
+      "mean_split_auc": 0.9761787190082645,
+      "min_split_auc": 0.9527074380165289,
+      "min_split_balanced_accuracy": 0.9398181818181819,
+      "pooled_auc": 0.9613172845450169,
+      "pooled_balanced_accuracy": 0.9428189696677901,
+      "separation": 0.3314923916546576,
+      "pearson_r": 0.5540901233764788,
+      "threshold": 0.7592591829709989,
+      "per_split_auc": {
+        "closed_open_eyes": 0.99965,
+        "head_pose_image_database": 0.9527074380165289
+      }
+    },
+    {
+      "weights": [
+        0.65,
+        0.0,
+        0.35
+      ],
+      "mean_split_auc": 0.9758029269972452,
+      "min_split_auc": 0.9518975206611571,
+      "min_split_balanced_accuracy": 0.9268181818181818,
+      "pooled_auc": 0.9514737602311025,
+      "pooled_balanced_accuracy": 0.9155657197881559,
+      "separation": 0.3381644458935893,
+      "pearson_r": 0.620603194917577,
+      "threshold": 0.681540841917551,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9997083333333333,
+        "head_pose_image_database": 0.9518975206611571
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.15,
+        0.4
+      ],
+      "mean_split_auc": 0.9751792011019285,
+      "min_split_auc": 0.9729917355371901,
+      "min_split_balanced_accuracy": 0.9369090909090909,
+      "pooled_auc": 0.9679465575349061,
+      "pooled_balanced_accuracy": 0.9184617236398651,
+      "separation": 0.3896254479725579,
+      "pearson_r": 0.7794943323688228,
+      "threshold": 0.5582705962876172,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9773666666666667,
+        "head_pose_image_database": 0.9729917355371901
+      }
+    },
+    {
+      "weights": [
+        0.7,
+        0.0,
+        0.3
+      ],
+      "mean_split_auc": 0.9743571625344353,
+      "min_split_auc": 0.9490809917355372,
+      "min_split_balanced_accuracy": 0.9224545454545454,
+      "pooled_auc": 0.9465166104959075,
+      "pooled_balanced_accuracy": 0.9102238805970149,
+      "separation": 0.3274982469277571,
+      "pearson_r": 0.5693042956563864,
+      "threshold": 0.7006974629565448,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9996333333333334,
+        "head_pose_image_database": 0.9490809917355372
+      }
+    },
+    {
+      "weights": [
+        0.75,
+        0.2,
+        0.05
+      ],
+      "mean_split_auc": 0.9738158746556473,
+      "min_split_auc": 0.9479900826446281,
+      "min_split_balanced_accuracy": 0.9258181818181819,
+      "pooled_auc": 0.9578570052961002,
+      "pooled_balanced_accuracy": 0.9335291285507945,
+      "separation": 0.3285603229161108,
+      "pearson_r": 0.5476143246307413,
+      "threshold": 0.7826116084914433,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9996416666666667,
+        "head_pose_image_database": 0.9479900826446281
+      }
+    },
+    {
+      "weights": [
+        0.75,
+        0.15,
+        0.1
+      ],
+      "mean_split_auc": 0.973510020661157,
+      "min_split_auc": 0.947395041322314,
+      "min_split_balanced_accuracy": 0.9158181818181819,
+      "pooled_auc": 0.9550924410207029,
+      "pooled_balanced_accuracy": 0.9215310544053924,
+      "separation": 0.32562825417756447,
+      "pearson_r": 0.5406852894616647,
+      "threshold": 0.7782177096308802,
+      "per_split_auc": {
+        "closed_open_eyes": 0.999625,
+        "head_pose_image_database": 0.947395041322314
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.1,
+        0.45
+      ],
+      "mean_split_auc": 0.9726335743801653,
+      "min_split_auc": 0.9697421487603306,
+      "min_split_balanced_accuracy": 0.9352727272727273,
+      "pooled_auc": 0.9647111218103033,
+      "pooled_balanced_accuracy": 0.9159749638902264,
+      "separation": 0.3866933792340112,
+      "pearson_r": 0.7694202439146418,
+      "threshold": 0.6258494109044355,
+      "per_split_auc": {
+        "closed_open_eyes": 0.975525,
+        "head_pose_image_database": 0.9697421487603306
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.6,
+        0.0
+      ],
+      "mean_split_auc": 0.9698070592286502,
+      "min_split_auc": 0.9627083333333334,
+      "min_split_balanced_accuracy": 0.9510909090909091,
+      "pooled_auc": 0.9754251324025036,
+      "pooled_balanced_accuracy": 0.9417140105922003,
+      "separation": 0.4266802655853087,
+      "pearson_r": 0.8182976249390399,
+      "threshold": 0.5975522555560282,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9627083333333334,
+        "head_pose_image_database": 0.976905785123967
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.55,
+        0.05
+      ],
+      "mean_split_auc": 0.9697415633608816,
+      "min_split_auc": 0.9620583333333333,
+      "min_split_balanced_accuracy": 0.9526363636363637,
+      "pooled_auc": 0.9749865190178142,
+      "pooled_balanced_accuracy": 0.9408762638420799,
+      "separation": 0.4237481968467621,
+      "pearson_r": 0.8177013979845029,
+      "threshold": 0.6012532269462791,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9620583333333333,
+        "head_pose_image_database": 0.9774247933884298
+      }
+    },
+    {
+      "weights": [
+        0.75,
+        0.1,
+        0.15
+      ],
+      "mean_split_auc": 0.9696447658402204,
+      "min_split_auc": 0.9396561983471075,
+      "min_split_balanced_accuracy": 0.9161818181818182,
+      "pooled_auc": 0.9502951372171401,
+      "pooled_balanced_accuracy": 0.9158016369764083,
+      "separation": 0.3226961854390178,
+      "pearson_r": 0.5333322580465553,
+      "threshold": 0.7693816898080528,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9996333333333334,
+        "head_pose_image_database": 0.9396561983471075
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.5,
+        0.1
+      ],
+      "mean_split_auc": 0.9694946625344353,
+      "min_split_auc": 0.9611083333333333,
+      "min_split_balanced_accuracy": 0.952,
+      "pooled_auc": 0.9746206066441984,
+      "pooled_balanced_accuracy": 0.9410544053923928,
+      "separation": 0.4208161281082156,
+      "pearson_r": 0.8161102826230483,
+      "threshold": 0.6114192005727506,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9611083333333333,
+        "head_pose_image_database": 0.9778809917355372
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.05,
+        0.5
+      ],
+      "mean_split_auc": 0.9693823347107438,
+      "min_split_auc": 0.9660396694214876,
+      "min_split_balanced_accuracy": 0.9316363636363636,
+      "pooled_auc": 0.960908521906596,
+      "pooled_balanced_accuracy": 0.911167549350024,
+      "separation": 0.38376131049546486,
+      "pearson_r": 0.7584935351480101,
+      "threshold": 0.6272272167652683,
+      "per_split_auc": {
+        "closed_open_eyes": 0.972725,
+        "head_pose_image_database": 0.9660396694214876
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.45,
+        0.15
+      ],
+      "mean_split_auc": 0.969088808539945,
+      "min_split_auc": 0.9600916666666667,
+      "min_split_balanced_accuracy": 0.9507272727272728,
+      "pooled_auc": 0.9739744824265768,
+      "pooled_balanced_accuracy": 0.9394727973038035,
+      "separation": 0.41788405936966916,
+      "pearson_r": 0.8135001810518481,
+      "threshold": 0.5989993641710789,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9600916666666667,
+        "head_pose_image_database": 0.9780859504132231
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.4,
+        0.2
+      ],
+      "mean_split_auc": 0.9684831267217631,
+      "min_split_auc": 0.9589166666666666,
+      "min_split_balanced_accuracy": 0.9466666666666667,
+      "pooled_auc": 0.9730539239287433,
+      "pooled_balanced_accuracy": 0.9345185363505055,
+      "separation": 0.4149519906311226,
+      "pearson_r": 0.8098577122898231,
+      "threshold": 0.5861921783332509,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9589166666666666,
+        "head_pose_image_database": 0.9780495867768595
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.35,
+        0.25
+      ],
+      "mean_split_auc": 0.9673024104683197,
+      "min_split_auc": 0.9571833333333334,
+      "min_split_balanced_accuracy": 0.9454166666666666,
+      "pooled_auc": 0.9700890707751565,
+      "pooled_balanced_accuracy": 0.9295281656234954,
+      "separation": 0.41201992189257614,
+      "pearson_r": 0.8051808771830179,
+      "threshold": 0.5960675345225759,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9571833333333334,
+        "head_pose_image_database": 0.9774214876033058
+      }
+    },
+    {
+      "weights": [
+        0.75,
+        0.05,
+        0.2
+      ],
+      "mean_split_auc": 0.9663619834710744,
+      "min_split_auc": 0.9331239669421487,
+      "min_split_balanced_accuracy": 0.9118181818181819,
+      "pooled_auc": 0.943518054886856,
+      "pooled_balanced_accuracy": 0.9089359653346172,
+      "separation": 0.31976411670047145,
+      "pearson_r": 0.525587103101168,
+      "threshold": 0.7596719646638173,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9996,
+        "head_pose_image_database": 0.9331239669421487
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.3,
+        0.3
+      ],
+      "mean_split_auc": 0.9657210399449037,
+      "min_split_auc": 0.9546916666666667,
+      "min_split_balanced_accuracy": 0.9404166666666667,
+      "pooled_auc": 0.9684164660568128,
+      "pooled_balanced_accuracy": 0.9246003851709196,
+      "separation": 0.4090878531540295,
+      "pearson_r": 0.799479388050991,
+      "threshold": 0.613030086142745,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9546916666666667,
+        "head_pose_image_database": 0.9767504132231405
+      }
+    },
+    {
+      "weights": [
+        0.45,
+        0.0,
+        0.55
+      ],
+      "mean_split_auc": 0.9654507231404958,
+      "min_split_auc": 0.9616264462809917,
+      "min_split_balanced_accuracy": 0.9272727272727272,
+      "pooled_auc": 0.9518839672604719,
+      "pooled_balanced_accuracy": 0.9071978815599422,
+      "separation": 0.38082924175691835,
+      "pearson_r": 0.7467909334770219,
+      "threshold": 0.6125633753334808,
+      "per_split_auc": {
+        "closed_open_eyes": 0.969275,
+        "head_pose_image_database": 0.9616264462809917
+      }
+    },
+    {
+      "weights": [
+        0.75,
+        0.0,
+        0.25
+      ],
+      "mean_split_auc": 0.9638913567493113,
+      "min_split_auc": 0.9282743801652893,
+      "min_split_balanced_accuracy": 0.9090909090909092,
+      "pooled_auc": 0.9339195955705344,
+      "pooled_balanced_accuracy": 0.9031391429947039,
+      "separation": 0.3168320479619249,
+      "pearson_r": 0.5174837804560838,
+      "threshold": 0.7673600007047197,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9995083333333333,
+        "head_pose_image_database": 0.9282743801652893
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.25,
+        0.35
+      ],
+      "mean_split_auc": 0.9636193526170799,
+      "min_split_auc": 0.9518833333333333,
+      "min_split_balanced_accuracy": 0.9391666666666667,
+      "pooled_auc": 0.9664029850746269,
+      "pooled_balanced_accuracy": 0.9213168030813673,
+      "separation": 0.40615578441548306,
+      "pearson_r": 0.7927746363587274,
+      "threshold": 0.6058515230594976,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9518833333333333,
+        "head_pose_image_database": 0.9753553719008264
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.2,
+        0.4
+      ],
+      "mean_split_auc": 0.9612236570247934,
+      "min_split_auc": 0.949125,
+      "min_split_balanced_accuracy": 0.9364545454545454,
+      "pooled_auc": 0.9638194511314396,
+      "pooled_balanced_accuracy": 0.9172267693789119,
+      "separation": 0.4032237156769366,
+      "pearson_r": 0.7850992932958469,
+      "threshold": 0.6046145722822247,
+      "per_split_auc": {
+        "closed_open_eyes": 0.949125,
+        "head_pose_image_database": 0.9733223140495868
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.15,
+        0.45
+      ],
+      "mean_split_auc": 0.9588414600550964,
+      "min_split_auc": 0.9468333333333333,
+      "min_split_balanced_accuracy": 0.9360909090909091,
+      "pooled_auc": 0.9610702936928261,
+      "pooled_balanced_accuracy": 0.915346653827636,
+      "separation": 0.40029164693839003,
+      "pearson_r": 0.7764965605413774,
+      "threshold": 0.6021135803495296,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9468333333333333,
+        "head_pose_image_database": 0.9708495867768595
+      }
+    },
+    {
+      "weights": [
+        0.8,
+        0.2,
+        0.0
+      ],
+      "mean_split_auc": 0.9565112603305785,
+      "min_split_auc": 0.913497520661157,
+      "min_split_balanced_accuracy": 0.9176363636363636,
+      "pooled_auc": 0.9442676937891189,
+      "pooled_balanced_accuracy": 0.9329898892633606,
+      "separation": 0.3178941239502787,
+      "pearson_r": 0.49442055159230297,
+      "threshold": 0.8121492230247844,
+      "per_split_auc": {
+        "closed_open_eyes": 0.999525,
+        "head_pose_image_database": 0.913497520661157
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.1,
+        0.5
+      ],
+      "mean_split_auc": 0.9561690771349862,
+      "min_split_auc": 0.9445166666666667,
+      "min_split_balanced_accuracy": 0.9341666666666666,
+      "pooled_auc": 0.957954260953298,
+      "pooled_balanced_accuracy": 0.9117332691381801,
+      "separation": 0.3973595781998435,
+      "pearson_r": 0.7670191095562453,
+      "threshold": 0.6077347502720964,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9445166666666667,
+        "head_pose_image_database": 0.9678214876033058
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.65,
+        0.0
+      ],
+      "mean_split_auc": 0.9559777892561983,
+      "min_split_auc": 0.938425,
+      "min_split_balanced_accuracy": 0.9333333333333333,
+      "pooled_auc": 0.9684602792489168,
+      "pooled_balanced_accuracy": 0.9193692826191622,
+      "separation": 0.4402785332896873,
+      "pearson_r": 0.8001329666863839,
+      "threshold": 0.6471704421435186,
+      "per_split_auc": {
+        "closed_open_eyes": 0.938425,
+        "head_pose_image_database": 0.9735305785123967
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.6,
+        0.05
+      ],
+      "mean_split_auc": 0.9554864669421488,
+      "min_split_auc": 0.936725,
+      "min_split_balanced_accuracy": 0.9325,
+      "pooled_auc": 0.9680476649012999,
+      "pooled_balanced_accuracy": 0.9178767453057295,
+      "separation": 0.4373464645511409,
+      "pearson_r": 0.8002452730732939,
+      "threshold": 0.6425290671297572,
+      "per_split_auc": {
+        "closed_open_eyes": 0.936725,
+        "head_pose_image_database": 0.9742479338842975
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.55,
+        0.1
+      ],
+      "mean_split_auc": 0.9547454889807163,
+      "min_split_auc": 0.9346083333333334,
+      "min_split_balanced_accuracy": 0.9325,
+      "pooled_auc": 0.9677087144920559,
+      "pooled_balanced_accuracy": 0.9194583533943188,
+      "separation": 0.43441439581259444,
+      "pearson_r": 0.79949822049477,
+      "threshold": 0.6448843993417668,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9346083333333334,
+        "head_pose_image_database": 0.9748826446280991
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.5,
+        0.15
+      ],
+      "mean_split_auc": 0.9538945592286501,
+      "min_split_auc": 0.9324833333333333,
+      "min_split_balanced_accuracy": 0.9304166666666667,
+      "pooled_auc": 0.9670847376023111,
+      "pooled_balanced_accuracy": 0.9187409725565719,
+      "separation": 0.4314823270740478,
+      "pearson_r": 0.7978640817644294,
+      "threshold": 0.6467780070084415,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9324833333333333,
+        "head_pose_image_database": 0.9753057851239669
+      }
+    },
+    {
+      "weights": [
+        0.8,
+        0.15,
+        0.05
+      ],
+      "mean_split_auc": 0.9535443870523416,
+      "min_split_auc": 0.9075471074380165,
+      "min_split_balanced_accuracy": 0.8962727272727273,
+      "pooled_auc": 0.9411213288396726,
+      "pooled_balanced_accuracy": 0.9189239287433799,
+      "separation": 0.31496205521173215,
+      "pearson_r": 0.48819087611231277,
+      "threshold": 0.8259770360511766,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9995416666666667,
+        "head_pose_image_database": 0.9075471074380165
+      }
+    },
+    {
+      "weights": [
+        0.8,
+        0.1,
+        0.1
+      ],
+      "mean_split_auc": 0.9534543388429753,
+      "min_split_auc": 0.9073586776859505,
+      "min_split_balanced_accuracy": 0.8831818181818182,
+      "pooled_auc": 0.9384694270582571,
+      "pooled_balanced_accuracy": 0.9052864708714492,
+      "separation": 0.3120299864731856,
+      "pearson_r": 0.4816283538834399,
+      "threshold": 0.8139244559601275,
+      "per_split_auc": {
+        "closed_open_eyes": 0.99955,
+        "head_pose_image_database": 0.9073586776859505
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.05,
+        0.55
+      ],
+      "mean_split_auc": 0.9531548553719008,
+      "min_split_auc": 0.942075,
+      "min_split_balanced_accuracy": 0.9290909090909091,
+      "pooled_auc": 0.9543769860375542,
+      "pooled_balanced_accuracy": 0.9061506981222918,
+      "separation": 0.39442750946129695,
+      "pearson_r": 0.7567277654045842,
+      "threshold": 0.6002412990397579,
+      "per_split_auc": {
+        "closed_open_eyes": 0.942075,
+        "head_pose_image_database": 0.9642347107438016
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.45,
+        0.2
+      ],
+      "mean_split_auc": 0.9527658402203857,
+      "min_split_auc": 0.9301333333333334,
+      "min_split_balanced_accuracy": 0.9291666666666667,
+      "pooled_auc": 0.9661545498314877,
+      "pooled_balanced_accuracy": 0.918353394318729,
+      "separation": 0.42855025833550137,
+      "pearson_r": 0.7953230928876751,
+      "threshold": 0.644269236921772,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9301333333333334,
+        "head_pose_image_database": 0.975398347107438
+      }
+    },
+    {
+      "weights": [
+        0.8,
+        0.05,
+        0.15
+      ],
+      "mean_split_auc": 0.9525907369146005,
+      "min_split_auc": 0.9056231404958678,
+      "min_split_balanced_accuracy": 0.8822727272727273,
+      "pooled_auc": 0.9343317284545016,
+      "pooled_balanced_accuracy": 0.9008088589311507,
+      "separation": 0.3090979177346391,
+      "pearson_r": 0.47475695819754543,
+      "threshold": 0.8095737545846453,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9995583333333333,
+        "head_pose_image_database": 0.9056231404958678
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.4,
+        0.25
+      ],
+      "mean_split_auc": 0.9517558195592286,
+      "min_split_auc": 0.9283083333333333,
+      "min_split_balanced_accuracy": 0.9266666666666666,
+      "pooled_auc": 0.9650086663456909,
+      "pooled_balanced_accuracy": 0.9160231102551757,
+      "separation": 0.42561818959695474,
+      "pearson_r": 0.7918641776464213,
+      "threshold": 0.6468948867303894,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9283083333333333,
+        "head_pose_image_database": 0.9752033057851239
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.35,
+        0.3
+      ],
+      "mean_split_auc": 0.9505338154269972,
+      "min_split_auc": 0.9263833333333333,
+      "min_split_balanced_accuracy": 0.9254166666666667,
+      "pooled_auc": 0.9636499759268176,
+      "pooled_balanced_accuracy": 0.9126191622532498,
+      "separation": 0.4226861208584083,
+      "pearson_r": 0.7874854576547141,
+      "threshold": 0.6456919979418574,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9263833333333333,
+        "head_pose_image_database": 0.9746842975206611
+      }
+    },
+    {
+      "weights": [
+        0.4,
+        0.0,
+        0.6
+      ],
+      "mean_split_auc": 0.9496865358126722,
+      "min_split_auc": 0.9391416666666667,
+      "min_split_balanced_accuracy": 0.9240909090909091,
+      "pooled_auc": 0.9463972075108329,
+      "pooled_balanced_accuracy": 0.9008353394318729,
+      "separation": 0.39149544072275055,
+      "pearson_r": 0.7456900037474388,
+      "threshold": 0.6002448836487618,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9391416666666667,
+        "head_pose_image_database": 0.9602314049586776
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.3,
+        0.35
+      ],
+      "mean_split_auc": 0.949149173553719,
+      "min_split_auc": 0.9245,
+      "min_split_balanced_accuracy": 0.9204166666666667,
+      "pooled_auc": 0.9620178141550313,
+      "pooled_balanced_accuracy": 0.9083774675012036,
+      "separation": 0.4197540521198617,
+      "pearson_r": 0.782194516236672,
+      "threshold": 0.6496354393848238,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9245,
+        "head_pose_image_database": 0.9737983471074381
+      }
+    },
+    {
+      "weights": [
+        0.8,
+        0.0,
+        0.2
+      ],
+      "mean_split_auc": 0.9486243112947659,
+      "min_split_auc": 0.8977652892561984,
+      "min_split_balanced_accuracy": 0.8878181818181818,
+      "pooled_auc": 0.9230587385652383,
+      "pooled_balanced_accuracy": 0.8947761194029851,
+      "separation": 0.30616584899609267,
+      "pearson_r": 0.46760211285843045,
+      "threshold": 0.80999972050106,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9994833333333333,
+        "head_pose_image_database": 0.8977652892561984
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.25,
+        0.4
+      ],
+      "mean_split_auc": 0.9472591597796143,
+      "min_split_auc": 0.9223166666666667,
+      "min_split_balanced_accuracy": 0.9179166666666667,
+      "pooled_auc": 0.958385652383245,
+      "pooled_balanced_accuracy": 0.9032715454983149,
+      "separation": 0.41682198338131526,
+      "pearson_r": 0.7760083968293796,
+      "threshold": 0.6481416422511375,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9223166666666667,
+        "head_pose_image_database": 0.972201652892562
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.2,
+        0.45
+      ],
+      "mean_split_auc": 0.9449582988980716,
+      "min_split_auc": 0.9197083333333333,
+      "min_split_balanced_accuracy": 0.9116666666666666,
+      "pooled_auc": 0.9560187770823303,
+      "pooled_balanced_accuracy": 0.8979874819451131,
+      "separation": 0.41388991464276864,
+      "pearson_r": 0.7689533309169592,
+      "threshold": 0.6438790672271524,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9197083333333333,
+        "head_pose_image_database": 0.9702082644628099
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.15,
+        0.5
+      ],
+      "mean_split_auc": 0.9422697314049586,
+      "min_split_auc": 0.916675,
+      "min_split_balanced_accuracy": 0.9079166666666667,
+      "pooled_auc": 0.9532850264805007,
+      "pooled_balanced_accuracy": 0.890912373615792,
+      "separation": 0.4109578459042222,
+      "pearson_r": 0.7610642055113059,
+      "threshold": 0.6387987416852783,
+      "per_split_auc": {
+        "closed_open_eyes": 0.916675,
+        "head_pose_image_database": 0.9678644628099173
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.1,
+        0.55
+      ],
+      "mean_split_auc": 0.9394468663911846,
+      "min_split_auc": 0.9139416666666667,
+      "min_split_balanced_accuracy": 0.9041666666666666,
+      "pooled_auc": 0.9501728454501686,
+      "pooled_balanced_accuracy": 0.8869427058257102,
+      "separation": 0.40802577716567573,
+      "pearson_r": 0.7523837945509684,
+      "threshold": 0.6325882482426658,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9139416666666667,
+        "head_pose_image_database": 0.9649520661157025
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.6,
+        0.1
+      ],
+      "mean_split_auc": 0.9364980716253444,
+      "min_split_auc": 0.9025333333333333,
+      "min_split_balanced_accuracy": 0.90375,
+      "pooled_auc": 0.9576480500722195,
+      "pooled_balanced_accuracy": 0.8808955223880597,
+      "separation": 0.4480126635169731,
+      "pearson_r": 0.7735928959101119,
+      "threshold": 0.6925000034643346,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9025333333333333,
+        "head_pose_image_database": 0.9704628099173553
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.65,
+        0.05
+      ],
+      "mean_split_auc": 0.9364971418732783,
+      "min_split_auc": 0.9033083333333334,
+      "min_split_balanced_accuracy": 0.9075,
+      "pooled_auc": 0.9574622051035147,
+      "pooled_balanced_accuracy": 0.8810158883004333,
+      "separation": 0.45094473225551956,
+      "pearson_r": 0.7738131213044004,
+      "threshold": 0.6934554050464532,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9033083333333334,
+        "head_pose_image_database": 0.9696859504132231
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.7,
+        0.0
+      ],
+      "mean_split_auc": 0.9364870523415978,
+      "min_split_auc": 0.9042666666666667,
+      "min_split_balanced_accuracy": 0.90875,
+      "pooled_auc": 0.9574434280211844,
+      "pooled_balanced_accuracy": 0.8775806451612903,
+      "separation": 0.453876800994066,
+      "pearson_r": 0.773315167285221,
+      "threshold": 0.6988102515333228,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9042666666666667,
+        "head_pose_image_database": 0.9687074380165289
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.05,
+        0.6
+      ],
+      "mean_split_auc": 0.93640826446281,
+      "min_split_auc": 0.9112,
+      "min_split_balanced_accuracy": 0.9029166666666666,
+      "pooled_auc": 0.9466957149735195,
+      "pooled_balanced_accuracy": 0.8834135772749157,
+      "separation": 0.4050937084271292,
+      "pearson_r": 0.7429617909963181,
+      "threshold": 0.6481311775260876,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9112,
+        "head_pose_image_database": 0.9616165289256199
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.55,
+        0.15
+      ],
+      "mean_split_auc": 0.9359049242424242,
+      "min_split_auc": 0.9007916666666667,
+      "min_split_balanced_accuracy": 0.9025000000000001,
+      "pooled_auc": 0.95742850264805,
+      "pooled_balanced_accuracy": 0.8811675493500241,
+      "separation": 0.44508059477842654,
+      "pearson_r": 0.7726278237409562,
+      "threshold": 0.6815725787118987,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9007916666666667,
+        "head_pose_image_database": 0.9710181818181818
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.5,
+        0.2
+      ],
+      "mean_split_auc": 0.9350454889807163,
+      "min_split_auc": 0.8988083333333333,
+      "min_split_balanced_accuracy": 0.8975,
+      "pooled_auc": 0.9568343765045739,
+      "pooled_balanced_accuracy": 0.8817332691381801,
+      "separation": 0.44214852603988003,
+      "pearson_r": 0.7708967919080488,
+      "threshold": 0.6850316606955099,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8988083333333333,
+        "head_pose_image_database": 0.9712826446280992
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.45,
+        0.25
+      ],
+      "mean_split_auc": 0.9338584366391185,
+      "min_split_auc": 0.8963416666666667,
+      "min_split_balanced_accuracy": 0.89625,
+      "pooled_auc": 0.9559186326432354,
+      "pooled_balanced_accuracy": 0.8806740491092923,
+      "separation": 0.43921645730133346,
+      "pearson_r": 0.7683848675467186,
+      "threshold": 0.6423297191158746,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8963416666666667,
+        "head_pose_image_database": 0.9713752066115703
+      }
+    },
+    {
+      "weights": [
+        0.35,
+        0.0,
+        0.65
+      ],
+      "mean_split_auc": 0.9329383953168044,
+      "min_split_auc": 0.9080916666666666,
+      "min_split_balanced_accuracy": 0.8966666666666667,
+      "pooled_auc": 0.9388998555609052,
+      "pooled_balanced_accuracy": 0.8768728935965335,
+      "separation": 0.40216163968858276,
+      "pearson_r": 0.7328536858006708,
+      "threshold": 0.6503508471263704,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9080916666666666,
+        "head_pose_image_database": 0.9577851239669422
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.4,
+        0.3
+      ],
+      "mean_split_auc": 0.9323919077134986,
+      "min_split_auc": 0.8938416666666666,
+      "min_split_balanced_accuracy": 0.895,
+      "pooled_auc": 0.9545792007703419,
+      "pooled_balanced_accuracy": 0.876610495907559,
+      "separation": 0.436284388562787,
+      "pearson_r": 0.7650838011580992,
+      "threshold": 0.6446580504684214,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8938416666666666,
+        "head_pose_image_database": 0.9709421487603306
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.35,
+        0.35
+      ],
+      "mean_split_auc": 0.9308994834710744,
+      "min_split_auc": 0.891475,
+      "min_split_balanced_accuracy": 0.89375,
+      "pooled_auc": 0.9530577756379394,
+      "pooled_balanced_accuracy": 0.8758473760231102,
+      "separation": 0.43335231982424055,
+      "pearson_r": 0.760992382014257,
+      "threshold": 0.693754034673286,
+      "per_split_auc": {
+        "closed_open_eyes": 0.891475,
+        "head_pose_image_database": 0.9703239669421487
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.3,
+        0.4
+      ],
+      "mean_split_auc": 0.9290654614325069,
+      "min_split_auc": 0.8888416666666666,
+      "min_split_balanced_accuracy": 0.88625,
+      "pooled_auc": 0.9512802118440058,
+      "pooled_balanced_accuracy": 0.8720173326913818,
+      "separation": 0.43042025108569393,
+      "pearson_r": 0.7561166257611919,
+      "threshold": 0.6281857422431398,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8888416666666666,
+        "head_pose_image_database": 0.9692892561983472
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.25,
+        0.45
+      ],
+      "mean_split_auc": 0.9269456955922866,
+      "min_split_auc": 0.8862583333333334,
+      "min_split_balanced_accuracy": 0.88375,
+      "pooled_auc": 0.949084737602311,
+      "pooled_balanced_accuracy": 0.868740972556572,
+      "separation": 0.42748818234714747,
+      "pearson_r": 0.7504697818595534,
+      "threshold": 0.689565145216833,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8862583333333334,
+        "head_pose_image_database": 0.9676330578512397
+      }
+    },
+    {
+      "weights": [
+        0.85,
+        0.15,
+        0.0
+      ],
+      "mean_split_auc": 0.9254828168044077,
+      "min_split_auc": 0.8515239669421487,
+      "min_split_balanced_accuracy": 0.8736363636363637,
+      "pooled_auc": 0.9221887337506018,
+      "pooled_balanced_accuracy": 0.9139022628791527,
+      "separation": 0.30429585624589983,
+      "pearson_r": 0.4393596658931343,
+      "threshold": 0.86044624343614,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9994416666666667,
+        "head_pose_image_database": 0.8515239669421487
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.2,
+        0.5
+      ],
+      "mean_split_auc": 0.9248782024793388,
+      "min_split_auc": 0.883925,
+      "min_split_balanced_accuracy": 0.8825000000000001,
+      "pooled_auc": 0.946043813192104,
+      "pooled_balanced_accuracy": 0.8643789118921521,
+      "separation": 0.42455611360860096,
+      "pearson_r": 0.7440721571271338,
+      "threshold": 0.7007403317004581,
+      "per_split_auc": {
+        "closed_open_eyes": 0.883925,
+        "head_pose_image_database": 0.9658314049586777
+      }
+    },
+    {
+      "weights": [
+        0.85,
+        0.1,
+        0.05
+      ],
+      "mean_split_auc": 0.9244844696969696,
+      "min_split_auc": 0.8495272727272727,
+      "min_split_balanced_accuracy": 0.8471818181818181,
+      "pooled_auc": 0.9185551275878672,
+      "pooled_balanced_accuracy": 0.8944005777563794,
+      "separation": 0.3013637875073534,
+      "pearson_r": 0.433501247529172,
+      "threshold": 0.8747393670116188,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9994416666666667,
+        "head_pose_image_database": 0.8495272727272727
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.15,
+        0.55
+      ],
+      "mean_split_auc": 0.9226296487603305,
+      "min_split_auc": 0.881775,
+      "min_split_balanced_accuracy": 0.8808333333333334,
+      "pooled_auc": 0.9427515647568608,
+      "pooled_balanced_accuracy": 0.8622893596533462,
+      "separation": 0.4216240448700545,
+      "pearson_r": 0.7369507607218666,
+      "threshold": 0.7003501332221206,
+      "per_split_auc": {
+        "closed_open_eyes": 0.881775,
+        "head_pose_image_database": 0.9634842975206611
+      }
+    },
+    {
+      "weights": [
+        0.85,
+        0.05,
+        0.1
+      ],
+      "mean_split_auc": 0.9211340564738292,
+      "min_split_auc": 0.8428264462809917,
+      "min_split_balanced_accuracy": 0.8379090909090909,
+      "pooled_auc": 0.9124713529128551,
+      "pooled_balanced_accuracy": 0.8833341357727491,
+      "separation": 0.2984317187688069,
+      "pearson_r": 0.4274015291518279,
+      "threshold": 0.8569259987943729,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9994416666666667,
+        "head_pose_image_database": 0.8428264462809917
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.1,
+        0.6
+      ],
+      "mean_split_auc": 0.9200015151515151,
+      "min_split_auc": 0.8791666666666667,
+      "min_split_balanced_accuracy": 0.875,
+      "pooled_auc": 0.9397973038035629,
+      "pooled_balanced_accuracy": 0.857303803562831,
+      "separation": 0.41869197613150794,
+      "pearson_r": 0.7291387846993482,
+      "threshold": 0.6938422627145406,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8791666666666667,
+        "head_pose_image_database": 0.9608363636363636
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.05,
+        0.65
+      ],
+      "mean_split_auc": 0.9170140151515151,
+      "min_split_auc": 0.8763916666666667,
+      "min_split_balanced_accuracy": 0.8733333333333333,
+      "pooled_auc": 0.9365281656234954,
+      "pooled_balanced_accuracy": 0.8528839672604718,
+      "separation": 0.41575990739296154,
+      "pearson_r": 0.7206749420827334,
+      "threshold": 0.6979348814257007,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8763916666666667,
+        "head_pose_image_database": 0.9576363636363636
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.7,
+        0.05
+      ],
+      "mean_split_auc": 0.9142109848484848,
+      "min_split_auc": 0.8648583333333333,
+      "min_split_balanced_accuracy": 0.8695833333333334,
+      "pooled_auc": 0.9442479537794897,
+      "pooled_balanced_accuracy": 0.8657462686567163,
+      "separation": 0.4645429999598983,
+      "pearson_r": 0.7426000107895839,
+      "threshold": 0.4812887977623146,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8648583333333333,
+        "head_pose_image_database": 0.9635636363636364
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.75,
+        0.0
+      ],
+      "mean_split_auc": 0.9141376033057851,
+      "min_split_auc": 0.8657,
+      "min_split_balanced_accuracy": 0.8725,
+      "pooled_auc": 0.944089552238806,
+      "pooled_balanced_accuracy": 0.8667573423206548,
+      "separation": 0.46747506869844485,
+      "pearson_r": 0.7419553649390771,
+      "threshold": 0.5283497368037506,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8657,
+        "head_pose_image_database": 0.9625752066115703
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.65,
+        0.1
+      ],
+      "mean_split_auc": 0.9141052685950413,
+      "min_split_auc": 0.863675,
+      "min_split_balanced_accuracy": 0.86875,
+      "pooled_auc": 0.9444646124217622,
+      "pooled_balanced_accuracy": 0.8651492537313432,
+      "separation": 0.46161093122135183,
+      "pearson_r": 0.7426550776857143,
+      "threshold": 0.47900446380501194,
+      "per_split_auc": {
+        "closed_open_eyes": 0.863675,
+        "head_pose_image_database": 0.9645355371900827
+      }
+    },
+    {
+      "weights": [
+        0.85,
+        0.0,
+        0.15
+      ],
+      "mean_split_auc": 0.9139387396694215,
+      "min_split_auc": 0.828502479338843,
+      "min_split_balanced_accuracy": 0.8351818181818182,
+      "pooled_auc": 0.8982758786711603,
+      "pooled_balanced_accuracy": 0.8734520943668753,
+      "separation": 0.29549965003026035,
+      "pearson_r": 0.42107944893774846,
+      "threshold": 0.8500714486740841,
+      "per_split_auc": {
+        "closed_open_eyes": 0.999375,
+        "head_pose_image_database": 0.828502479338843
+      }
+    },
+    {
+      "weights": [
+        0.3,
+        0.0,
+        0.7
+      ],
+      "mean_split_auc": 0.9137446280991735,
+      "min_split_auc": 0.8734,
+      "min_split_balanced_accuracy": 0.8708333333333333,
+      "pooled_auc": 0.9290163697640829,
+      "pooled_balanced_accuracy": 0.8494776119402985,
+      "separation": 0.41282783865441486,
+      "pearson_r": 0.7116026905940595,
+      "threshold": 0.6035541998647952,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8734,
+        "head_pose_image_database": 0.9540892561983471
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.6,
+        0.15
+      ],
+      "mean_split_auc": 0.9136501377410469,
+      "min_split_auc": 0.8621333333333333,
+      "min_split_balanced_accuracy": 0.8674999999999999,
+      "pooled_auc": 0.944477130476649,
+      "pooled_balanced_accuracy": 0.8632956186807896,
+      "separation": 0.4586788624828053,
+      "pearson_r": 0.7420973415811536,
+      "threshold": 0.5020074720045298,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8621333333333333,
+        "head_pose_image_database": 0.9651669421487603
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.55,
+        0.2
+      ],
+      "mean_split_auc": 0.9132495867768595,
+      "min_split_auc": 0.8608,
+      "min_split_balanced_accuracy": 0.86625,
+      "pooled_auc": 0.9442980259990371,
+      "pooled_balanced_accuracy": 0.8619234472797304,
+      "separation": 0.45574679374425875,
+      "pearson_r": 0.7409073293249386,
+      "threshold": 0.49057766222999083,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8608,
+        "head_pose_image_database": 0.965699173553719
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.5,
+        0.25
+      ],
+      "mean_split_auc": 0.9127287534435262,
+      "min_split_auc": 0.8593583333333333,
+      "min_split_balanced_accuracy": 0.865,
+      "pooled_auc": 0.9439407799711121,
+      "pooled_balanced_accuracy": 0.8598338950409244,
+      "separation": 0.4528147250057123,
+      "pearson_r": 0.7390697953366132,
+      "threshold": 0.4797353183065315,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8593583333333333,
+        "head_pose_image_database": 0.966099173553719
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.45,
+        0.3
+      ],
+      "mean_split_auc": 0.911641976584022,
+      "min_split_auc": 0.8571583333333334,
+      "min_split_balanced_accuracy": 0.86375,
+      "pooled_auc": 0.9432108810784786,
+      "pooled_balanced_accuracy": 0.8554766490129995,
+      "separation": 0.4498826562671657,
+      "pearson_r": 0.7365741332927556,
+      "threshold": 0.46536204237570744,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8571583333333334,
+        "head_pose_image_database": 0.9661256198347108
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.4,
+        0.35
+      ],
+      "mean_split_auc": 0.9106809573002754,
+      "min_split_auc": 0.8553916666666667,
+      "min_split_balanced_accuracy": 0.8625,
+      "pooled_auc": 0.9422758786711604,
+      "pooled_balanced_accuracy": 0.8528382282137699,
+      "separation": 0.4469505875286193,
+      "pearson_r": 0.7334147053775983,
+      "threshold": 0.5354200462664833,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8553916666666667,
+        "head_pose_image_database": 0.9659702479338843
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.35,
+        0.4
+      ],
+      "mean_split_auc": 0.9093839187327823,
+      "min_split_auc": 0.8535083333333333,
+      "min_split_balanced_accuracy": 0.85875,
+      "pooled_auc": 0.9409778526721233,
+      "pooled_balanced_accuracy": 0.8511362542128069,
+      "separation": 0.4440185187900727,
+      "pearson_r": 0.7295910740686663,
+      "threshold": 0.5365084110583136,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8535083333333333,
+        "head_pose_image_database": 0.9652595041322314
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.3,
+        0.45
+      ],
+      "mean_split_auc": 0.9077227961432508,
+      "min_split_auc": 0.8513166666666667,
+      "min_split_balanced_accuracy": 0.8574999999999999,
+      "pooled_auc": 0.9393967260471834,
+      "pooled_balanced_accuracy": 0.8479104477611941,
+      "separation": 0.44108645005152625,
+      "pearson_r": 0.7251081248761854,
+      "threshold": 0.5481639736498147,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8513166666666667,
+        "head_pose_image_database": 0.9641289256198348
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.25,
+        0.5
+      ],
+      "mean_split_auc": 0.9058670798898072,
+      "min_split_auc": 0.8490333333333333,
+      "min_split_balanced_accuracy": 0.855,
+      "pooled_auc": 0.9375151661049591,
+      "pooled_balanced_accuracy": 0.8445377948964853,
+      "separation": 0.4381543813129797,
+      "pearson_r": 0.7199760727532818,
+      "threshold": 0.5372636954324758,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8490333333333333,
+        "head_pose_image_database": 0.962700826446281
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.2,
+        0.55
+      ],
+      "mean_split_auc": 0.9039052685950413,
+      "min_split_auc": 0.846875,
+      "min_split_balanced_accuracy": 0.8504166666666666,
+      "pooled_auc": 0.9354005777563794,
+      "pooled_balanced_accuracy": 0.8413432835820895,
+      "separation": 0.43522231257443333,
+      "pearson_r": 0.7142103497764514,
+      "threshold": 0.5307787556968551,
+      "per_split_auc": {
+        "closed_open_eyes": 0.846875,
+        "head_pose_image_database": 0.9609355371900826
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.15,
+        0.6
+      ],
+      "mean_split_auc": 0.9014734848484849,
+      "min_split_auc": 0.8441833333333333,
+      "min_split_balanced_accuracy": 0.8466666666666667,
+      "pooled_auc": 0.9329268175252768,
+      "pooled_balanced_accuracy": 0.8397038998555609,
+      "separation": 0.4322902438358866,
+      "pearson_r": 0.7078313768307745,
+      "threshold": 0.5170639596844644,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8441833333333333,
+        "head_pose_image_database": 0.9587636363636364
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.1,
+        0.65
+      ],
+      "mean_split_auc": 0.8987042011019284,
+      "min_split_auc": 0.8412166666666666,
+      "min_split_balanced_accuracy": 0.84375,
+      "pooled_auc": 0.92925710158883,
+      "pooled_balanced_accuracy": 0.8345931632161772,
+      "separation": 0.42935817509734026,
+      "pearson_r": 0.7008642270596802,
+      "threshold": 0.5409046234035414,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8412166666666666,
+        "head_pose_image_database": 0.9561917355371901
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.05,
+        0.7
+      ],
+      "mean_split_auc": 0.8959385330578512,
+      "min_split_auc": 0.838525,
+      "min_split_balanced_accuracy": 0.84125,
+      "pooled_auc": 0.925434280211844,
+      "pooled_balanced_accuracy": 0.8315816080885894,
+      "separation": 0.4264261063587936,
+      "pearson_r": 0.6933381933965462,
+      "threshold": 0.5165210880067075,
+      "per_split_auc": {
+        "closed_open_eyes": 0.838525,
+        "head_pose_image_database": 0.9533520661157024
+      }
+    },
+    {
+      "weights": [
+        0.25,
+        0.0,
+        0.75
+      ],
+      "mean_split_auc": 0.8927160123966942,
+      "min_split_auc": 0.835475,
+      "min_split_balanced_accuracy": 0.835,
+      "pooled_auc": 0.9180871449205585,
+      "pooled_balanced_accuracy": 0.8301636976408281,
+      "separation": 0.42349403762024723,
+      "pearson_r": 0.6852862762721812,
+      "threshold": 0.580065413302023,
+      "per_split_auc": {
+        "closed_open_eyes": 0.835475,
+        "head_pose_image_database": 0.9499570247933884
+      }
+    },
+    {
+      "weights": [
+        0.9,
+        0.1,
+        0.0
+      ],
+      "mean_split_auc": 0.891183023415978,
+      "min_split_auc": 0.7830743801652893,
+      "min_split_balanced_accuracy": 0.8291818181818182,
+      "pooled_auc": 0.894439094848339,
+      "pooled_balanced_accuracy": 0.8930500722195474,
+      "separation": 0.29069758854152117,
+      "pearson_r": 0.3895909426097683,
+      "threshold": 0.9137280224837976,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9992916666666667,
+        "head_pose_image_database": 0.7830743801652893
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.6,
+        0.2
+      ],
+      "mean_split_auc": 0.8886478305785124,
+      "min_split_auc": 0.817775,
+      "min_split_balanced_accuracy": 0.8300000000000001,
+      "pooled_auc": 0.9308671160327395,
+      "pooled_balanced_accuracy": 0.856131439576312,
+      "separation": 0.4693450614486375,
+      "pearson_r": 0.7087074060838903,
+      "threshold": 0.4653027620775171,
+      "per_split_auc": {
+        "closed_open_eyes": 0.817775,
+        "head_pose_image_database": 0.9595206611570248
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.55,
+        0.25
+      ],
+      "mean_split_auc": 0.8885921487603305,
+      "min_split_auc": 0.8173,
+      "min_split_balanced_accuracy": 0.83125,
+      "pooled_auc": 0.930652383245065,
+      "pooled_balanced_accuracy": 0.8534448724121328,
+      "separation": 0.46641299271009107,
+      "pearson_r": 0.7073216050722757,
+      "threshold": 0.45995050974213675,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8173,
+        "head_pose_image_database": 0.9598842975206612
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.5,
+        0.3
+      ],
+      "mean_split_auc": 0.8884284779614325,
+      "min_split_auc": 0.8166916666666667,
+      "min_split_balanced_accuracy": 0.825,
+      "pooled_auc": 0.9303577274915744,
+      "pooled_balanced_accuracy": 0.8510881078478575,
+      "separation": 0.4634809239715445,
+      "pearson_r": 0.7053949558279416,
+      "threshold": 0.4414487551257405,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8166916666666667,
+        "head_pose_image_database": 0.9601652892561984
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.65,
+        0.15
+      ],
+      "mean_split_auc": 0.8883989325068871,
+      "min_split_auc": 0.8179416666666667,
+      "min_split_balanced_accuracy": 0.83125,
+      "pooled_auc": 0.9307323062108811,
+      "pooled_balanced_accuracy": 0.857294174289841,
+      "separation": 0.47227713018718404,
+      "pearson_r": 0.7095629619534299,
+      "threshold": 0.48763167360233706,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8179416666666667,
+        "head_pose_image_database": 0.9588561983471074
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.7,
+        0.1
+      ],
+      "mean_split_auc": 0.8881878099173555,
+      "min_split_auc": 0.81825,
+      "min_split_balanced_accuracy": 0.835,
+      "pooled_auc": 0.930389504092441,
+      "pooled_balanced_accuracy": 0.8598025999037073,
+      "separation": 0.4752091989257306,
+      "pearson_r": 0.7099020302064453,
+      "threshold": 0.4902676343398976,
+      "per_split_auc": {
+        "closed_open_eyes": 0.81825,
+        "head_pose_image_database": 0.9581256198347108
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.75,
+        0.05
+      ],
+      "mean_split_auc": 0.8880572314049586,
+      "min_split_auc": 0.81905,
+      "min_split_balanced_accuracy": 0.8362499999999999,
+      "pooled_auc": 0.9298300433317285,
+      "pooled_balanced_accuracy": 0.8599807414540201,
+      "separation": 0.4781412676642771,
+      "pearson_r": 0.7097412168806151,
+      "threshold": 0.5026330918815242,
+      "per_split_auc": {
+        "closed_open_eyes": 0.81905,
+        "head_pose_image_database": 0.9570644628099173
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.45,
+        0.35
+      ],
+      "mean_split_auc": 0.8880042699724517,
+      "min_split_auc": 0.8158333333333333,
+      "min_split_balanced_accuracy": 0.8245833333333333,
+      "pooled_auc": 0.9297558979297063,
+      "pooled_balanced_accuracy": 0.8450192585459798,
+      "separation": 0.460548855232998,
+      "pearson_r": 0.7029202713480607,
+      "threshold": 0.49223817063512376,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8158333333333333,
+        "head_pose_image_database": 0.9601752066115703
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.8,
+        0.0
+      ],
+      "mean_split_auc": 0.8877239325068871,
+      "min_split_auc": 0.8193916666666666,
+      "min_split_balanced_accuracy": 0.8400000000000001,
+      "pooled_auc": 0.9295079441502166,
+      "pooled_balanced_accuracy": 0.8595931632161772,
+      "separation": 0.48107333640282357,
+      "pearson_r": 0.7090996371076798,
+      "threshold": 0.49832165930708383,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8193916666666666,
+        "head_pose_image_database": 0.9560561983471074
+      }
+    },
+    {
+      "weights": [
+        0.9,
+        0.05,
+        0.05
+      ],
+      "mean_split_auc": 0.8876772382920111,
+      "min_split_auc": 0.7760628099173553,
+      "min_split_balanced_accuracy": 0.8072727272727273,
+      "pooled_auc": 0.8875748675974964,
+      "pooled_balanced_accuracy": 0.8663938372652864,
+      "separation": 0.2877655198029748,
+      "pearson_r": 0.38415555843956256,
+      "threshold": 0.9096082452809804,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9992916666666667,
+        "head_pose_image_database": 0.7760628099173553
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.4,
+        0.4
+      ],
+      "mean_split_auc": 0.8871495179063361,
+      "min_split_auc": 0.8141833333333334,
+      "min_split_balanced_accuracy": 0.81875,
+      "pooled_auc": 0.9290202214732788,
+      "pooled_balanced_accuracy": 0.8433750601829562,
+      "separation": 0.45761678649445153,
+      "pearson_r": 0.6998939882211415,
+      "threshold": 0.5168303684045265,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8141833333333334,
+        "head_pose_image_database": 0.9601157024793389
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.35,
+        0.45
+      ],
+      "mean_split_auc": 0.8858748278236914,
+      "min_split_auc": 0.8123083333333333,
+      "min_split_balanced_accuracy": 0.81375,
+      "pooled_auc": 0.9280062590274434,
+      "pooled_balanced_accuracy": 0.8405368319691864,
+      "separation": 0.45468471775590497,
+      "pearson_r": 0.6963163115554488,
+      "threshold": 0.525911488889441,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8123083333333333,
+        "head_pose_image_database": 0.9594413223140495
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.3,
+        0.5
+      ],
+      "mean_split_auc": 0.8843125000000001,
+      "min_split_auc": 0.810225,
+      "min_split_balanced_accuracy": 0.81125,
+      "pooled_auc": 0.9265907558979297,
+      "pooled_balanced_accuracy": 0.8381800674049109,
+      "separation": 0.4517526490173584,
+      "pearson_r": 0.6921912908706719,
+      "threshold": 0.514140967568046,
+      "per_split_auc": {
+        "closed_open_eyes": 0.810225,
+        "head_pose_image_database": 0.9584
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.25,
+        0.55
+      ],
+      "mean_split_auc": 0.8825999311294765,
+      "min_split_auc": 0.8079833333333334,
+      "min_split_balanced_accuracy": 0.8095833333333333,
+      "pooled_auc": 0.9248873375060183,
+      "pooled_balanced_accuracy": 0.8342994703899855,
+      "separation": 0.448820580278812,
+      "pearson_r": 0.6875268228745548,
+      "threshold": 0.5045757455923131,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8079833333333334,
+        "head_pose_image_database": 0.9572165289256198
+      }
+    },
+    {
+      "weights": [
+        0.9,
+        0.0,
+        0.1
+      ],
+      "mean_split_auc": 0.8812694214876033,
+      "min_split_auc": 0.7633388429752066,
+      "min_split_balanced_accuracy": 0.7945454545454546,
+      "pooled_auc": 0.871253249879634,
+      "pooled_balanced_accuracy": 0.8531656234954261,
+      "separation": 0.28483345106442814,
+      "pearson_r": 0.37854641164923886,
+      "threshold": 0.9063592862420164,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9992,
+        "head_pose_image_database": 0.7633388429752066
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.2,
+        0.6
+      ],
+      "mean_split_auc": 0.8804075068870523,
+      "min_split_auc": 0.8054166666666667,
+      "min_split_balanced_accuracy": 0.8075,
+      "pooled_auc": 0.9228757823784304,
+      "pooled_balanced_accuracy": 0.8312831006259027,
+      "separation": 0.4458885115402653,
+      "pearson_r": 0.6823345797179713,
+      "threshold": 0.5065250426662997,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8054166666666667,
+        "head_pose_image_database": 0.955398347107438
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.15,
+        0.65
+      ],
+      "mean_split_auc": 0.8779160468319559,
+      "min_split_auc": 0.8024833333333333,
+      "min_split_balanced_accuracy": 0.8025,
+      "pooled_auc": 0.92056186807896,
+      "pooled_balanced_accuracy": 0.8288685604236881,
+      "separation": 0.442956442801719,
+      "pearson_r": 0.6766298641248178,
+      "threshold": 0.4812240962760437,
+      "per_split_auc": {
+        "closed_open_eyes": 0.8024833333333333,
+        "head_pose_image_database": 0.9533487603305785
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.1,
+        0.7
+      ],
+      "mean_split_auc": 0.875321349862259,
+      "min_split_auc": 0.7997666666666666,
+      "min_split_balanced_accuracy": 0.8004166666666667,
+      "pooled_auc": 0.9179350024073183,
+      "pooled_balanced_accuracy": 0.8251661049590756,
+      "separation": 0.44002437406317235,
+      "pearson_r": 0.6704313955545713,
+      "threshold": 0.47730432096219316,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7997666666666666,
+        "head_pose_image_database": 0.9508760330578513
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.05,
+        0.75
+      ],
+      "mean_split_auc": 0.8721988980716253,
+      "min_split_auc": 0.7961333333333334,
+      "min_split_balanced_accuracy": 0.7949999999999999,
+      "pooled_auc": 0.9141545498314877,
+      "pooled_balanced_accuracy": 0.8222388059701493,
+      "separation": 0.43709230532462595,
+      "pearson_r": 0.6637610341042977,
+      "threshold": 0.4842044363661987,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7961333333333334,
+        "head_pose_image_database": 0.9482644628099174
+      }
+    },
+    {
+      "weights": [
+        0.2,
+        0.0,
+        0.8
+      ],
+      "mean_split_auc": 0.8688332988980716,
+      "min_split_auc": 0.7926583333333334,
+      "min_split_balanced_accuracy": 0.7925,
+      "pooled_auc": 0.9068151179585942,
+      "pooled_balanced_accuracy": 0.8181800674049109,
+      "separation": 0.4341602365860794,
+      "pearson_r": 0.656643451038574,
+      "threshold": 0.4669931781983492,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7926583333333334,
+        "head_pose_image_database": 0.9450082644628099
+      }
+    },
+    {
+      "weights": [
+        0.95,
+        0.05,
+        0.0
+      ],
+      "mean_split_auc": 0.8678703168044077,
+      "min_split_auc": 0.7367239669421488,
+      "min_split_balanced_accuracy": 0.8065454545454546,
+      "pooled_auc": 0.8685719788155994,
+      "pooled_balanced_accuracy": 0.8762927298988926,
+      "separation": 0.2770993208371424,
+      "pearson_r": 0.3451279894318771,
+      "threshold": 0.9569726764919004,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9990166666666667,
+        "head_pose_image_database": 0.7367239669421488
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.7,
+        0.15
+      ],
+      "mean_split_auc": 0.8626435950413223,
+      "min_split_auc": 0.77295,
+      "min_split_balanced_accuracy": 0.79125,
+      "pooled_auc": 0.9166774193548387,
+      "pooled_balanced_accuracy": 0.8513240250361098,
+      "separation": 0.4858753978915627,
+      "pearson_r": 0.6771916539325381,
+      "threshold": 0.45700233659337874,
+      "per_split_auc": {
+        "closed_open_eyes": 0.77295,
+        "head_pose_image_database": 0.9523371900826446
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.65,
+        0.2
+      ],
+      "mean_split_auc": 0.86259314738292,
+      "min_split_auc": 0.7721416666666666,
+      "min_split_balanced_accuracy": 0.7879166666666666,
+      "pooled_auc": 0.9168584496870487,
+      "pooled_balanced_accuracy": 0.8486687530091478,
+      "separation": 0.48294332915301624,
+      "pearson_r": 0.6765288217810588,
+      "threshold": 0.4349982623252949,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7721416666666666,
+        "head_pose_image_database": 0.9530446280991736
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.75,
+        0.1
+      ],
+      "mean_split_auc": 0.8625401859504132,
+      "min_split_auc": 0.773725,
+      "min_split_balanced_accuracy": 0.7958333333333334,
+      "pooled_auc": 0.9162527684159846,
+      "pooled_balanced_accuracy": 0.8538324506499759,
+      "separation": 0.48880746663010927,
+      "pearson_r": 0.6774333883649948,
+      "threshold": 0.4608656260174205,
+      "per_split_auc": {
+        "closed_open_eyes": 0.773725,
+        "head_pose_image_database": 0.9513553719008264
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.6,
+        0.25
+      ],
+      "mean_split_auc": 0.862323932506887,
+      "min_split_auc": 0.7709916666666666,
+      "min_split_balanced_accuracy": 0.7875,
+      "pooled_auc": 0.9169008184882042,
+      "pooled_balanced_accuracy": 0.8470871449205585,
+      "separation": 0.4800112604144698,
+      "pearson_r": 0.6754332450336232,
+      "threshold": 0.42645072263073425,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7709916666666666,
+        "head_pose_image_database": 0.9536561983471075
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.8,
+        0.05
+      ],
+      "mean_split_auc": 0.8622665977961432,
+      "min_split_auc": 0.7741166666666667,
+      "min_split_balanced_accuracy": 0.8004166666666667,
+      "pooled_auc": 0.9157327876745306,
+      "pooled_balanced_accuracy": 0.8532354357246028,
+      "separation": 0.49173953536865583,
+      "pearson_r": 0.6772675932833022,
+      "threshold": 0.46449566838400613,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7741166666666667,
+        "head_pose_image_database": 0.9504165289256198
+      }
+    },
+    {
+      "weights": [
+        0.95,
+        0.0,
+        0.05
+      ],
+      "mean_split_auc": 0.8622335399449036,
+      "min_split_auc": 0.7255504132231405,
+      "min_split_balanced_accuracy": 0.7779090909090909,
+      "pooled_auc": 0.8497520462205104,
+      "pooled_balanced_accuracy": 0.8366754935002407,
+      "separation": 0.27416725209859594,
+      "pearson_r": 0.3401217397699766,
+      "threshold": 0.9545058345596501,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9989166666666667,
+        "head_pose_image_database": 0.7255504132231405
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.55,
+        0.3
+      ],
+      "mean_split_auc": 0.8621332300275482,
+      "min_split_auc": 0.7700416666666666,
+      "min_split_balanced_accuracy": 0.7845833333333334,
+      "pooled_auc": 0.9167669715936447,
+      "pooled_balanced_accuracy": 0.8446990852190659,
+      "separation": 0.47707919167592316,
+      "pearson_r": 0.6738954145991545,
+      "threshold": 0.41313375458589013,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7700416666666666,
+        "head_pose_image_database": 0.9542247933884298
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.85,
+        0.0
+      ],
+      "mean_split_auc": 0.8619395661157025,
+      "min_split_auc": 0.774375,
+      "min_split_balanced_accuracy": 0.8025,
+      "pooled_auc": 0.9153846894559461,
+      "pooled_balanced_accuracy": 0.8530572941742898,
+      "separation": 0.49467160410720223,
+      "pearson_r": 0.6767095245691024,
+      "threshold": 0.45694619801806735,
+      "per_split_auc": {
+        "closed_open_eyes": 0.774375,
+        "head_pose_image_database": 0.949504132231405
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.5,
+        0.35
+      ],
+      "mean_split_auc": 0.8616996212121212,
+      "min_split_auc": 0.7691083333333333,
+      "min_split_balanced_accuracy": 0.78125,
+      "pooled_auc": 0.9163471352912855,
+      "pooled_balanced_accuracy": 0.8404309099662975,
+      "separation": 0.47414712293737676,
+      "pearson_r": 0.671908152073267,
+      "threshold": 0.3995393553627895,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7691083333333333,
+        "head_pose_image_database": 0.9542909090909091
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.45,
+        0.4
+      ],
+      "mean_split_auc": 0.8610766184573002,
+      "min_split_auc": 0.7679416666666666,
+      "min_split_balanced_accuracy": 0.775,
+      "pooled_auc": 0.9156701974000963,
+      "pooled_balanced_accuracy": 0.8385989407799711,
+      "separation": 0.47121505419883014,
+      "pearson_r": 0.6694667730149129,
+      "threshold": 0.4877055691104899,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7679416666666666,
+        "head_pose_image_database": 0.9542115702479339
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.4,
+        0.45
+      ],
+      "mean_split_auc": 0.8599448691460054,
+      "min_split_auc": 0.7660583333333333,
+      "min_split_balanced_accuracy": 0.77125,
+      "pooled_auc": 0.9147409725565719,
+      "pooled_balanced_accuracy": 0.8357029369282619,
+      "separation": 0.4682829854602837,
+      "pearson_r": 0.6665692151115785,
+      "threshold": 0.48414261251865676,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7660583333333333,
+        "head_pose_image_database": 0.9538314049586777
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.35,
+        0.5
+      ],
+      "mean_split_auc": 0.8586588154269972,
+      "min_split_auc": 0.7642333333333333,
+      "min_split_balanced_accuracy": 0.7675000000000001,
+      "pooled_auc": 0.9135883485796822,
+      "pooled_balanced_accuracy": 0.8334039480019259,
+      "separation": 0.4653509167217371,
+      "pearson_r": 0.6632161266016333,
+      "threshold": 0.4868452638818017,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7642333333333333,
+        "head_pose_image_database": 0.9530842975206612
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.3,
+        0.55
+      ],
+      "mean_split_auc": 0.8569751377410468,
+      "min_split_auc": 0.7619833333333333,
+      "min_split_balanced_accuracy": 0.7633333333333334,
+      "pooled_auc": 0.9120640346653828,
+      "pooled_balanced_accuracy": 0.8301203659123736,
+      "separation": 0.4624188479831908,
+      "pearson_r": 0.6594109114255051,
+      "threshold": 0.48209617047630704,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7619833333333333,
+        "head_pose_image_database": 0.9519669421487603
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.25,
+        0.6
+      ],
+      "mean_split_auc": 0.855168870523416,
+      "min_split_auc": 0.7596666666666667,
+      "min_split_balanced_accuracy": 0.75875,
+      "pooled_auc": 0.9103933558016369,
+      "pooled_balanced_accuracy": 0.8269571497351951,
+      "separation": 0.4594867792446441,
+      "pearson_r": 0.6551597288826551,
+      "threshold": 0.4625113438669467,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7596666666666667,
+        "head_pose_image_database": 0.9506710743801653
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.2,
+        0.65
+      ],
+      "mean_split_auc": 0.8531498278236915,
+      "min_split_auc": 0.7572583333333334,
+      "min_split_balanced_accuracy": 0.7537499999999999,
+      "pooled_auc": 0.9085031295137217,
+      "pooled_balanced_accuracy": 0.8248050072219547,
+      "separation": 0.45655471050609775,
+      "pearson_r": 0.6504714470151414,
+      "threshold": 0.4820401368838833,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7572583333333334,
+        "head_pose_image_database": 0.9490413223140496
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.15,
+        0.7
+      ],
+      "mean_split_auc": 0.850530061983471,
+      "min_split_auc": 0.754075,
+      "min_split_balanced_accuracy": 0.74625,
+      "pooled_auc": 0.9062479537794896,
+      "pooled_balanced_accuracy": 0.822002888781897,
+      "separation": 0.4536226417675511,
+      "pearson_r": 0.6453575504479031,
+      "threshold": 0.44724027674853783,
+      "per_split_auc": {
+        "closed_open_eyes": 0.754075,
+        "head_pose_image_database": 0.9469851239669421
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.1,
+        0.75
+      ],
+      "mean_split_auc": 0.847964738292011,
+      "min_split_auc": 0.7510666666666667,
+      "min_split_balanced_accuracy": 0.7408333333333333,
+      "pooled_auc": 0.9038059701492537,
+      "pooled_balanced_accuracy": 0.8170125180548868,
+      "separation": 0.45069057302900467,
+      "pearson_r": 0.6398320049096421,
+      "threshold": 0.4728180918837128,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7510666666666667,
+        "head_pose_image_database": 0.9448628099173554
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.05,
+        0.8
+      ],
+      "mean_split_auc": 0.8451306473829201,
+      "min_split_auc": 0.7480166666666667,
+      "min_split_balanced_accuracy": 0.7391666666666666,
+      "pooled_auc": 0.9009393355801637,
+      "pooled_balanced_accuracy": 0.8145931632161771,
+      "separation": 0.4477585042904581,
+      "pearson_r": 0.6339110820556205,
+      "threshold": 0.47802196781875866,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7480166666666667,
+        "head_pose_image_database": 0.9422446280991735
+      }
+    },
+    {
+      "weights": [
+        0.15,
+        0.0,
+        0.85
+      ],
+      "mean_split_auc": 0.8418595730027547,
+      "min_split_auc": 0.7444166666666666,
+      "min_split_balanced_accuracy": 0.7295833333333334,
+      "pooled_auc": 0.893869523350987,
+      "pooled_balanced_accuracy": 0.8117067886374578,
+      "separation": 0.44482643555191165,
+      "pearson_r": 0.6276131494416568,
+      "threshold": 0.40123430733356125,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7444166666666666,
+        "head_pose_image_database": 0.9393024793388429
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.65,
+        0.25
+      ],
+      "mean_split_auc": 0.8336856060606062,
+      "min_split_auc": 0.7203166666666667,
+      "min_split_balanced_accuracy": 0.7291666666666666,
+      "pooled_auc": 0.9016605681271064,
+      "pooled_balanced_accuracy": 0.8416249398170439,
+      "separation": 0.4936095281188485,
+      "pearson_r": 0.644765980046667,
+      "threshold": 0.39054960229501556,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7203166666666667,
+        "head_pose_image_database": 0.9470545454545455
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.7,
+        0.2
+      ],
+      "mean_split_auc": 0.833664738292011,
+      "min_split_auc": 0.7208666666666667,
+      "min_split_balanced_accuracy": 0.7316666666666667,
+      "pooled_auc": 0.9016364949446317,
+      "pooled_balanced_accuracy": 0.8424939817043813,
+      "separation": 0.49654159685739496,
+      "pearson_r": 0.6456802851235405,
+      "threshold": 0.3590911273445142,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7208666666666667,
+        "head_pose_image_database": 0.9464628099173553
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.75,
+        0.15
+      ],
+      "mean_split_auc": 0.8333792699724518,
+      "min_split_auc": 0.7209833333333333,
+      "min_split_balanced_accuracy": 0.7325,
+      "pooled_auc": 0.9013639865190178,
+      "pooled_balanced_accuracy": 0.8442802118440058,
+      "separation": 0.49947366559594153,
+      "pearson_r": 0.6462405413226977,
+      "threshold": 0.41817556799054634,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7209833333333333,
+        "head_pose_image_database": 0.9457752066115702
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.6,
+        0.3
+      ],
+      "mean_split_auc": 0.8332109159779615,
+      "min_split_auc": 0.7188416666666667,
+      "min_split_balanced_accuracy": 0.7279166666666667,
+      "pooled_auc": 0.9014997592681753,
+      "pooled_balanced_accuracy": 0.8404309099662975,
+      "separation": 0.49067745938030194,
+      "pearson_r": 0.6434895526641559,
+      "threshold": 0.37870153281865104,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7188416666666667,
+        "head_pose_image_database": 0.9475801652892561
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "mean_split_auc": 0.8329266184573003,
+      "min_split_auc": 0.7208416666666667,
+      "min_split_balanced_accuracy": 0.7370833333333333,
+      "pooled_auc": 0.9009277804525758,
+      "pooled_balanced_accuracy": 0.8448772267693789,
+      "separation": 0.502405734334488,
+      "pearson_r": 0.6464562819923458,
+      "threshold": 0.4306779042298171,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7208416666666667,
+        "head_pose_image_database": 0.9450115702479339
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.55,
+        0.35
+      ],
+      "mean_split_auc": 0.8324290633608815,
+      "min_split_auc": 0.7170333333333333,
+      "min_split_balanced_accuracy": 0.7275,
+      "pooled_auc": 0.9011088107847858,
+      "pooled_balanced_accuracy": 0.8372676937891189,
+      "separation": 0.4877453906417554,
+      "pearson_r": 0.6418445266155663,
+      "threshold": 0.3650297948785049,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7170333333333333,
+        "head_pose_image_database": 0.9478247933884297
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.85,
+        0.05
+      ],
+      "mean_split_auc": 0.83201532369146,
+      "min_split_auc": 0.7199083333333334,
+      "min_split_balanced_accuracy": 0.74,
+      "pooled_auc": 0.9002999518536351,
+      "pooled_balanced_accuracy": 0.8453851709195956,
+      "separation": 0.5053378030730344,
+      "pearson_r": 0.6463383506002107,
+      "threshold": 0.4325003250835037,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7199083333333334,
+        "head_pose_image_database": 0.9441223140495868
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.5,
+        0.4
+      ],
+      "mean_split_auc": 0.8314135330578513,
+      "min_split_auc": 0.715075,
+      "min_split_balanced_accuracy": 0.7183333333333333,
+      "pooled_auc": 0.9004251324025037,
+      "pooled_balanced_accuracy": 0.833644679826673,
+      "separation": 0.48481332190320886,
+      "pearson_r": 0.6398261434819562,
+      "threshold": 0.4572251271606983,
+      "per_split_auc": {
+        "closed_open_eyes": 0.715075,
+        "head_pose_image_database": 0.9477520661157025
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.9,
+        0.0
+      ],
+      "mean_split_auc": 0.8312574724517907,
+      "min_split_auc": 0.7193083333333333,
+      "min_split_balanced_accuracy": 0.74375,
+      "pooled_auc": 0.8998805970149254,
+      "pooled_balanced_accuracy": 0.8459821858449688,
+      "separation": 0.508269871811581,
+      "pearson_r": 0.6458987419800496,
+      "threshold": 0.4359397048596756,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7193083333333333,
+        "head_pose_image_database": 0.943206611570248
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.45,
+        0.45
+      ],
+      "mean_split_auc": 0.8301826101928376,
+      "min_split_auc": 0.7127916666666667,
+      "min_split_balanced_accuracy": 0.7112499999999999,
+      "pooled_auc": 0.8996547905633124,
+      "pooled_balanced_accuracy": 0.8328382282137698,
+      "separation": 0.4818812531646624,
+      "pearson_r": 0.6374314639896245,
+      "threshold": 0.45693611999109357,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7127916666666667,
+        "head_pose_image_database": 0.9475735537190083
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.4,
+        0.5
+      ],
+      "mean_split_auc": 0.8286787190082645,
+      "min_split_auc": 0.71025,
+      "min_split_balanced_accuracy": 0.70625,
+      "pooled_auc": 0.8985869041887338,
+      "pooled_balanced_accuracy": 0.8286278285989408,
+      "separation": 0.47894918442611595,
+      "pearson_r": 0.6346594465102364,
+      "threshold": 0.4567786750354454,
+      "per_split_auc": {
+        "closed_open_eyes": 0.71025,
+        "head_pose_image_database": 0.947107438016529
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.35,
+        0.55
+      ],
+      "mean_split_auc": 0.8271533402203857,
+      "min_split_auc": 0.7081083333333333,
+      "min_split_balanced_accuracy": 0.7025,
+      "pooled_auc": 0.8972840635532018,
+      "pooled_balanced_accuracy": 0.8265382763601348,
+      "separation": 0.4760171156875694,
+      "pearson_r": 0.6315110003235423,
+      "threshold": 0.4575641021173293,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7081083333333333,
+        "head_pose_image_database": 0.946198347107438
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.3,
+        0.6
+      ],
+      "mean_split_auc": 0.8254047865013774,
+      "min_split_auc": 0.7057583333333334,
+      "min_split_balanced_accuracy": 0.6995833333333333,
+      "pooled_auc": 0.8958204140587386,
+      "pooled_balanced_accuracy": 0.8232233991333655,
+      "separation": 0.4730850469490229,
+      "pearson_r": 0.6279890117274564,
+      "threshold": 0.45499410028401127,
+      "per_split_auc": {
+        "closed_open_eyes": 0.7057583333333334,
+        "head_pose_image_database": 0.9450512396694215
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.25,
+        0.65
+      ],
+      "mean_split_auc": 0.823588326446281,
+      "min_split_auc": 0.703375,
+      "min_split_balanced_accuracy": 0.6945833333333333,
+      "pooled_auc": 0.8941689937409726,
+      "pooled_balanced_accuracy": 0.8213745787193066,
+      "separation": 0.4701529782104764,
+      "pearson_r": 0.6240983417965347,
+      "threshold": 0.4321376765677923,
+      "per_split_auc": {
+        "closed_open_eyes": 0.703375,
+        "head_pose_image_database": 0.943801652892562
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.2,
+        0.7
+      ],
+      "mean_split_auc": 0.8211626033057852,
+      "min_split_auc": 0.70015,
+      "min_split_balanced_accuracy": 0.6841666666666666,
+      "pooled_auc": 0.8922026961964372,
+      "pooled_balanced_accuracy": 0.8190442946557535,
+      "separation": 0.4672209094719299,
+      "pearson_r": 0.619845795371638,
+      "threshold": 0.4476764675325421,
+      "per_split_auc": {
+        "closed_open_eyes": 0.70015,
+        "head_pose_image_database": 0.9421752066115703
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.15,
+        0.75
+      ],
+      "mean_split_auc": 0.8186325413223141,
+      "min_split_auc": 0.696875,
+      "min_split_balanced_accuracy": 0.6779166666666666,
+      "pooled_auc": 0.8901131439576312,
+      "pooled_balanced_accuracy": 0.815734232065479,
+      "separation": 0.46428884073338345,
+      "pearson_r": 0.6152400616780719,
+      "threshold": 0.4131226625685268,
+      "per_split_auc": {
+        "closed_open_eyes": 0.696875,
+        "head_pose_image_database": 0.9403900826446281
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.1,
+        0.8
+      ],
+      "mean_split_auc": 0.8158971074380166,
+      "min_split_auc": 0.6935,
+      "min_split_balanced_accuracy": 0.67,
+      "pooled_auc": 0.8877549350024073,
+      "pooled_balanced_accuracy": 0.8121521425132403,
+      "separation": 0.46135677199483693,
+      "pearson_r": 0.6102916277772142,
+      "threshold": 0.4007498095816378,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6935,
+        "head_pose_image_database": 0.938294214876033
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.05,
+        0.85
+      ],
+      "mean_split_auc": 0.8126136019283746,
+      "min_split_auc": 0.6894916666666666,
+      "min_split_balanced_accuracy": 0.6637500000000001,
+      "pooled_auc": 0.8848931150698123,
+      "pooled_balanced_accuracy": 0.8099157438613385,
+      "separation": 0.45842470325629037,
+      "pearson_r": 0.6050126668210851,
+      "threshold": 0.38014120757450565,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6894916666666666,
+        "head_pose_image_database": 0.9357355371900826
+      }
+    },
+    {
+      "weights": [
+        0.1,
+        0.0,
+        0.9
+      ],
+      "mean_split_auc": 0.8094180785123968,
+      "min_split_auc": 0.685775,
+      "min_split_balanced_accuracy": 0.6579166666666667,
+      "pooled_auc": 0.8780640346653827,
+      "pooled_balanced_accuracy": 0.8067212325469426,
+      "separation": 0.4554926345177439,
+      "pearson_r": 0.5994169037641379,
+      "threshold": 0.37072789142477636,
+      "per_split_auc": {
+        "closed_open_eyes": 0.685775,
+        "head_pose_image_database": 0.9330611570247934
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.7,
+        0.25
+      ],
+      "mean_split_auc": 0.7937087809917356,
+      "min_split_auc": 0.647325,
+      "min_split_balanced_accuracy": 0.6366666666666667,
+      "pooled_auc": 0.8822720269619644,
+      "pooled_balanced_accuracy": 0.8388493018777083,
+      "separation": 0.5072077958232273,
+      "pearson_r": 0.6160229612643395,
+      "threshold": 0.35755386013910595,
+      "per_split_auc": {
+        "closed_open_eyes": 0.647325,
+        "head_pose_image_database": 0.940092561983471
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.65,
+        0.3
+      ],
+      "mean_split_auc": 0.7935679063360881,
+      "min_split_auc": 0.6466333333333333,
+      "min_split_balanced_accuracy": 0.6333333333333333,
+      "pooled_auc": 0.8822277323062109,
+      "pooled_balanced_accuracy": 0.835953298025999,
+      "separation": 0.5042757270846807,
+      "pearson_r": 0.6149216939391643,
+      "threshold": 0.3490946871637648,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6466333333333333,
+        "head_pose_image_database": 0.940502479338843
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.75,
+        0.2
+      ],
+      "mean_split_auc": 0.793218629476584,
+      "min_split_auc": 0.6471083333333333,
+      "min_split_balanced_accuracy": 0.6429166666666667,
+      "pooled_auc": 0.8820033702455464,
+      "pooled_balanced_accuracy": 0.8399229658160808,
+      "separation": 0.5101398645617736,
+      "pearson_r": 0.6168261765171407,
+      "threshold": 0.3711423461175445,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6471083333333333,
+        "head_pose_image_database": 0.9393289256198347
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.6,
+        0.35
+      ],
+      "mean_split_auc": 0.7931981404958677,
+      "min_split_auc": 0.64555,
+      "min_split_balanced_accuracy": 0.6329166666666667,
+      "pooled_auc": 0.8819715936446798,
+      "pooled_balanced_accuracy": 0.8339841116995667,
+      "separation": 0.5013436583461341,
+      "pearson_r": 0.6135168184452753,
+      "threshold": 0.3361779392994644,
+      "per_split_auc": {
+        "closed_open_eyes": 0.64555,
+        "head_pose_image_database": 0.9408462809917355
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.55,
+        0.4
+      ],
+      "mean_split_auc": 0.7927944214876033,
+      "min_split_auc": 0.64465,
+      "min_split_balanced_accuracy": 0.6358333333333334,
+      "pooled_auc": 0.8815584978334136,
+      "pooled_balanced_accuracy": 0.8293861338468946,
+      "separation": 0.4984115896075877,
+      "pearson_r": 0.6118039727011427,
+      "threshold": 0.3278219994091227,
+      "per_split_auc": {
+        "closed_open_eyes": 0.64465,
+        "head_pose_image_database": 0.9409388429752066
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.8,
+        0.15
+      ],
+      "mean_split_auc": 0.7925815771349862,
+      "min_split_auc": 0.6465416666666667,
+      "min_split_balanced_accuracy": 0.6395833333333334,
+      "pooled_auc": 0.8816538276360135,
+      "pooled_balanced_accuracy": 0.8409075589792971,
+      "separation": 0.5130719333003202,
+      "pearson_r": 0.6173380028164085,
+      "threshold": 0.38801097707107235,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6465416666666667,
+        "head_pose_image_database": 0.9386214876033058
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.5,
+        0.45
+      ],
+      "mean_split_auc": 0.7919591253443525,
+      "min_split_auc": 0.6431083333333333,
+      "min_split_balanced_accuracy": 0.6370833333333333,
+      "pooled_auc": 0.8809961482908041,
+      "pooled_balanced_accuracy": 0.826779008184882,
+      "separation": 0.4954795208690411,
+      "pearson_r": 0.6097800644831801,
+      "threshold": 0.42547470088514705,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6431083333333333,
+        "head_pose_image_database": 0.9408099173553719
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.85,
+        0.1
+      ],
+      "mean_split_auc": 0.7915902892561983,
+      "min_split_auc": 0.64525,
+      "min_split_balanced_accuracy": 0.6458333333333334,
+      "pooled_auc": 0.8811242176215696,
+      "pooled_balanced_accuracy": 0.8415045739046703,
+      "separation": 0.5160040020388668,
+      "pearson_r": 0.6175661142252576,
+      "threshold": 0.4008577361525957,
+      "per_split_auc": {
+        "closed_open_eyes": 0.64525,
+        "head_pose_image_database": 0.9379305785123967
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.45,
+        0.5
+      ],
+      "mean_split_auc": 0.790801170798898,
+      "min_split_auc": 0.6410833333333333,
+      "min_split_balanced_accuracy": 0.63,
+      "pooled_auc": 0.8801757342320655,
+      "pooled_balanced_accuracy": 0.8244174289841117,
+      "separation": 0.4925474521304947,
+      "pearson_r": 0.6074433342094594,
+      "threshold": 0.43976358039514796,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6410833333333333,
+        "head_pose_image_database": 0.9405190082644628
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.9,
+        0.05
+      ],
+      "mean_split_auc": 0.7900276515151514,
+      "min_split_auc": 0.6428916666666666,
+      "min_split_balanced_accuracy": 0.6516666666666666,
+      "pooled_auc": 0.8804318728935965,
+      "pooled_balanced_accuracy": 0.8411747713047664,
+      "separation": 0.5189360707774133,
+      "pearson_r": 0.6175190927320701,
+      "threshold": 0.4201720000589517,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6428916666666666,
+        "head_pose_image_database": 0.9371636363636363
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.4,
+        0.55
+      ],
+      "mean_split_auc": 0.7894552341597796,
+      "min_split_auc": 0.6389666666666667,
+      "min_split_balanced_accuracy": 0.625,
+      "pooled_auc": 0.8792368801155512,
+      "pooled_balanced_accuracy": 0.8217621569571497,
+      "separation": 0.4896153833919482,
+      "pearson_r": 0.6047934029790328,
+      "threshold": 0.4275750158810353,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6389666666666667,
+        "head_pose_image_database": 0.9399438016528926
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.95,
+        0.0
+      ],
+      "mean_split_auc": 0.7879871900826447,
+      "min_split_auc": 0.6397,
+      "min_split_balanced_accuracy": 0.6504166666666666,
+      "pooled_auc": 0.87981896966779,
+      "pooled_balanced_accuracy": 0.8419812229176697,
+      "separation": 0.5218681395159598,
+      "pearson_r": 0.6172063204466275,
+      "threshold": 0.4193907489307852,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6397,
+        "head_pose_image_database": 0.9362743801652893
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.35,
+        0.6
+      ],
+      "mean_split_auc": 0.7878871900826446,
+      "min_split_auc": 0.6367,
+      "min_split_balanced_accuracy": 0.6220833333333333,
+      "pooled_auc": 0.8780312951372171,
+      "pooled_balanced_accuracy": 0.819525758305248,
+      "separation": 0.48668331465340164,
+      "pearson_r": 0.6018313044728881,
+      "threshold": 0.39469288924658896,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6367,
+        "head_pose_image_database": 0.9390743801652892
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.3,
+        0.65
+      ],
+      "mean_split_auc": 0.7860763085399449,
+      "min_split_auc": 0.6340666666666667,
+      "min_split_balanced_accuracy": 0.6175,
+      "pooled_auc": 0.8766677900818488,
+      "pooled_balanced_accuracy": 0.8174939817043813,
+      "separation": 0.4837512459148551,
+      "pearson_r": 0.598559499673122,
+      "threshold": 0.40770483070045194,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6340666666666667,
+        "head_pose_image_database": 0.9380859504132232
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.25,
+        0.7
+      ],
+      "mean_split_auc": 0.7843926652892561,
+      "min_split_auc": 0.632025,
+      "min_split_balanced_accuracy": 0.6158333333333333,
+      "pooled_auc": 0.8751482908040443,
+      "pooled_balanced_accuracy": 0.8148074145402022,
+      "separation": 0.4808191771763086,
+      "pearson_r": 0.5949818737531055,
+      "threshold": 0.39929396378717097,
+      "per_split_auc": {
+        "closed_open_eyes": 0.632025,
+        "head_pose_image_database": 0.9367603305785124
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.2,
+        0.75
+      ],
+      "mean_split_auc": 0.7824427341597796,
+      "min_split_auc": 0.6297416666666666,
+      "min_split_balanced_accuracy": 0.6116666666666666,
+      "pooled_auc": 0.8734727973038036,
+      "pooled_balanced_accuracy": 0.8139431872893597,
+      "separation": 0.47788710843776216,
+      "pearson_r": 0.591103714920568,
+      "threshold": 0.38981236966536664,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6297416666666666,
+        "head_pose_image_database": 0.9351438016528926
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.15,
+        0.8
+      ],
+      "mean_split_auc": 0.7807613980716254,
+      "min_split_auc": 0.6280583333333334,
+      "min_split_balanced_accuracy": 0.6079166666666667,
+      "pooled_auc": 0.8717443428021184,
+      "pooled_balanced_accuracy": 0.8099422243620606,
+      "separation": 0.4749550396992157,
+      "pearson_r": 0.586931675439781,
+      "threshold": 0.38524752728642875,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6280583333333334,
+        "head_pose_image_database": 0.9334644628099174
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.1,
+        0.85
+      ],
+      "mean_split_auc": 0.77881391184573,
+      "min_split_auc": 0.6261666666666666,
+      "min_split_balanced_accuracy": 0.6070833333333333,
+      "pooled_auc": 0.8696576793452094,
+      "pooled_balanced_accuracy": 0.8071665864227251,
+      "separation": 0.4720229709606691,
+      "pearson_r": 0.5824737155005566,
+      "threshold": 0.37522246872305065,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6261666666666666,
+        "head_pose_image_database": 0.9314611570247934
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.05,
+        0.9
+      ],
+      "mean_split_auc": 0.7768194214876033,
+      "min_split_auc": 0.6243,
+      "min_split_balanced_accuracy": 0.6029166666666667,
+      "pooled_auc": 0.8674313914299471,
+      "pooled_balanced_accuracy": 0.803700048146365,
+      "separation": 0.46909090222212263,
+      "pearson_r": 0.5777390310232549,
+      "threshold": 0.39509531507251555,
+      "per_split_auc": {
+        "closed_open_eyes": 0.6243,
+        "head_pose_image_database": 0.9293388429752066
+      }
+    },
+    {
+      "weights": [
+        0.05,
+        0.0,
+        0.95
+      ],
+      "mean_split_auc": 0.7744462809917355,
+      "min_split_auc": 0.622,
+      "min_split_balanced_accuracy": 0.6,
+      "pooled_auc": 0.8610751083293211,
+      "pooled_balanced_accuracy": 0.8014588348579682,
+      "separation": 0.46615883348357606,
+      "pearson_r": 0.5727379668727292,
+      "threshold": 0.4086536120075239,
+      "per_split_auc": {
+        "closed_open_eyes": 0.622,
+        "head_pose_image_database": 0.926892561983471
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.5,
+        0.5
+      ],
+      "mean_split_auc": 0.7408057679063361,
+      "min_split_auc": 0.5478958333333334,
+      "min_split_balanced_accuracy": 0.5466666666666666,
+      "pooled_auc": 0.8583317284545017,
+      "pooled_balanced_accuracy": 0.8211073663938373,
+      "separation": 0.5061457198348734,
+      "pearson_r": 0.5820231905720815,
+      "threshold": 0.3937183823331049,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5478958333333334,
+        "head_pose_image_database": 0.9337157024793389
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.45,
+        0.55
+      ],
+      "mean_split_auc": 0.7406360709366391,
+      "min_split_auc": 0.5480291666666667,
+      "min_split_balanced_accuracy": 0.5454166666666667,
+      "pooled_auc": 0.8577973038035628,
+      "pooled_balanced_accuracy": 0.8178863745787193,
+      "separation": 0.503213651096327,
+      "pearson_r": 0.579752483178131,
+      "threshold": 0.34269677896407846,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5480291666666667,
+        "head_pose_image_database": 0.9332429752066116
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.4,
+        0.6
+      ],
+      "mean_split_auc": 0.7403507403581266,
+      "min_split_auc": 0.5481791666666667,
+      "min_split_balanced_accuracy": 0.5429166666666667,
+      "pooled_auc": 0.8570577756379394,
+      "pooled_balanced_accuracy": 0.8169908521906596,
+      "separation": 0.5002815823577804,
+      "pearson_r": 0.577220396165805,
+      "threshold": 0.3484180498372814,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5481791666666667,
+        "head_pose_image_database": 0.9325223140495867
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.55,
+        0.45
+      ],
+      "mean_split_auc": 0.7402573519283746,
+      "min_split_auc": 0.5467791666666667,
+      "min_split_balanced_accuracy": 0.5479166666666666,
+      "pooled_auc": 0.8586157920077034,
+      "pooled_balanced_accuracy": 0.8247616754935003,
+      "separation": 0.5090777885734199,
+      "pearson_r": 0.5840324840487833,
+      "threshold": 0.2645750175964353,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5467791666666667,
+        "head_pose_image_database": 0.9337355371900826
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.35,
+        0.65
+      ],
+      "mean_split_auc": 0.7400862086776859,
+      "min_split_auc": 0.5485625,
+      "min_split_balanced_accuracy": 0.54375,
+      "pooled_auc": 0.8562238805970149,
+      "pooled_balanced_accuracy": 0.8134039480019258,
+      "separation": 0.4973495136192338,
+      "pearson_r": 0.5744279960989823,
+      "threshold": 0.39004598069222385,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5485625,
+        "head_pose_image_database": 0.9316099173553719
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.3,
+        0.7
+      ],
+      "mean_split_auc": 0.7400052513774105,
+      "min_split_auc": 0.5491708333333334,
+      "min_split_balanced_accuracy": 0.54375,
+      "pooled_auc": 0.8554467982667309,
+      "pooled_balanced_accuracy": 0.8112301396244583,
+      "separation": 0.4944174448806874,
+      "pearson_r": 0.5713773898562426,
+      "threshold": 0.3226416608967596,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5491708333333334,
+        "head_pose_image_database": 0.9308396694214877
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.6,
+        0.4
+      ],
+      "mean_split_auc": 0.7395132403581268,
+      "min_split_auc": 0.5453041666666667,
+      "min_split_balanced_accuracy": 0.5491666666666666,
+      "pooled_auc": 0.8587274915743861,
+      "pooled_balanced_accuracy": 0.8288204140587385,
+      "separation": 0.5120098573119665,
+      "pearson_r": 0.5857813425116191,
+      "threshold": 0.2893600781385691,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5453041666666667,
+        "head_pose_image_database": 0.9337223140495868
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.25,
+        0.75
+      ],
+      "mean_split_auc": 0.739437138429752,
+      "min_split_auc": 0.5492875,
+      "min_split_balanced_accuracy": 0.5429166666666667,
+      "pooled_auc": 0.8542662493981704,
+      "pooled_balanced_accuracy": 0.8096750120365912,
+      "separation": 0.4914853761421408,
+      "pearson_r": 0.5680717213159434,
+      "threshold": 0.35075881913556034,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5492875,
+        "head_pose_image_database": 0.9295867768595041
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.65,
+        0.35
+      ],
+      "mean_split_auc": 0.7389066976584022,
+      "min_split_auc": 0.5441208333333334,
+      "min_split_balanced_accuracy": 0.5529166666666667,
+      "pooled_auc": 0.8587303803562831,
+      "pooled_balanced_accuracy": 0.8318054886856042,
+      "separation": 0.5149419260505129,
+      "pearson_r": 0.5872717285649564,
+      "threshold": 0.30058638965431966,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5441208333333334,
+        "head_pose_image_database": 0.9336925619834711
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.2,
+        0.8
+      ],
+      "mean_split_auc": 0.7384655475206612,
+      "min_split_auc": 0.5487625,
+      "min_split_balanced_accuracy": 0.5429166666666667,
+      "pooled_auc": 0.8529605199807414,
+      "pooled_balanced_accuracy": 0.8080621088107849,
+      "separation": 0.4885533074035944,
+      "pearson_r": 0.5645151565648718,
+      "threshold": 0.35864629319871855,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5487625,
+        "head_pose_image_database": 0.9281685950413223
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.7,
+        0.3
+      ],
+      "mean_split_auc": 0.7377697141873278,
+      "min_split_auc": 0.5421708333333334,
+      "min_split_balanced_accuracy": 0.5529166666666667,
+      "pooled_auc": 0.8585878671160327,
+      "pooled_balanced_accuracy": 0.8329995185363506,
+      "separation": 0.5178739947890594,
+      "pearson_r": 0.5885065493499005,
+      "threshold": 0.2984284302590273,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5421708333333334,
+        "head_pose_image_database": 0.9333685950413223
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.15,
+        0.85
+      ],
+      "mean_split_auc": 0.7375424414600551,
+      "min_split_auc": 0.5483708333333334,
+      "min_split_balanced_accuracy": 0.5429166666666667,
+      "pooled_auc": 0.8515016851227732,
+      "pooled_balanced_accuracy": 0.8057944150216658,
+      "separation": 0.4856212386650477,
+      "pearson_r": 0.5607128577649275,
+      "threshold": 0.34055583469481976,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5483708333333334,
+        "head_pose_image_database": 0.9267140495867768
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.75,
+        0.25
+      ],
+      "mean_split_auc": 0.7368031163911846,
+      "min_split_auc": 0.5406541666666667,
+      "min_split_balanced_accuracy": 0.5525,
+      "pooled_auc": 0.8584415021665864,
+      "pooled_balanced_accuracy": 0.8343716899374097,
+      "separation": 0.520806063527606,
+      "pearson_r": 0.589489608663824,
+      "threshold": 0.3238682480479863,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5406541666666667,
+        "head_pose_image_database": 0.9329520661157025
+      }
+    },
+    {
+      "weights": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "mean_split_auc": 0.736663567493113,
+      "min_split_auc": 0.4773438016528926,
+      "min_split_balanced_accuracy": 0.5905454545454545,
+      "pooled_auc": 0.6239624458353394,
+      "pooled_balanced_accuracy": 0.6533654309099663,
+      "separation": 0.26350105313276373,
+      "pearson_r": 0.30563275258601474,
+      "threshold": 0.6812574510717009,
+      "per_split_auc": {
+        "closed_open_eyes": 0.9959833333333333,
+        "head_pose_image_database": 0.4773438016528926
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.1,
+        0.9
+      ],
+      "mean_split_auc": 0.7365883780991735,
+      "min_split_auc": 0.5482875,
+      "min_split_balanced_accuracy": 0.54125,
+      "pooled_auc": 0.849868560423688,
+      "pooled_balanced_accuracy": 0.8031391429947039,
+      "separation": 0.48268916992650135,
+      "pearson_r": 0.5566709460584489,
+      "threshold": 0.32295859475839156,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5482875,
+        "head_pose_image_database": 0.924889256198347
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.8,
+        0.2
+      ],
+      "mean_split_auc": 0.73563548553719,
+      "min_split_auc": 0.5388875,
+      "min_split_balanced_accuracy": 0.5549999999999999,
+      "pooled_auc": 0.8581921039961483,
+      "pooled_balanced_accuracy": 0.8346437168993741,
+      "separation": 0.5237381322661525,
+      "pearson_r": 0.5902255514488954,
+      "threshold": 0.2861093757193328,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5388875,
+        "head_pose_image_database": 0.9323834710743801
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.05,
+        0.95
+      ],
+      "mean_split_auc": 0.7355426480716254,
+      "min_split_auc": 0.5484208333333334,
+      "min_split_balanced_accuracy": 0.5404166666666667,
+      "pooled_auc": 0.8479985556090515,
+      "pooled_balanced_accuracy": 0.8009605199807415,
+      "separation": 0.47975710118795484,
+      "pearson_r": 0.5523964541279462,
+      "threshold": 0.31064945553044443,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5484208333333334,
+        "head_pose_image_database": 0.9226644628099173
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "mean_split_auc": 0.7343428719008265,
+      "min_split_auc": 0.547975,
+      "min_split_balanced_accuracy": 0.5425,
+      "pooled_auc": 0.8417746750120366,
+      "pooled_balanced_accuracy": 0.7994679826673086,
+      "separation": 0.4768250324494083,
+      "pearson_r": 0.5478972692440269,
+      "threshold": 0.29556977333360146,
+      "per_split_auc": {
+        "closed_open_eyes": 0.547975,
+        "head_pose_image_database": 0.9207107438016529
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.85,
+        0.15
+      ],
+      "mean_split_auc": 0.7340741563360882,
+      "min_split_auc": 0.5364458333333333,
+      "min_split_balanced_accuracy": 0.5520833333333333,
+      "pooled_auc": 0.8577404910929225,
+      "pooled_balanced_accuracy": 0.8355344246509389,
+      "separation": 0.5266702010046989,
+      "pearson_r": 0.5907198018364068,
+      "threshold": 0.35742380913103,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5364458333333333,
+        "head_pose_image_database": 0.931702479338843
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.9,
+        0.1
+      ],
+      "mean_split_auc": 0.7323063188705234,
+      "min_split_auc": 0.5334291666666666,
+      "min_split_balanced_accuracy": 0.5549999999999999,
+      "pooled_auc": 0.8570751083293211,
+      "pooled_balanced_accuracy": 0.8370269619643718,
+      "separation": 0.5296022697432455,
+      "pearson_r": 0.5909784959985015,
+      "threshold": 0.37091142594978505,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5334291666666666,
+        "head_pose_image_database": 0.9311834710743802
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        0.95,
+        0.05
+      ],
+      "mean_split_auc": 0.7303572830578513,
+      "min_split_auc": 0.5301625,
+      "min_split_balanced_accuracy": 0.55375,
+      "pooled_auc": 0.8563375060182956,
+      "pooled_balanced_accuracy": 0.8378911892152142,
+      "separation": 0.532534338481792,
+      "pearson_r": 0.5910084110857,
+      "threshold": 0.38973143247379216,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5301625,
+        "head_pose_image_database": 0.9305520661157025
+      }
+    },
+    {
+      "weights": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "mean_split_auc": 0.7286326618457301,
+      "min_split_auc": 0.5274041666666667,
+      "min_split_balanced_accuracy": 0.5554166666666667,
+      "pooled_auc": 0.8558993740972557,
+      "pooled_balanced_accuracy": 0.8381006259027444,
+      "separation": 0.5354664072203386,
+      "pearson_r": 0.5908168915221084,
+      "threshold": 0.3907615159927055,
+      "per_split_auc": {
+        "closed_open_eyes": 0.5274041666666667,
+        "head_pose_image_database": 0.9298611570247934
+      }
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "source_revision": "ee65e4c1acb84f4921622cb5960382eb45f4314f",
+  "label_author": "Codex",
+  "label_status": "agent_provisional_not_human_gold",
+  "words_per_minute": 150,
+  "teacher_window_seconds": 25,
+  "minimum_scored_teacher_words": 20,
+  "contracts": {
+    "fractions_add_subtract": {
+      "topic": "Fraction arithmetic",
+      "scope": "Adding and subtracting fractions by finding common denominators, using equivalent fractions, and simplifying the result.",
+      "family": "fractions",
+      "adjacent_contract": "fractions_multiply",
+      "unrelated_contract": "linear_equations"
+    },
+    "fractions_multiply": {
+      "topic": "Fraction arithmetic",
+      "scope": "Multiplying fractions and finding a fraction of an amount using multiplication and division.",
+      "family": "fractions",
+      "adjacent_contract": "fractions_add_subtract",
+      "unrelated_contract": "linear_sequences"
+    },
+    "ratios_equivalent": {
+      "topic": "Ratios",
+      "scope": "Simplifying ratios and checking equivalence by scaling both parts by the same factor.",
+      "family": "ratios",
+      "adjacent_contract": "ratios_sharing",
+      "unrelated_contract": "fractions_add_subtract"
+    },
+    "ratios_sharing": {
+      "topic": "Ratios",
+      "scope": "Using ratio parts to divide a total or recover amounts from the difference between shares.",
+      "family": "ratios",
+      "adjacent_contract": "ratios_equivalent",
+      "unrelated_contract": "fractions_multiply"
+    },
+    "linear_equations": {
+      "topic": "Algebra",
+      "scope": "Solving linear equations by inverse operations on both sides to isolate the unknown.",
+      "family": "algebra",
+      "adjacent_contract": "linear_sequences",
+      "unrelated_contract": "ratios_equivalent"
+    },
+    "linear_sequences": {
+      "topic": "Algebra",
+      "scope": "Generating terms of arithmetic sequences from an nth-term rule and reasoning about their values.",
+      "family": "algebra",
+      "adjacent_contract": "linear_equations",
+      "unrelated_contract": "ratios_sharing"
+    }
+  },
+  "sessions": [
+    {
+      "intervention_id": "288", "source_split": "train", "split": "calibration",
+      "contract": "fractions_add_subtract", "start_sequence": 4, "end_sequence": 29,
+      "problem": "Work out 5/7 - 1/4 and give the answer in its simplest form. Options: A 27/28, B 4/3, C 13/28, D 1/7.",
+      "selection_reason": "Self-contained common-denominator explanation and a learner's numerator-conversion mistake. Personal greetings and the platform handoff are omitted."
+    },
+    {
+      "intervention_id": "1127", "source_split": "train", "split": "calibration",
+      "contract": "fractions_multiply", "start_sequence": 5, "end_sequence": 28,
+      "problem": "Rewrite (4/5) times 7 as 7 divided by K times L. Find K and L.",
+      "selection_reason": "Tutor explains a fraction as division and multiplication; stop before answer-letter-only discussion."
+    },
+    {
+      "intervention_id": "2142", "source_split": "train", "split": "calibration",
+      "contract": "ratios_equivalent", "start_sequence": 2, "end_sequence": 26,
+      "problem": "Simplify the ratio 12:18. Then practise with 45:20.",
+      "selection_reason": "Includes a worked ratio and a follow-up example, including the learner reversing the order. Stop before an unfinished third exercise."
+    },
+    {
+      "intervention_id": "5367", "source_split": "train", "split": "calibration",
+      "contract": "ratios_sharing", "start_sequence": 4, "end_sequence": 38,
+      "problem": "Two people share 60 sweets in the ratio 3:2. How many sweets does the first person receive?",
+      "replacements": {"Lina": "the first person"},
+      "selection_reason": "Complete ratio-sharing scaffold with several genuine student errors; standardize the inconsistent fictional character name."
+    },
+    {
+      "intervention_id": "999", "source_split": "train", "split": "calibration",
+      "contract": "linear_equations", "start_sequence": 8, "end_sequence": 39,
+      "problem": "Solve 0.4t - 0.2 = 1.",
+      "selection_reason": "Complete inverse-operations explanation. Omit the opening discussion of participant names and closing platform instructions."
+    },
+    {
+      "intervention_id": "3138", "source_split": "train", "split": "calibration",
+      "contract": "linear_sequences", "start_sequence": 5, "end_sequence": 32,
+      "problem": "How many terms are greater than zero in the arithmetic sequence whose nth term is 16 - 3n?",
+      "replacements": {"Isabella": ""},
+      "selection_reason": "Explicit nth-term substitution, decreasing sequence, and positive-term count. Remove direct address by the learner's surrogate name."
+    },
+    {
+      "intervention_id": "574", "source_split": "test", "split": "evaluation",
+      "contract": "fractions_add_subtract", "start_sequence": 3, "end_sequence": 25,
+      "problem": "Calculate 2/9 + 1/3.",
+      "selection_reason": "Different source question and session from calibration. The learner first guesses the common denominator, then completes the addition."
+    },
+    {
+      "intervention_id": "1411", "source_split": "test", "split": "evaluation",
+      "contract": "fractions_multiply", "start_sequence": 6, "end_sequence": 27,
+      "problem": "A person has 2/3 of a whole cake. A second person eats 1/3 of that piece. Which calculation gives the fraction of the whole cake eaten?",
+      "replacements": {"Edward": "the second person"},
+      "selection_reason": "Genuine confusion between subtraction and taking a fraction of an amount. Keep the student's uncertainty and the teacher's scaffold."
+    },
+    {
+      "intervention_id": "1305", "source_split": "test", "split": "evaluation",
+      "contract": "ratios_equivalent", "start_sequence": 5, "end_sequence": 23,
+      "problem": "Which ratio is not equivalent to 6:18? A 18:56, B 1:3, C 9:27, D 4:12.",
+      "selection_reason": "Source question options are supplied as text so A/B/C/D references are interpretable without the original interface."
+    },
+    {
+      "intervention_id": "2140", "source_split": "test", "split": "evaluation",
+      "contract": "ratios_sharing", "start_sequence": 5, "end_sequence": 32,
+      "problem": "Two people share a profit in the ratio 5:3. The first person gets 120 pounds more than the second. How much profit did they make altogether?",
+      "replacements": {"Dorian": "the first person", "Nathaniel": "the second person"},
+      "selection_reason": "Ratio-parts reasoning from the difference between shares; all necessary quantities are available in text."
+    },
+    {
+      "intervention_id": "552", "source_split": "test", "split": "evaluation",
+      "contract": "linear_equations", "start_sequence": 5, "end_sequence": 22,
+      "problem": "Solve (t + 1)/3 = 5/4.",
+      "selection_reason": "Learner initially proposes fraction addition; teacher redirects to equation solving. This is pedagogical support, not off-topic drift. Stop after the correct solution."
+    },
+    {
+      "intervention_id": "8470", "source_split": "test", "split": "evaluation",
+      "contract": "linear_sequences", "start_sequence": 10, "end_sequence": 38,
+      "problem": "Find the first term of the sequence with nth-term rule 5n - 7. Then try 4n + 5.",
+      "selection_reason": "Omit platform/tutor-handoff opening. Retain the tutor's subtract-2 slip and immediate subtract-7 correction as authentic dialogue; factual accuracy is separate from topical adherence."
+    }
+  ]
+}

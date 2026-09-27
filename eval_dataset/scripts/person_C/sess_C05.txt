@@ -1,0 +1,25 @@
+TOPIC: Node.js basics (event loop, non-blocking I/O, callbacks)
+TEACHER: C
+LEARNER: D
+CATEGORY: code_switch
+
+C: Okay, today I want to get you past the syntax and into the thing that actually makes Node different, which is the event loop and non-blocking I/O.
+D: I keep hearing "non-blocking" but honestly I don't know what it's not blocking.
+C: Fair. The short version is that Node runs your JavaScript on a single thread, so if one operation sits there waiting for a file or a database, nothing else can run.
+D: So how does it ever handle more than one request at a time?
+C: It hands the slow work off and keeps going. Let me use a picture that usually makes this click, and then we'll map it straight back to code.
+C: Think of one waiter in a small restaurant. He walks to table four, takes the order, and instead of standing next to the table until the food is ready, he clips the ticket to the rail and walks away. He goes to table five, takes their order, clips that ticket up too, refills someone's water on the way back, and clears two plates from table two. The kitchen is doing the slow part, the grilling, the simmering, the plating, and none of that is his problem.
+C: When a plate is finally up, the cook rings the bell, the ticket comes down off the rail, and the waiter carries that plate out. Then he's right back to whoever is waving at him. One waiter, dozens of tables, and nobody sits there watching a pan. The only way the whole floor stops is if he decides to stand at the stove and stir the sauce himself.
+D: Okay, and the waiter is the thread?
+C: Exactly. The waiter is the single thread running your JavaScript, the kitchen is the operating system doing the file read or the network call, and the ticket rail is the queue. The bell is the completion event, and carrying the plate out is your callback finally running.
+D: And standing at the stove is what, a while loop?
+C: Standing at the stove is any synchronous blocking call. A tight loop, readFileSync, a long JSON.parse over something huge. While that runs the whole server is unresponsive, because there is only ever one waiter.
+D: So when I write fs.readFile with a callback, where exactly does my function go?
+C: Node hands the read to the thread pool, and your callback is parked until the read finishes. Then it gets queued, and the event loop picks it up on the next pass through that phase.
+D: How many phases are there?
+C: A handful — timers, pending callbacks, poll, check, close. For now just remember that timers run setTimeout callbacks, poll is where most I/O completions land, and check is where setImmediate runs.
+D: And promises? Are those just callbacks with nicer syntax?
+C: Underneath, yes, but microtasks are drained between phases, so a resolved promise runs before the next setTimeout even if the timeout was zero. That trips people up constantly.
+C: The practical rule is simple. Never block the loop. Push CPU-heavy work to a worker thread or a separate process, and always prefer the async version of an API even when the sync one looks easier.
+D: Can I try writing a small server that reads a file and returns it?
+C: Yes, do that next. Use http.createServer, read the file asynchronously inside the handler, and send the response from the callback so the loop stays free.
