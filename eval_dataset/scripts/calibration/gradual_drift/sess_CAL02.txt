@@ -1,0 +1,57 @@
+TOPIC: French conversation
+SCOPE: present-tense verbs and everyday greetings
+TEACHER: A
+LEARNER: B
+CATEGORY: gradual_drift
+AUTHOR: agent:sonnet-5
+DIGRESSION: 23,25,27,29,31,33,35,37,39,41,43,45,47,49
+
+A: Hey, good to see you. So today's the day we finally tackle French — greetings and present-tense verbs, since that's what you wanted. Ready?
+B: Yeah, let's go. I've been dreading it a little, honestly.
+A: Don't dread it, it's the easy stuff. Start with greetings, because you'll use them every single time you open your mouth. "Bonjour" for hello, formal or general, any time of day until evening. "Bonsoir" once it gets dark. And "Salut" is casual, like "hey," only for friends or people your age.
+B: So I can't just say "Salut" to everyone?
+A: Right, don't say it to your boss or a stranger on the street. That's the tu versus vous distinction basically leaking into greetings too. "Tu" is informal, one person you know well. "Vous" is formal, or plural, or a stranger, or your boss. When in doubt, vous.
+B: Got it. What about "how are you"?
+A: "Comment ça va?" or just "Ça va?" for short. And the answer is usually just "Ça va" back, meaning "it's going," fine either as a question or a reply, which trips people up at first.
+B: Wait, so the same phrase is the question and the answer?
+A: Exactly, context does the work. Like if I say "Ça va?" and you say "Ça va, et toi?" — that's "fine, and you?" — you've just had a complete exchange. Try it on me.
+B: Ça va... et toi?
+A: Close, but you want to answer first before asking it back, otherwise it sounds like you're just repeating my question. Try "Ça va bien, merci, et toi?" — fine, thanks, and you?
+B: Ça va bien, merci, et toi.
+A: There you go, perfect. Okay, now the actual backbone of all this, present-tense verbs. The two you cannot avoid are être, "to be," and avoir, "to have." Both irregular, both used constantly. Être: je suis, tu es, il/elle est, nous sommes, vous êtes, ils/elles sont.
+B: That's a lot to memorize at once.
+A: It is, but you'll drill it into muscle memory fast because it comes up in every sentence about identity or description — "je suis fatigué," I'm tired, "il est content," he's happy. Avoir is the other pillar: j'ai, tu as, il/elle a, nous avons, vous avez, ils/elles ont.
+B: Okay so avoir is "to have." When would I actually use that versus être?
+A: Good question, and here's the part that confuses everyone — French uses avoir for age, where English uses "to be." You don't say "I am twenty," you say "j'ai vingt ans," literally "I have twenty years." Same with being hungry or cold: "j'ai faim," I have hunger, "j'ai froid," I have cold.
+B: That's so backwards from English.
+A: It feels that way until it doesn't. Now, most other verbs are regular -er verbs, and they follow one pattern you can apply everywhere: drop the -er, add -e, -es, -e, -ons, -ez, -ent. Take "parler," to speak — je parle, tu parles, il parle, nous parlons, vous parlez, ils parlent.
+B: So if I learn that ending pattern I can conjugate basically any -er verb?
+A: Basically, yes, that's most of the verbs in French right there. One important irregular one to know early is "aller," to go — je vais, tu vas, il va, nous allons, vous allez, ils vont. You'll want it constantly, like "je vais au marché," I'm going to the market.
+B: Why the market specifically, is that just a textbook example?
+A: Ha, no, actually that phrase always makes me think of an actual market, the one near where I stayed one summer in Aix-en-Provence. Little stalls of it every Tuesday and Saturday morning.
+B: Oh, you lived there? I didn't know that.
+A: Yeah, years back, for about ten weeks, this little apartment above a bakery. The whole town would fill up with these market stalls twice a week, and I'd walk down just to see what was fresh, even when I didn't need groceries.
+B: That sounds amazing honestly. What was the town like otherwise?
+A: Stone everywhere, these narrow streets, and it smelled like lavender constantly because you were basically at the edge of the lavender fields. Late June they're just this endless purple stretch running up into the hills, and the whole region smells like it for weeks.
+B: I've seen pictures of those fields, they're gorgeous.
+A: They really are, and it's one of those things where the photos actually undersell it, because you don't get the smell from a photo, and the smell is honestly half of it. There was this tiny shop in town that made candles from the local lavender, and I ended up buying way more than I could reasonably carry home.
+B: Did you bring them all the way back on the plane?
+A: Most of them, wrapped in like every sweater I owned so they wouldn't crack. And that trip is actually what got me into candle making myself, weirdly. I came home and thought, I bet I could make these, and just started experimenting in my kitchen.
+B: Wait, you make candles now?
+A: I do, it's become a real hobby over the past few years. Soy wax mostly, sometimes a coconut-soy blend because it holds scent a little better and burns cleaner than straight paraffin. Paraffin's cheaper but it's petroleum-based and the soot bothers me.
+B: I had no idea there were different waxes to choose between.
+A: Oh, there's a whole world of it. Melting point matters, how well it "throws" scent both cold and hot, how it looks once it sets — soy can get this frosty texture on top if you don't pour at the right temperature, which annoys people until they learn it's basically harmless.
+B: What about the wick, does that matter as much?
+A: Enormously, actually, more than people expect. Too thin a wick and the candle tunnels down the middle and drowns itself; too thick and it flares up, smokes, and burns through your fragrance way too fast. You size it to the diameter of the vessel and adjust based on the wax and how much fragrance oil you're loading in.
+B: How do you even figure out the right one without just wasting a bunch of candles?
+A: Test burns, basically, and keeping notes. I'll pour the same wax and scent into a few jars with different wick sizes, burn each for a few hours, and watch the melt pool — you want it to reach the edges of the glass by about the second hour without going crazy. It's tedious but you only really have to do it once per vessel type.
+B: Do you sell these anywhere or is it just for you?
+A: I started doing a couple of craft fairs last fall, actually, just local ones. It was mostly to see if anyone besides my friends would buy them, and it went better than I expected — I sold out of the lavender ones first, unsurprisingly.
+B: That's great! Do you have a whole setup, like a table and everything?
+A: Yeah, I built this little display out of reclaimed wood, tiered shelves so the labels are all visible, and I do these small brown kraft labels with hand lettering because it feels more personal than a printed sticker. Pricing was the hard part honestly, figuring out what covers the wax, wick, jar, fragrance oil, and your time without pricing yourself out of a craft fair crowd.
+B: How'd you land on a number?
+A: I basically costed out one batch of twelve, added a fair hourly rate for my time, then looked around at what other sellers were charging for similar sizes and split the difference. Ended up around eighteen dollars for an eight-ounce jar, which felt fair to me and still moved product.
+B: That's a whole business plan, not just a hobby at this point.
+A: It's getting there, honestly. I've been toying with doing an online shop too, maybe after the holidays once I see how a bigger fair season goes. We're way off from French at this point, aren't we.
+B: Ha, yeah, totally, but I'm kind of into it now. What would an online shop even take, like a whole website?
+A: Not really, that's the nice part — I'd probably just start on one of those marketplace sites built for handmade stuff rather than building my own site from scratch, since they already handle payments and shipping labels and all the annoying logistics. The bigger cost is really just good photos, because candle listings live or die on how the jar looks in the light, and phone photos only get you so far before people scroll past.

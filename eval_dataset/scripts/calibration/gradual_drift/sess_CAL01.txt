@@ -1,0 +1,57 @@
+TOPIC: Python fundamentals
+SCOPE: variables, loops, and functions
+TEACHER: A
+LEARNER: B
+CATEGORY: gradual_drift
+AUTHOR: agent:opus-5
+DIGRESSION: 35, 37, 39, 41, 43, 45, 47, 49
+
+A: Okay, I can see you now. So you said you've been poking at Python for a few weeks, but the basics still feel slippery?
+B: Yeah. I can read code and mostly guess what it does, but when I sit down to write something from scratch I just freeze.
+A: That's really common, and it usually means the model underneath isn't solid yet rather than that you're missing syntax. So let's rebuild the floor. Start with variables. What do you think a variable actually is?
+B: A box that holds a value?
+A: That's the standard answer and it's fine for about a week, then it starts lying to you. In Python a variable is more like a name tag you stick on a value. The value lives in memory and the name is just a label pointing at it. So if you write x = [1, 2, 3] and then y = x, you haven't made a second list. You've stuck a second tag on the same one.
+B: Oh. So if I change y, x changes too?
+A: Exactly, if the thing is mutable. Append to y and x sees it, because there's only one list there. That catches almost everyone once, usually at eleven at night when a test fails for no visible reason. With numbers and strings you never notice, because you can't change those in place at all.
+B: So integers are safe and lists are dangerous.
+A: Roughly, though I'd say shared rather than dangerous. Sharing is often exactly what you want. You just need to know when you're doing it. Rule of thumb: if you typed square brackets or curly braces, assume it's shared until you deliberately copy it.
+B: Okay. People keep telling me my variable names are bad, too.
+A: Names are the cheapest documentation you will ever write. If you call something data or temp or thing2, you're forcing future-you to re-derive the meaning every single time you read the line. Say what it is. unpaid_invoices. retry_count. user_by_email. Long is fine. Vague is not.
+B: That I can actually do. Loops next?
+A: Loops next. And here's the thing about Python loops: most languages make you count. You say start at zero, keep going while i is less than the length, add one each time. Python mostly lets you skip all of that. You say for each item in this collection, and it hands you the items one at a time.
+B: I've definitely seen for i in range(len(things)) though.
+A: You have, and nine times out of ten that's a habit imported from another language. If you only need the items, write for thing in things. If you genuinely need the position too, use enumerate. Reaching for range and len together is a smell that you're about to index something you never had to index.
+B: What if I'm walking two lists side by side?
+A: zip. for name, score in zip(names, scores). It stops at the shorter of the two, which is either precisely what you wanted or a bug lying in wait, so if they're supposed to be the same length, check that somewhere.
+B: And while loops? I never know when those are the right call.
+A: When you don't know how many times you'll go round. Reading lines until a file ends, retrying a request until it succeeds, asking someone for input until they type something sensible. If you know the count up front, or you're walking over a collection, use a for loop. If the stopping condition is a question about the world, that's a while loop.
+B: That's a cleaner split than I had. I've been using while for basically everything because it felt more controllable.
+A: It feels controllable, and it's genuinely more error-prone, because now you own the exit condition. Forget to update the variable the condition depends on and you've written an infinite loop. A for loop can't do that to you. The collection runs out and it stops, whether you were paying attention or not.
+B: Fair. Can I ask about break? I'm never sure I'm allowed to use it.
+A: You're allowed. People get oddly precious about it. break is how you say I found what I came for, stop looking. The thing actually worth knowing is that a loop can have an else clause, and it runs only if the loop finished without breaking.
+B: Wait. Loops can have an else? That sounds made up.
+A: I know, everyone reacts like that. It's real, it's rare, and when it fits it saves you the whole found = False flag dance. Search the list, break when you hit it, put the complaining in the else. Try it once and see whether you like reading it.
+B: I'll try it. Functions after this?
+A: Functions. A function is a name for a piece of behaviour, the same way a variable is a name for a value. That's the whole idea, really. The skill isn't typing the def line, it's deciding where the seams go, which chunks of behaviour deserve their own name.
+B: How do I decide that? I usually only pull something out once I've copy-pasted it twice.
+A: That's a decent trigger, but there's a better one. Pull it out when the block needs a comment. The moment you catch yourself writing hash, now normalise the phone numbers, that's a function called normalise_phone_numbers asking to be born. The comment becomes the name, and then it can't quietly drift out of date the way comments do.
+B: Oh, I like that a lot. What about arguments, how many is too many?
+A: Past three or four you're usually shuttling around something that wants to be one object instead. And while we're here, the mutable default trap: if you write def f(items=[]), that list is created once, when the function is defined, not on each call. So it accumulates between calls and you get a haunted function. Use None and build the list inside.
+B: That's horrible. Why on earth does it work that way?
+A: Because defaults are evaluated once at definition time, and honestly because nobody predicted how many people would walk into it. It's the most reported non-bug in the language. Funnily enough, the person who taught me that one was a guy called Dev at my first job, and he had the most brutal code review style I have ever been on the receiving end of.
+B: Brutal how?
+A: Forty comments on a twelve-line diff, that kind of brutal. Not mean, exactly, just relentless. He had this rule that if he had to ask a question about your code, then the code had already lost the argument. He'd come from a bank before that, and I'm fairly sure something expensive had gone wrong there and he never quite got over it.
+B: I think I'd have cried.
+A: I did, more or less, for the first month. Then around month three I started catching my own mistakes before he could, and it turned out that was the entire point. He also instituted this Friday rule where nobody merged anything after two in the afternoon, which sounds like bureaucracy until you've lost a Saturday rolling back somebody's optimism.
+B: Did people actually stick to it?
+A: Mostly, because he made it visible. There was a whiteboard by the kitchen where we tracked how many consecutive Fridays we'd gone without an incident. It got to thirty-one, then someone pushed a config change at four on a Friday and everyone was weirdly bereaved. That kitchen is also where the espresso machine lived, which is honestly the main reason I remember the place.
+B: A good one?
+A: An absurd one. A lever machine, an old Faema somebody's uncle donated when his restaurant closed, and nobody knew how to use it for the first six months. You pull the lever down yourself, so you are the pump. The pressure comes from a spring and your arm, and the shot is different every time depending on how impatient you were that morning.
+B: That sounds like a terrible way to get caffeine.
+A: It's a terrible way to get caffeine and a wonderful way to learn what actually matters, because you can't hide behind a machine that does it for you. Grind too coarse and the water falls straight through into brown disappointment. That machine is how I ended up roasting my own beans, eventually.
+B: Roasting at home? Isn't that an industrial thing?
+A: You'd think so. You can do it in a cast iron pan if you accept smoke and unevenness. I use a little drum roaster on the balcony, a kilo at a time, twelve minutes or so, and almost all of the skill is listening. The beans crack audibly once, then again more softly a couple of minutes later, and where you stop between those two cracks is basically the whole personality of the coffee.
+B: Where do you even buy green beans?
+A: Importers will sell you two or three kilos, and that's where it gets interesting, because suddenly you're reading about specific farms. Not countries, farms. One hillside in Huila, picked in November, dried on raised beds. I'm going to Colombia in February, actually, and a friend of a friend can get me onto a couple of farms during harvest.
+B: That sounds like a real trip.
+A: I've wanted to do it for years. The picking is all by hand, several passes over the same tree because the cherries don't ripen together, and everyone who's been says you don't understand the price of coffee until you've watched someone do that on a slope for eight hours. I want to see the wet mill, the drying patios, and taste something a day after it was processed.

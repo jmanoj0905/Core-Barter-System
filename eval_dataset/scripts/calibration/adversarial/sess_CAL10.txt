@@ -1,0 +1,61 @@
+TOPIC: Public speaking
+SCOPE: structuring a talk and managing nerves
+TEACHER: A
+LEARNER: B
+CATEGORY: adversarial
+AUTHOR: agent:opus-5
+DIGRESSION: 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 53
+
+A: Right, you said the conference talk is three weeks out. Before we touch a single slide, answer me this — if somebody grabbed an audience member on their way out of the room and asked what your talk was about, what should that person say?
+B: Um. Probably something like "how their team cut deploy times"?
+A: Good instinct, but that's a topic, not a takeaway. A topic is what you talked about. A takeaway is what changed in their head. Try it as one sentence with a verb in it, something they could repeat at dinner without you there.
+B: "You can cut deploy time in half without rewriting anything, if you fix the slowest test first."
+A: That's a talk. Write it on a sticky note and put it where you can see it, because from now on that sentence is the judge of everything. Every slide either serves it or it goes. Most bad talks aren't badly delivered, they're just three talks wearing one coat.
+B: That's uncomfortably close to my draft. I've got a section on hiring in there.
+A: Then the hiring section is a different talk and it can have its own day. Now the shape. The version I'd give you is three moves: here's the world as it is and why it hurts, here's the turn, here's what the world looks like afterwards. Problem, pivot, payoff.
+B: Isn't that a bit formulaic?
+A: It's formulaic the way a door is formulaic. Nobody admires the door, they just get through it. The audience is spending effort on your content; don't make them also spend effort guessing the architecture.
+B: Fair. So how much time on each part?
+A: Rough thirds, but weight the problem more than you want to. People skip it because they already know it — you do, they don't, not in your specific shape. If the pain isn't real by minute four, the solution is just trivia. And the turn should be one insight, not nine improvements.
+B: Mine is definitely a list of nine improvements.
+A: Then pick the one that made the others possible and let the rest be a slide at the end. Here's the mental model I use: a talk is a hallway, not a warehouse. A warehouse holds everything and you wander it. A hallway has a direction and doors you pass on the way. You're building a hallway.
+B: Okay, that actually helps. What about knowing where I am in the hallway? I lose the thread halfway through and start apologising.
+A: Signposting. Tiny sentences that cost four seconds and buy the audience a map. "That's the problem. Now the part that surprised us." Be shameless about it. And transitions are where you look competent or lost, so those are the lines you memorise word for word.
+B: Only the transitions? I was going to script the whole thing.
+A: Script it once to find the words, then throw the script away and keep the joints. Fully memorised talks break badly. Also: never open with an apology or an agenda slide. Open inside the story — "it's 2am and the deploy is stuck" beats "hi, I'm going to talk about deploys."
+B: And the ending? I always just trail off into "yeah, so, that's it."
+A: Land the plane. Know your last two sentences cold, and make them the takeaway sentence plus one thing you want them to do on Monday. Then stop talking. The silence feels enormous to you and normal to everyone else.
+B: Noted. I'm still mostly scared of the nerves part, honestly.
+A: We'll get there — actually, hang on. Let me teach you something else for a bit, because I promised you last week and it's a better use of the middle of this call. You said you wanted to start a sourdough starter and it kept dying.
+B: I did say that. Mine went grey and smelled like nail polish.
+A: Then let's do it properly. A starter is flour and water and nothing else, and what you're actually keeping alive is an ecosystem — wild yeasts plus lactic acid bacteria, both of which arrive on the flour itself, not from the air, whatever the romantic version says. The yeast makes carbon dioxide and alcohol. The bacteria make lactic and acetic acid. You are farming, not baking, for the first two weeks.
+B: So what makes it stable? Mine seemed fine for four days then collapsed.
+A: That's the classic arc and it's not failure. Early on you get a burst from bacteria that don't survive the acidity they create — lots of gas, smells like cheese, totally temporary. Then it goes quiet and dead-looking for days. That lull is the acid selecting who lives there.
+B: So the grey nail-polish thing was just the lull?
+A: Probably, and it was hungry. Grey liquid on top is hooch — alcohol. It means the yeast ate everything and kept fermenting in a starved way. Pour it off and feed it. And stop feeding by eye: weigh it. If it's sluggish, feed one part starter to five parts flour and five water.
+B: Wait, feeding it less starter makes it stronger?
+A: You're not feeding the starter, you're diluting the acid. Too much acid and the yeast goes slow and the gluten degrades. A big dilution resets the environment and gives the population room to actually multiply instead of just sitting in its own waste. Same reason you refresh a culture before baking rather than using it straight from the fridge.
+B: How do I know when it's ready to use?
+A: Watch it, not the clock. Mark the jar with a rubber band at feeding. Ready means it has roughly doubled or better and domed on top, and it's just starting to go flat in the centre — that's peak. Past peak the dome collapses and it's still alive but weaker. Recipes that say "leave four hours" are describing someone else's kitchen.
+B: And the float test? People swear by dropping a spoonful in water.
+A: It's a rough signal, not a law. It tells you there's gas trapped in there. Plenty of perfectly good starters at peak won't float, and a stiff one will float when it's already tired. The dome and the smell tell you more — you want yoghurty, faintly sweet, a bit of tang. Sharp like vinegar means too warm or too long.
+B: What's the difference between what the starter does in the jar and what it does in the dough?
+A: Same biology, different job. Bulk fermentation is where the gas is generated and the gluten network organises — you're building the structure that will hold the gas. Then you shape, which tightens it, and proof, the final inflation. Under-bulk and you get a dense loaf however long you proof it.
+B: How do I tell which one I did wrong?
+A: Look at the crumb. Dense and gummy with a tight bottom is under-fermented. Big holes under the top crust with a flat, pale loaf is over-fermented. And the biggest dial is temperature, not time — dough at twenty-six degrees ferments about twice as fast as dough at twenty.
+B: That explains winter, then. Mine never doubled from November onwards.
+A: Almost certainly that. A starter you've neglected for a month is almost never dead, by the way — feed it twice a day for three days before you declare a funeral. Right. Anyway, back to your talk, because you dodged the nerves question and I noticed.
+B: I did. I get shaky hands and my voice goes thin and fast for the first few minutes.
+A: Both of those are adrenaline doing its job, and the reframe matters: the body you get before a talk and before something exciting are the same body. But don't rely on the reframe — engineer around it. The first sixty seconds are where the shake is worst, so make them the most rehearsed part.
+B: So a memorised opening after all.
+A: Memorised opening, memorised close, loose middle. And slow your first line down deliberately, slower than feels right, because the thin fast voice feeds itself. Long exhale before you start — the exhale is what drops your heart rate, not the inhale. Then plant your feet and let one hand hold the clicker so it has a job.
+B: What do I do when I notice it happening mid-talk?
+A: Pause and take a drink of water. That's it. It reads as considered, it gives you four seconds, and it breaks the spiral. Audiences read silence as confidence far more often than as panic. The other trick is to find two friendly faces, one on each side of the room, and talk to them — it converts a crowd into a conversation.
+B: Q&A terrifies me more than the talk, though. Someone always asks the thing I don't know.
+A: Then rehearse saying "I don't know, but here's how I'd find out." Say it once out loud today so it isn't the first time under pressure. Repeat every question back before answering — it buys thinking time and helps the room hear. And you're allowed to redirect: "that's a different talk, find me afterwards."
+B: That's oddly comforting.
+A: One more thing. Sit down and write the actual worst case: you blank, you look at your notes, you say "let me get my thread back," and you carry on. Rehearse that recovery once. Most of the fear is of an undefined disaster, and defined disasters are survivable and dull.
+B: So what do I actually do this week?
+A: Three things. Write the takeaway sentence and cut anything that doesn't serve it, including hiring. Build the hallway — problem, turn, payoff — and write the transitions and the first and last sixty seconds word for word. Then rehearse standing up, out loud, twice, with a timer, because reading it in your head is a completely different skill.
+B: And the starter?
+A: Feed it tonight, one to five, and put it somewhere warm. Check it in eight hours, not four.
