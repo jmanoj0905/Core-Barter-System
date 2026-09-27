@@ -164,3 +164,45 @@ def test_window_span_equals_sum_of_contribution_seconds():
         span = w.teacher_seconds_end - w.teacher_seconds_start
         total = sum(c.seconds for c in w.contributions)
         assert span == pytest.approx(total)
+
+
+def test_overshoot_is_discarded_not_carried_forward():
+    # Three teacher turns at 30s / 20s / 10s, explicit durations. Discard:
+    # turn 1 (30s) closes its own window; the 5s overshoot is thrown away, so
+    # turns 2+3 (20s + 10s = 30s) close a second window together.
+    # Carry-forward would instead credit the 5s overshoot to the next buffer,
+    # letting turn 2 alone close a window (5+20=25), leaving turn 3 (10s) as
+    # its own trailing-flush window -> 3 windows instead of 2.
+    script = make_script(
+        [
+            Turn(speaker="A", text="alpha beta gamma delta"),
+            Turn(speaker="A", text="epsilon zeta eta theta"),
+            Turn(speaker="A", text="iota kappa lambda mu"),
+        ]
+    )
+    durations = [30.0, 20.0, 10.0]
+    windows = replay(script, durations)
+
+    assert len(windows) == 2
+    assert [c.turn_index for c in windows[0].contributions] == [1]
+    assert [c.turn_index for c in windows[1].contributions] == [2, 3]
+
+
+def test_filler_phrase_spanning_a_turn_boundary_is_cleaned():
+    # Two teacher turns land in the same window; the multi-word filler phrase
+    # "you know" straddles the turn boundary (turn 1 ends in "you", turn 2
+    # begins with "know"). Only cleaning the JOIN strips it — cleaning each
+    # segment first would leave both words in place, since neither "...you"
+    # nor "know..." matches the phrase alone.
+    script = make_script(
+        [
+            Turn(speaker="A", text="alpha beta gamma you"),
+            Turn(speaker="A", text="know delta epsilon zeta"),
+        ]
+    )
+    durations = [13.0, 13.0]
+    windows = replay(script, durations)
+
+    assert len(windows) == 1
+    assert windows[0].raw_text == "alpha beta gamma you know delta epsilon zeta"
+    assert windows[0].text == "alpha beta gamma delta epsilon zeta"
