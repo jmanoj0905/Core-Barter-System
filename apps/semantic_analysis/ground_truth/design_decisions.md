@@ -7,8 +7,9 @@ Why these five pieces of work, in this order, and what evidence settled each
 choice. Companion docs: [finetune_spike_findings.md](./finetune_spike_findings.md)
 (the fine-tune probe), [finetune_alternatives_research.md](./finetune_alternatives_research.md)
 (option survey), [threshold_experiment_findings.md](./threshold_experiment_findings.md)
-(threshold diagnostic), [labeling_rubric.md](./labeling_rubric.md) (label
-definitions).
+(threshold diagnostic), [rho_calibration_findings.md](./rho_calibration_findings.md)
+(the `RHO` relative-threshold verdict behind D8),
+[labeling_rubric.md](./labeling_rubric.md) (label definitions).
 
 ## The framing decision: not fine-tuning, yet
 
@@ -228,6 +229,59 @@ wrong in D3; worth a closer look when real data exists.
 Fitting thresholds on them would pull the boundary toward hard cases that are
 not representative of ordinary session traffic. Twelve comparisons over six
 topics is a probe, not a powered test.
+
+## D8 — `RHO` and the relative threshold `thr = RHO*R`
+
+**Decision.** Rejected. Not implemented, not shipped. `LOWER = 0.14` stays flat.
+
+**Why.** The handoff proposed `RHO = 0.45`. At that value the mechanism loses to
+the flat threshold already shipped, on a 25-session / 364-window corpus:
+
+| | Off-topic caught | False accusations | Informedness |
+|---|---:|---:|---:|
+| flat `LOWER = 0.14` | 50/66 | 69/289 | 0.5188 |
+| **`RHO = 0.45`** (proposed) | 56/66 | **96/289** | **0.5163** |
+| `RHO = 0.26` (best fit) | 52/66 | 56/289 | 0.5941 |
+
+0.45 buys six more caught digressions for **27 more false accusations** — the
+exact trade D2 refused at one-fourteenth the price. Spec §7.2: if
+`thr = RHO·R` does not beat a flat threshold there is nothing to ship.
+
+**Why not simply adopt 0.26 instead.** Because it fails D1's bar and does not
+hold up held out. D1 accepted `UPPER = 0.36` because it was *identical* in 60/60
+and 6/6 folds. `RHO`'s argmax is identical in no fold family: 23/25 session
+folds, 23/25 topic folds, and **1 of 4 author folds** — 0.25 / 0.26 / 0.36 /
+0.36 as each author is held out.
+
+**Held-out result** (each fold's held-out sessions scored at that fold's own
+training-fitted argmax, then pooled):
+
+| | Off-topic caught | False accusations | Informedness |
+|---|---:|---:|---:|
+| in-sample @0.26 | 52/66 | 56/289 | 0.5941 |
+| pooled leave-one-session-out | 50/66 | 61/289 | 0.5465 |
+| pooled leave-one-**author**-out | 50/66 | **71/289** | **0.5119** |
+| flat `LOWER` control | 50/66 | 69/289 | 0.5188 |
+
+The caught-rate advantage is entirely in-sample — 50/66 in every held-out arm,
+identical to flat. Held out it is at best a quieter threshold, and under the
+author fold it is louder than flat. Splitting by authorship says the same thing:
+the whole -14 false-accusation gain comes from the 10 real AnnoMI sessions, while
+the 15 agent-authored sessions show +1.
+
+**Limits, stated plainly.** 25 sessions, 4 author strata, structural labels with
+no kappa, synthetic prosody throughout, three of five categories LLM-authored,
+and the WER robustness leg (spec §7.5 criterion 4) **never run** — the S3 bucket
+`transcribe.py` stages audio in belongs to another AWS account. This rejects
+`RHO` on this corpus; it does not prove no relative threshold can work. Two
+further caveats belong here: §7.1's "only above-threshold windows update `R`"
+safeguard is a provable no-op for any `RHO < 1`, so `R` is just a running max;
+and the argmax is objective-dependent (0.20 under the committed secondary and
+under accuracy, 0.26 under the primary).
+
+Anyone who wants to revisit this needs more than four author strata and real
+audio durations, should run the WER leg first, and should record the result here.
+Full detail: [rho_calibration_findings.md](./rho_calibration_findings.md).
 
 ---
 
