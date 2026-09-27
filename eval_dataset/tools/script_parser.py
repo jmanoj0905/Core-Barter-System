@@ -58,10 +58,25 @@ def _parse_digression(value: str, turns: list[Turn], teacher: str) -> frozenset[
             continue
         if "-" in part:
             start_s, end_s = part.split("-", 1)
-            start, end = int(start_s.strip()), int(end_s.strip())
+            try:
+                start, end = int(start_s.strip()), int(end_s.strip())
+            except ValueError:
+                raise ValueError(
+                    f"DIGRESSION range {part!r} is not numeric"
+                ) from None
+            if start > end:
+                raise ValueError(
+                    f"DIGRESSION range {part!r} runs backwards — a range "
+                    "must run low-to-high, e.g. '3-5' not '5-3'"
+                )
             indices = range(start, end + 1)
         else:
-            indices = [int(part)]
+            try:
+                indices = [int(part)]
+            except ValueError:
+                raise ValueError(
+                    f"DIGRESSION value {part!r} is not a valid turn number"
+                ) from None
         for idx in indices:
             if idx < 1 or idx > len(turns):
                 raise ValueError(

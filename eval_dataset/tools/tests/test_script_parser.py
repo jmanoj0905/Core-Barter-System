@@ -140,3 +140,27 @@ def test_digression_forbidden_for_on_topic_categories(tmp_path):
             _path(tmp_path, category="abstract_on_topic", extra="DIGRESSION: 1\n"),
             require_digression_labels=True,
         )
+
+# All-teacher, 5-turn layout so these tests fail on the reversed range
+# specifically, not incidentally on the learner or range-bounds check.
+_ALL_TEACHER_5 = ("A", "A", "A", "A", "A")
+
+
+def test_digression_reversed_range_rejected(tmp_path):
+    # range(5, 3+1) is empty in Python, so a naive implementation silently
+    # drops a reversed range instead of raising. Unconditional — no flag.
+    with pytest.raises(ValueError, match="backwards"):
+        parse_script(_path(
+            tmp_path, category="adversarial", extra="DIGRESSION: 5-3\n",
+            speakers=_ALL_TEACHER_5,
+        ))
+
+
+def test_digression_reversed_range_mixed_with_valid_entry_rejected(tmp_path):
+    # The dangerous case: "5-3, 3" must not silently succeed with just {3}
+    # while quietly dropping the malformed reversed range.
+    with pytest.raises(ValueError, match="backwards"):
+        parse_script(_path(
+            tmp_path, category="adversarial", extra="DIGRESSION: 5-3, 3\n",
+            speakers=_ALL_TEACHER_5,
+        ))
