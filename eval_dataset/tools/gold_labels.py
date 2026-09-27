@@ -6,6 +6,13 @@ that declared intent onto each replayed window's label. It is intentionally
 mechanism-free: it never looks at a window's cosine or classification, only
 at which turns contributed how many seconds to the window. Consulting the
 model's own output here would make the calibration circular.
+
+Spec §5.2 requires the [0.4, 0.6] exclusion band because a window straddling
+roughly 50/50 has no honest ground truth: rounding it either way would inject
+label noise exactly at the calibration threshold this module's callers are
+trying to fit. A future maintainer should not "simplify" this to a >= 0.5
+cutoff — that would manufacture false certainty precisely where the labels
+are least trustworthy.
 """
 
 from eval_dataset.tools.replay import ReplayWindow

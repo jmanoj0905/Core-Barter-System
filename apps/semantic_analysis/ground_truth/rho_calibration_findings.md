@@ -134,6 +134,13 @@ So the honest description of what survives holdout is: not a better detector, at
 best a slightly quieter one, and not even that when the held-out sessions come
 from an unseen author.
 
+The pooled LOO-author row's "beats flat? NO" rests on 71 false digressions
+against flat's 69 — a 2-window difference out of 289, with no confidence
+interval or paired test computed. That delta is within single-window
+resolution and is not what the rejection rests on: C1 and C3 are structural
+(argmax spread 0.25–0.36 across folds), and §7.2's in-sample failure at the
+proposed `RHO = 0.45` is 27 false accusations, not 2.
+
 ## Argmax stability, per fold family
 
 D1's bar for calling a fitted constant stable was *identical* across folds —
@@ -331,6 +338,13 @@ digression-class F1, all pick **0.20**.
 | weighted informedness, w = 2.00 | 0.20 |
 | weighted informedness, w = 3.00 | 0.20 |
 
+The weight `w` (equivalently `K`) scales the false-digression side of
+informedness, not the caught-digression side — larger `w` penalises false
+accusations more heavily. `asymmetric_cost`, the committed secondary, is the
+**same measure** as `weighted_informedness_w2.00`: both weight false
+digressions by a factor of 2, so their agreement on 0.20 is one result read
+twice, not two independent objectives corroborating each other.
+
 Across weightings the argmax lands on 0.20 / 0.26 / 0.36 / 0.78. Any objective
 more averse to false accusations than plain informedness — which is D2's stated
 bias — pulls it to the bottom of the grid. There is no objective-independent
@@ -352,6 +366,11 @@ exactly the `abstract_on_topic` and `depressed_baseline` categories, so this and
 the per-category split describe the same windows from two directions. The
 apparent gain tracks which sessions the constant was fitted on, not a property
 of the mechanism, which is the same thing C1 detects from the fold side.
+
+The agent-authored false-digression delta (+1) is a 1-window difference (4
+against flat's 3), also within single-window resolution and carrying no
+uncertainty estimate. It is reported here as descriptive, not as a leg the
+verdict depends on.
 
 ## Two spec corrections
 
@@ -446,6 +465,17 @@ Recorded as corrections. Both specs were written before this evidence existed.
   negative-labelled digression sitting next to another session's
   positive-labelled teaching is a noise source for any cross-script
   aggregation.
+- **LIM-8 — the `_experimental` secondary checks in `test_conformance_oracle.py`
+  are not uniformly discriminating.** Per R14, the conformance oracle's
+  `test_experimental_span_means` checks were left with a wide ±0.02 tolerance
+  rather than tightened, on condition that this weakness be carried into the
+  findings' limits — this bullet does that. `case_B2_late` (expected 0.059,
+  actual 0.0594) is a genuinely tight match and real evidence the harness
+  reproduces the oracle. `adv3_long` (expected 0.008, actual 0.0045) is not: a
+  ±0.02 bound around 0.008 admits roughly `[-0.012, 0.028]`, i.e. essentially
+  any low-similarity span, so the ~44% relative miss still passes and the
+  passing test should not be counted as evidence for that span that it cannot
+  supply.
 
 ## Consequence for handoff §6 step 1
 
@@ -472,12 +502,13 @@ project.
 
 ## Reproduce
 
-From the repository root, with the semantic service dependencies available:
+From the repository root, with the semantic service dependencies available
+(system `python3` has no `sentence_transformers`; use the venv below):
 
 ```bash
-python3 apps/semantic_analysis/ground_truth/rho_calibration.py \
+cd apps/semantic_analysis && ./venv/bin/python -m ground_truth.rho_calibration \
   --durations synthetic \
-  --output apps/semantic_analysis/ground_truth/rho_calibration_results.json
+  --output ground_truth/rho_calibration_results.json
 ```
 
 The harness reads the corpus from `eval_dataset/scripts/calibration/*/sess_*.txt`

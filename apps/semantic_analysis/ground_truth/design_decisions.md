@@ -3,7 +3,7 @@
 Date: 2026-09-26
 Branch: `feature/semantic-ground-truth`
 
-Why these five pieces of work, in this order, and what evidence settled each
+Why these eight pieces of work, in this order, and what evidence settled each
 choice. Companion docs: [finetune_spike_findings.md](./finetune_spike_findings.md)
 (the fine-tune probe), [finetune_alternatives_research.md](./finetune_alternatives_research.md)
 (option survey), [threshold_experiment_findings.md](./threshold_experiment_findings.md)
@@ -292,9 +292,15 @@ Full detail: [rho_calibration_findings.md](./rho_calibration_findings.md).
   synthetic single sentences; production sees ~25-second multi-sentence windows.
   The sentence-to-window distribution shift remains the largest untested
   uncertainty.
-- **No session replay.** Window accuracy is not a warning-sequence metric. The
-  false-off-topic *rate* above is a window-label statistic, not a measured rate
-  of escalated warnings.
+- **Session replay now exists, but not as a warning-sequence metric.**
+  `eval_dataset/tools/replay.py` reproduces production windowing (`main.py`'s
+  buffering/flush rules) offline and has been run over all 25 calibration
+  sessions to build the window corpus D8 scores against. It does windowing
+  only — no cosine, no embedding, no `warning_engine` — so the false-off-topic
+  *rate* above remains a window-label statistic, not a measured rate of
+  escalated warnings. Replaying complete sessions through the warning ladder
+  to measure false warning sequences is still open (see "Next, in order",
+  item 3).
 
 ## Next, in order
 
@@ -313,8 +319,11 @@ Full detail: [rho_calibration_findings.md](./rho_calibration_findings.md).
 
 ## Note on version control
 
-`threshold_experiment.py`, all four findings/design documents, the results JSON
-and both test files are **untracked**. `.gitignore:34` excludes
-`ground_truth/*.csv` deliberately (synthetic is regenerable; real transcripts
-should not be committed), but the scripts and findings are simply not committed
-yet. They are the only record of why these thresholds have the values they do.
+As of commit `f5424d0`, `threshold_experiment.py`, all findings/design
+documents, `rho_calibration_results.json` and the test files
+(`test_threshold_experiment.py`, `test_rho_calibration.py`) are **tracked**,
+not untracked as an earlier draft of this note claimed. `.gitignore:34` still
+excludes `ground_truth/*.csv` deliberately (synthetic is regenerable; real
+transcripts should not be committed), but the scripts and findings themselves
+are committed and are the record of why these thresholds have the values they
+do.
