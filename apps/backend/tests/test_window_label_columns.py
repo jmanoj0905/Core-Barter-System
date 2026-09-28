@@ -111,9 +111,12 @@ def test_missing_table_is_skipped_not_created(tmp_path):
 
 def test_expected_columns_match_the_model():
     """Guard against the declaration drifting from the ORM again."""
-    from app.models import WindowResult
+    from app.models import Warning, WindowResult
 
-    declared = set(WindowResult.__table__.columns.keys())
+    declared_by_table = {
+        "window_results": set(WindowResult.__table__.columns.keys()),
+        "warnings": set(Warning.__table__.columns.keys()),
+    }
     for table, column, _ddl in _EXPECTED_COLUMNS:
-        assert table == "window_results"
+        declared = declared_by_table[table]
         assert column in declared, f"{column} is backfilled but no longer declared on the model"

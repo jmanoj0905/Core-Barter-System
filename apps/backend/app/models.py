@@ -109,6 +109,11 @@ class Warning(Base):
     message: Mapped[str] = mapped_column(Text, nullable=False)
     window_ids: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    # A severe warning no longer vetoes the verdict; this flags the warning as
+    # advisory — a record for a later adjudicator to find, not a payout veto.
+    # NULL (on rows written before this column existed) must be treated the
+    # same as False by every reader.
+    advisory: Mapped[bool | None] = mapped_column(Boolean, default=False, nullable=True)
 
 
 class Verdict(Base):
