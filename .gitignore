@@ -34,3 +34,9 @@ apps/frontend/node_modules/
 apps/semantic_analysis/ground_truth/*.csv
 .opencode/
 .gstack/
+
+# Video-engagement calibration imagery — personal data (webcam captures) and
+# downloaded public datasets. Never commit frames; regenerate with
+# apps/video_engagement/collect_attention_frames.py or public_datasets.py.
+apps/video_engagement/corpus/
+apps/video_engagement/datasets/

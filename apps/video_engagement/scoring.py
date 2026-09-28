@@ -1,13 +1,30 @@
 """Pure video-engagement scoring functions — no I/O, no ML model loading.
 
-Formula and weights are experimental (see docs/video_engagement/design-choices.md).
-DEFAULT_WEIGHTS is a placeholder until weight_search.py picks a real value.
+Weights and threshold below are FITTED values, not guesses: grid-searched over
+3,272 labeled frames from two openly-licensed public datasets. Method, data,
+licences, rubric and full results are in docs/video_engagement/design-choices.md
+and docs/video_engagement/weight-search-results.json. Re-fit with
+`weight_search.py --corpus`.
 """
 
 import math
 
-# w_eyes, w_head, w_gaze — placeholder, pending weight_search.py
-DEFAULT_WEIGHTS: tuple[float, float, float] = (0.4, 0.4, 0.2)
+# w_eyes, w_head, w_gaze — fitted 2026-09-26 by `weight_search.py --corpus`
+# over 2,295 labeled frames (Head Pose Image Database + closed-open-eyes),
+# scored on 977 held-out frames from subjects/shards the fit never saw:
+# mean per-split ROC-AUC 0.9894 on the fit set, 0.9886 on the holdout.
+# w_gaze sits at the grid floor because neither public dataset contains
+# head-forward/eyes-to-the-side frames, so no data could rank it; it is kept
+# non-zero so the signal stays live in production for that failure mode.
+DEFAULT_WEIGHTS: tuple[float, float, float] = (0.55, 0.4, 0.05)
+
+# Decision threshold on the fused score: at or above this, the window is
+# classified attentive. Fitted on the same corpus by maximising Youden's J;
+# on the held-out groups it gives tpr 0.975 / fpr 0.052 (balanced accuracy
+# 0.962). Nothing in the service thresholds the score today — warning_engine
+# consumes the continuous value — so this is the number to use when a boolean
+# "attentive" is needed; see design-choices.md.
+ATTENTIVE_SCORE_THRESHOLD: float = 0.6123
 
 # MediaPipe Face Mesh landmark indices used (468/478-point mesh, refine_landmarks=True)
 _RIGHT_EYE = {"p1": 33, "p2": 160, "p3": 158, "p4": 133, "p5": 153, "p6": 144}

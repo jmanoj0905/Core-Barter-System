@@ -77,3 +77,38 @@ def test_rekognition_eyes_closed_and_large_yaw():
     # `>=` here to match the actual (correct) verbatim scoring.py formula.
     assert signals["head_deviation"] >= 0.5
     assert signals["gaze_centered"] < 0.2
+
+
+def test_default_weights_match_the_recorded_experiment():
+    """The shipped weights must be the ones the recorded fit actually chose.
+
+    Guards against the failure this whole exercise exists to prevent: a weight
+    quietly drifting away from the experiment that justified it.
+    """
+    import json
+    from pathlib import Path
+
+    from scoring import ATTENTIVE_SCORE_THRESHOLD
+
+    results_path = (
+        Path(__file__).resolve().parents[3] / "docs" / "video_engagement" / "weight-search-results.json"
+    )
+    chosen = json.loads(results_path.read_text(encoding="utf-8"))["chosen"]
+    assert list(DEFAULT_WEIGHTS) == pytest.approx(chosen["weights"])
+    assert ATTENTIVE_SCORE_THRESHOLD == pytest.approx(chosen["threshold"], abs=5e-5)
+
+
+def test_attentive_threshold_sits_between_the_class_means():
+    """A threshold outside the observed class means would classify everything
+    one way, whatever its Youden score claimed."""
+    import json
+    from pathlib import Path
+
+    from scoring import ATTENTIVE_SCORE_THRESHOLD
+
+    results_path = (
+        Path(__file__).resolve().parents[3] / "docs" / "video_engagement" / "weight-search-results.json"
+    )
+    means = json.loads(results_path.read_text(encoding="utf-8"))["chosen"]["mean_score_per_label"]
+    inattentive = [v for k, v in means.items() if k != "attentive"]
+    assert max(inattentive) < ATTENTIVE_SCORE_THRESHOLD < means["attentive"]
