@@ -59,7 +59,7 @@ def _trust(barter_id, u1_before, u1_after, u2_before, u2_after):
     )
 
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -133,7 +133,8 @@ async def _evaluate_topic_quality(db: AsyncSession, barter_id: int) -> dict:
     """Read actual monitoring evidence for this session directly from the
     window/warning tables, instead of trusting the verdict's cached
     on_topic_percentage (which can be stale or, with zero windows, wrongly
-    read as 100% — ISSUE-019)."""
+    read as 100% — ISSUE-019). Reports how many severe warnings fired so an
+    adjudicator can weigh them; it no longer decides anything itself."""
     windows_result = await db.execute(
         select(WindowResult).where(WindowResult.barter_session_id == barter_id)
     )
@@ -143,17 +144,17 @@ async def _evaluate_topic_quality(db: AsyncSession, barter_id: int) -> dict:
     on_topic = sum(1 for w in windows if w.classification in ("correct", "weakly_correct"))
     on_topic_percentage = round(100.0 * on_topic / total, 2) if has_evidence else 0.0
 
-    severe_result = await db.execute(
-        select(Warning)
+    severe_count_result = await db.execute(
+        select(func.count())
+        .select_from(Warning)
         .where(Warning.barter_session_id == barter_id, Warning.severity == "severe")
-        .limit(1)
     )
-    has_severe_warning = severe_result.scalar_one_or_none() is not None
+    severe_warning_count = severe_count_result.scalar_one()
 
     return {
         "has_evidence": has_evidence,
         "on_topic_percentage": on_topic_percentage,
-        "has_severe_warning": has_severe_warning,
+        "severe_warning_count": severe_warning_count,
     }
 
 
