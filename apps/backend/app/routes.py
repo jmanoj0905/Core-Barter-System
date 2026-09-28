@@ -162,13 +162,12 @@ def _decide_verdict_type(
 ) -> str:
     """Documented quality policy (ISSUE-003): topic monitoring evidence can
     veto an otherwise-complete session, and never counts missing evidence as
-    proof of good behavior (ISSUE-019)."""
+    proof of good behavior (ISSUE-019). Sustained drift disputes; a single
+    severe warning does not veto."""
     if terminated:
         return "DISPUTE"
 
-    topic_failed = topic["has_evidence"] and (
-        topic["on_topic_percentage"] < 40 or topic["has_severe_warning"]
-    )
+    topic_failed = topic["has_evidence"] and topic["on_topic_percentage"] < 40
     if topic_failed:
         return "DISPUTE"
 
