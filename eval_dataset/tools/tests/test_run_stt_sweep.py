@@ -264,3 +264,23 @@ def test_sweep_skips_a_session_whose_wav_already_exists(tmp_path, monkeypatch):
 
     # the wav content is untouched.
     assert (audio_dir / "sess_CALTEST.wav").read_bytes() == b"already-here"
+
+
+def test_timed_durations_rejects_timing_misaligned_with_the_script():
+    # `timing` comes from synthesize.py, which emits one record per turn in order.
+    # Nothing downstream re-checks that, so timed_durations asserts it: a timing
+    # list shorter than the script would otherwise silently truncate and shift
+    # every subsequent duration, windowing the session at the wrong boundaries
+    # with no error raised anywhere.
+    script = _make_script()
+    full_timing = _make_timing()
+    transcript = {"words": [{"text": "hello", "start": 0.1, "end": 0.5}]}
+
+    with pytest.raises(ValueError, match="timing has 2 record"):
+        timed_durations(script, transcript, full_timing[:-1])
+
+    with pytest.raises(ValueError, match="timing has 4 record"):
+        timed_durations(script, transcript, full_timing + [dict(full_timing[-1])])
+
+    # the aligned case still works, so the guard is not simply rejecting everything
+    assert len(timed_durations(script, transcript, full_timing)) == len(script.turns)

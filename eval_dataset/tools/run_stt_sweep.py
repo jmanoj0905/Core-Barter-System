@@ -60,6 +60,20 @@ def timed_durations(script: Script, transcript: dict, timing: list[dict]) -> lis
     `synthetic_durations` in `eval_dataset/tools/replay.py` — `replay()`
     consumes either interchangeably.
     """
+    # `timing` is produced by synthesize.py, which emits one record per turn in
+    # order. That alignment is an invariant of a *different* module and nothing
+    # downstream re-checks it, so assert it here rather than trusting it: a longer
+    # `timing` would raise IndexError below, and a shorter one would silently
+    # truncate and shift every subsequent duration — the quiet failure is the
+    # dangerous one, because replay() would then window the session at the wrong
+    # boundaries without any error.
+    if len(timing) != len(script.turns):
+        raise ValueError(
+            f"timing has {len(timing)} record(s) but the script has "
+            f"{len(script.turns)} turn(s); synthesize.py must emit exactly one "
+            "timing record per turn, in order, for durations to align"
+        )
+
     durations = [0.0] * len(script.turns)
 
     for word in transcript["words"]:
