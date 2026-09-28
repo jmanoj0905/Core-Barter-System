@@ -10,6 +10,72 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-17-video-engagement-design.md`
 
+## Status — closed out 2026-09-26
+
+**Merged.** Shipped to `main` via **PR #2**, merge commit **`d85734a`** (branch
+`video-engagement-feature`, tip `28da322`, 0 commits ahead of `main` — fully merged,
+branch retained), plus follow-up **`4cd2b96`** (`chore: wire video_engagement into
+start.sh`, which adds the `video_engagement` venv setup and the port-8004 `launch`/health
+check that Task 7's service needs outside Docker).
+
+Every task's artifacts were re-verified against the code and against the per-task commits
+on the merged branch (one commit per task, in plan order, each carrying its tests plus its
+implementation). Test suites re-run 2026-09-26: `apps/backend` 11 passed,
+`apps/warning_engine` 6 passed, `apps/semantic_analysis` 9 passed.
+
+**Residual open items:**
+
+1. **Task 12 Step 3 — manual end-to-end verification never performed** (left unticked
+   below). Frontend capture code landed; the live two-tab webcam → WS → 5s-window check
+   has not been run.
+2. **Sub-signal weights are now fitted; the fusion blend is not.** The plan's own
+   Post-plan note is discharged for the sub-signal triple only.
+   `DEFAULT_WEIGHTS` is `(0.55, 0.40, 0.05)`, grid-searched by `weight_search.py --corpus`
+   over labeled frames from two openly-licensed public datasets and scored on a held-out
+   group split; method, licences, rubric, results and limits are in
+   `docs/video_engagement/design-choices.md`, which is no longer a placeholder.
+   Two parts remain guesses: `w_gaze` sits at the grid floor because neither dataset
+   contains head-forward/eyes-to-the-side frames, so **no data could rank it**; and
+   `ENGAGEMENT_FUSION_W_SPEECH/W_VIDEO = 0.7/0.3` was never touched — fusion needs
+   labelled *session-level* engagement, which only a pilot session can supply.
+3. **`007_video_engagement.sql` is never executed against the database the services
+   actually use.** A fresh SQLite DB does get both tables — but from
+   `Base.metadata.create_all()` in `apps/backend/app/database.py:init_db()`, driven by
+   `models.py`, not from the migration file. `start.sh` applies `migrations/*.sql` to a
+   *PostgreSQL* URL (`postgresql://barter:barter@localhost:5432/barter_db`) with errors
+   suppressed by `|| true`, while the backend runs on SQLite. This is a pre-existing
+   repo-wide condition affecting all eight migrations, not something this feature
+   introduced, so it was left alone — but it means the `.sql` file is documentation
+   rather than the applied schema, and schema drift between the two is not caught by
+   anything.
+4. **`apps/warning_engine`'s venv cannot run its own tests.** No service ships test
+   dependencies in `requirements.txt` (deliberate — those files build the Docker runtime
+   images), and `apps/warning_engine/venv` has no `pytest` installed, unlike the backend
+   and semantic_analysis venvs. The suite was run for this close-out with the
+   `apps/backend/venv` interpreter instead. Nothing was installed anywhere to make this
+   pass.
+
+**Deliberate deviations from the plan text, all verified as improvements, all ticked:**
+
+- `apps/video_engagement/requirements.txt` pins `mediapipe==0.10.21`,
+  `opencv-python-headless<4.10`, `numpy<2` where the plan had them unpinned — fix
+  commit `9240a97`, needed to keep the legacy MediaPipe Solutions API that `scoring.py`'s
+  landmark indices assume.
+- `warning_engine` carries an extra `video_attention_score_at` timestamp in `_new_state()`
+  so `_recompute_and_log_fusion` can drop a stale video score (review fix `28da322`,
+  covered by a sixth test, `test_fusion_excludes_stale_video_score`).
+- `weight_search.py` has grown a corpus-evaluation mode beyond the plan's three sweep
+  functions; the plan's `pearson_correlation` / `sweep_subsignal_weights` /
+  `sweep_fusion_weights` / CLI are all present and unchanged.
+
+**One caveat on the ticks.** Each task's "Step 2: Run test to verify it fails" is a
+red-run that leaves no artifact in the code or in git history, so it cannot be
+independently re-verified after the fact. Those boxes are ticked on the strength of the
+commit record — each task landed as a single commit containing the plan's exact test file
+alongside the implementation, in plan order — not on a re-observed failing run.
+
+---
+
 ## Global Constraints
 
 - Formula weights are never hardcoded as "the answer" — every weight (sub-signal triple, fusion blend) ships as an overridable env var with an explicit placeholder default, and the real value is picked by `weight_search.py`, documented in `docs/video_engagement/design-choices.md`.
@@ -77,7 +143,7 @@ apps/frontend/src/screens/LiveSession.jsx   # + video-frame capture + WS send, m
 **Interfaces:**
 - Produces: `VideoEngagementResult` model (`barter_session_id, user_id, window_start, window_end, video_attention_score, backend_used, raw_signals_json, created_at`), `EngagementScoreLog` model (`barter_session_id, user_id, speech_engagement_score, video_attention_score, fused_engagement_score, created_at`) — Task 2's routes import both by these exact names from `app.models`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `apps/backend/tests/conftest.py`:
 
@@ -179,12 +245,12 @@ async def test_engagement_score_log_model_roundtrip(backend_client, db_session):
     assert row.id is not None
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/backend && python -m pytest tests/test_video_engagement_routes.py -v`
 Expected: FAIL — `ImportError: cannot import name 'VideoEngagementResult' from 'app.models'`
 
-- [ ] **Step 3: Add the models**
+- [x] **Step 3: Add the models**
 
 Add to `apps/backend/app/models.py` (after `WindowResult`):
 
@@ -249,12 +315,12 @@ CREATE TABLE IF NOT EXISTS engagement_score_log (
 CREATE INDEX IF NOT EXISTS idx_engagement_log_barter ON engagement_score_log(barter_session_id);
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/backend && python -m pytest tests/test_video_engagement_routes.py -v`
 Expected: PASS (2 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/backend/app/models.py apps/backend/migrations/007_video_engagement.sql apps/backend/tests/conftest.py apps/backend/tests/test_video_engagement_routes.py
@@ -274,7 +340,7 @@ git commit -m "feat(backend): add video_engagement_results and engagement_score_
 - Consumes: `VideoEngagementResult`, `EngagementScoreLog` from Task 1 (`app.models`).
 - Produces: `POST /session/{barter_id}/video-engagement`, `GET /session/{barter_id}/video-engagement`, `POST /session/{barter_id}/engagement-log`, `GET /session/{barter_id}/engagement`, `GET /session/{barter_id}/engagement/history` — `video_engagement` service (Task 9) and `warning_engine` (Task 4) call these by these exact paths and payload shapes.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `apps/backend/tests/test_video_engagement_routes.py`:
 
@@ -332,12 +398,12 @@ async def test_get_engagement_no_data_returns_404(backend_client):
     assert resp.status_code == 404
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/backend && python -m pytest tests/test_video_engagement_routes.py -v`
 Expected: FAIL — `404 Not Found` for `/session/1/video-engagement` (route doesn't exist yet)
 
-- [ ] **Step 3: Add schemas and routes**
+- [x] **Step 3: Add schemas and routes**
 
 Add to `apps/backend/app/schemas.py`:
 
@@ -457,12 +523,12 @@ async def get_engagement_history(barter_id: int, db: AsyncSession = Depends(get_
     ]
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/backend && python -m pytest tests/test_video_engagement_routes.py -v`
 Expected: PASS (5 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/backend/app/schemas.py apps/backend/app/routes.py apps/backend/tests/test_video_engagement_routes.py
@@ -481,7 +547,7 @@ git commit -m "feat(backend): add video-engagement and engagement-log endpoints"
 **Interfaces:**
 - Produces: `sessions[barter_id]["speech_engagement_score"]`, `sessions[barter_id]["learner_user_id"]` (now always set, `None` if uninitialized), `POST /engagement/update` — Task 5 (`semantic_analysis`) calls this endpoint with `{barter_id, user_id, engagement_score}`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `apps/warning_engine/tests/conftest.py`:
 
@@ -550,12 +616,12 @@ async def test_engagement_update_auto_inits_session(warning_client):
     assert 42 in we_main.sessions
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/warning_engine && python -m pytest tests/test_engagement_fusion.py -v`
 Expected: FAIL — `404 Not Found` for `/engagement/update`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `apps/warning_engine/main.py`, modify `_new_state()`:
 
@@ -616,12 +682,12 @@ async def receive_engagement_update(request: EngagementUpdateRequest):
     return {"status": "updated"}
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/warning_engine && python -m pytest tests/test_engagement_fusion.py -v`
 Expected: PASS (2 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/warning_engine/main.py apps/warning_engine/tests/conftest.py apps/warning_engine/tests/test_engagement_fusion.py
@@ -640,7 +706,7 @@ git commit -m "feat(warning_engine): receive live speech engagement score"
 - Consumes: `sessions[barter_id]` from Task 3 (`speech_engagement_score`, `video_attention_score`, `learner_user_id` keys), `post_to_backend(path, payload)` (existing helper).
 - Produces: `POST /video-engagement/update` — `video_engagement` service (Task 9) calls this with `{barter_id, user_id, video_attention_score}`. Fused result is POSTed to backend's `/session/{barter_id}/engagement-log` (Task 2).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `apps/warning_engine/tests/test_engagement_fusion.py`:
 
@@ -693,12 +759,12 @@ async def test_fusion_falls_back_to_speech_only_when_no_video(warning_client):
     assert logged_call[0].kwargs["json"]["video_attention_score"] is None
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/warning_engine && python -m pytest tests/test_engagement_fusion.py -v`
 Expected: FAIL — `test_video_update_ignored_for_non_learner` gets 404 (`/video-engagement/update` doesn't exist), and the speech-only test finds zero `/engagement-log` calls (fusion/logging not wired yet).
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Add near the top of `apps/warning_engine/main.py`, with the other env vars:
 
@@ -769,12 +835,12 @@ async def receive_video_engagement_update(request: VideoEngagementUpdateRequest)
 
 (This replaces the plain `/engagement/update` endpoint added in Task 3 — same route, now also calling `_recompute_and_log_fusion`.)
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/warning_engine && python -m pytest tests/test_engagement_fusion.py -v`
 Expected: PASS (5 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/warning_engine/main.py apps/warning_engine/tests/test_engagement_fusion.py
@@ -794,7 +860,7 @@ git commit -m "feat(warning_engine): fuse video + speech engagement, log to back
 - Consumes: `contracts[barter_id]["learner_user_id"]` (existing), `WARNING_ENGINE_URL` (existing env var).
 - Produces: outbound `POST {WARNING_ENGINE_URL}/engagement/update` with `{barter_id, user_id, engagement_score}` on every `update_engagement_score` call — matches Task 3's endpoint contract exactly.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `apps/semantic_analysis/tests/conftest.py`:
 
@@ -870,12 +936,12 @@ async def test_learner_segment_posts_engagement_update(semantic_client):
     assert isinstance(payload["engagement_score"], float)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/semantic_analysis && python -m pytest tests/test_engagement_update_post.py -v`
 Expected: FAIL — zero calls to `/engagement/update` (not implemented yet)
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Add a small helper in `apps/semantic_analysis/main.py` near `post_engagement_alert`:
 
@@ -900,12 +966,12 @@ In `update_engagement_score`, after `state["last_score"] = score` add:
 
 No other line in `calculate_engagement_score` or `update_engagement_score` changes.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/semantic_analysis && python -m pytest tests/test_engagement_update_post.py -v`
 Expected: PASS (1 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/semantic_analysis/main.py apps/semantic_analysis/tests/conftest.py apps/semantic_analysis/tests/test_engagement_update_post.py
@@ -923,7 +989,7 @@ git commit -m "feat(semantic_analysis): post live engagement score to warning_en
 **Interfaces:**
 - Produces: `sub_signals_from_mediapipe_landmarks(landmarks: dict[int, tuple[float, float]]) -> dict`, `sub_signals_from_rekognition_face_detail(face_detail: dict) -> dict`, `video_attention_score(sub_signals: dict, weights: tuple[float, float, float]) -> float`, `DEFAULT_WEIGHTS: tuple[float, float, float]` — Tasks 7, 8, 9, and 11 (`weight_search.py`) import all of these by these exact names from `scoring.py`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `apps/video_engagement/tests/test_scoring.py`:
 
@@ -1006,12 +1072,12 @@ def test_rekognition_eyes_closed_and_large_yaw():
     assert signals["gaze_centered"] < 0.2
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_scoring.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named 'scoring'`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `apps/video_engagement/scoring.py`:
 
@@ -1128,12 +1194,12 @@ def video_attention_score(
     return _clamp01(raw)
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_scoring.py -v`
 Expected: PASS (7 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/video_engagement/scoring.py apps/video_engagement/tests/test_scoring.py
@@ -1153,7 +1219,7 @@ git commit -m "feat(video_engagement): pure scoring formula for local + cloud su
 **Interfaces:**
 - Produces: `app` (FastAPI instance) in `apps/video_engagement/main.py` — Task 9 extends this same file/app object.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `apps/video_engagement/tests/test_main.py`:
 
@@ -1175,12 +1241,12 @@ def test_root():
         assert resp.json()["service"] == "video-engagement"
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_main.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named 'main'`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `apps/video_engagement/requirements.txt`:
 
@@ -1261,12 +1327,12 @@ async def health():
     return {"status": "ok"}
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_main.py -v`
 Expected: PASS (2 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/video_engagement/requirements.txt apps/video_engagement/Dockerfile apps/video_engagement/main.py apps/video_engagement/tests/test_main.py
@@ -1285,7 +1351,7 @@ git commit -m "feat(video_engagement): service scaffold with health check"
 - Consumes: `sub_signals_from_mediapipe_landmarks`, `sub_signals_from_rekognition_face_detail`, `video_attention_score`, `DEFAULT_WEIGHTS` from `scoring.py` (Task 6).
 - Produces: `process_frame_local(frame_bytes: bytes) -> dict | None`, `process_frame_aws(frame_bytes: bytes) -> dict | None` (both return `{"eyes_open":..., "head_deviation":..., "gaze_centered":...}` or `None` if no face detected) — Task 9's window-flush logic calls these by these exact names.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `apps/video_engagement/tests/test_main.py`:
 
@@ -1345,12 +1411,12 @@ def test_process_frame_aws_fails_open_on_exception():
     assert result is None
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_main.py -v`
 Expected: FAIL — `AttributeError: module 'main' has no attribute 'process_frame_local'`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Add to `apps/video_engagement/main.py` (after the CORS middleware, before the endpoints):
 
@@ -1433,12 +1499,12 @@ def process_frame_aws(frame_bytes: bytes) -> dict | None:
         return None
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_main.py -v`
 Expected: PASS (6 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/video_engagement/main.py apps/video_engagement/tests/test_main.py
@@ -1457,7 +1523,7 @@ git commit -m "feat(video_engagement): local MediaPipe and cloud Rekognition fra
 - Consumes: `process_frame_local`, `process_frame_aws`, `video_attention_score`, `ACTIVE_WEIGHTS` (Task 8).
 - Produces: `ws /video/{barter_id}/{user_id}`, `GET/POST /video/config`, `POST /session/{barter_id}/end` — frontend (Task 12) connects to the WS route; `backend`'s `/session/{barter_id}/video-engagement` and `warning_engine`'s `/video-engagement/update` (Tasks 2, 4) are called by this task's `process_buffer`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `apps/video_engagement/tests/test_main.py`:
 
@@ -1537,12 +1603,12 @@ async def test_process_buffer_both_mode_posts_twice_with_different_backend_tag()
     assert sorted(backend_store_calls) == ["aws", "local"]
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_main.py -v`
 Expected: FAIL — `404` for `/video/config`, `AttributeError` for `process_buffer` (not implemented yet)
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Add to `apps/video_engagement/main.py`:
 
@@ -1676,12 +1742,12 @@ async def end_session(barter_id: int):
     return {"status": "ended", "barter_id": barter_id}
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_main.py -v`
 Expected: PASS (12 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/video_engagement/main.py apps/video_engagement/tests/test_main.py
@@ -1700,7 +1766,7 @@ git commit -m "feat(video_engagement): websocket ingest, window buffering, backe
 - Consumes: `apps/video_engagement/Dockerfile` (Task 7), `ws /video/{barter_id}/{user_id}` and `GET/POST /video/config` (Task 9).
 - Produces: routable `video_engagement:8004` service reachable from `backend`, `warning_engine`, and the frontend nginx proxy.
 
-- [ ] **Step 1: Add the service to `docker-compose.yml`**
+- [x] **Step 1: Add the service to `docker-compose.yml`**
 
 Add after the `audio_pipeline` service block:
 
@@ -1730,7 +1796,7 @@ Also add `ENGAGEMENT_FUSION_W_SPEECH` / `ENGAGEMENT_FUSION_W_VIDEO` to the `warn
       ENGAGEMENT_FUSION_W_VIDEO: ${ENGAGEMENT_FUSION_W_VIDEO:-0.3}
 ```
 
-- [ ] **Step 2: Add the nginx proxy route**
+- [x] **Step 2: Add the nginx proxy route**
 
 Add to `apps/frontend/nginx.conf`, after the `/audio/` location block:
 
@@ -1746,12 +1812,12 @@ Add to `apps/frontend/nginx.conf`, after the `/audio/` location block:
     }
 ```
 
-- [ ] **Step 3: Verify the compose file parses**
+- [x] **Step 3: Verify the compose file parses**
 
 Run: `docker compose config --quiet`
 Expected: no output, exit code 0 (valid YAML, all interpolations resolve)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docker-compose.yml apps/frontend/nginx.conf
@@ -1771,7 +1837,7 @@ git commit -m "feat: wire video_engagement service into compose and nginx"
 - Consumes: `video_attention_score` (Task 6), `backend`'s `GET /session/{barter_id}/video-engagement` and `GET /session/{barter_id}/engagement/history` (Task 2).
 - Produces: `sweep_subsignal_weights(raw_signal_rows, ground_truth_by_window) -> list[dict]`, `sweep_fusion_weights(video_scores, speech_scores) -> list[dict]`, `pearson_correlation(xs, ys) -> float` — a CLI entry point `if __name__ == "__main__"` that fetches data for a given `--barter-id` and writes the results doc.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `apps/video_engagement/tests/test_weight_search.py`:
 
@@ -1816,12 +1882,12 @@ def test_sweep_fusion_weights_returns_sorted_by_correlation():
     assert all(abs(r["w_video"] + r["w_speech"] - 1.0) < 1e-9 for r in results)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_weight_search.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named 'weight_search'`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `apps/video_engagement/weight_search.py`:
 
@@ -1979,12 +2045,12 @@ results and a chosen weight set, per the method in
 `docs/superpowers/specs/2026-09-17-video-engagement-design.md`.
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/video_engagement && python -m pytest tests/test_weight_search.py -v`
 Expected: PASS (4 passed)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/video_engagement/weight_search.py apps/video_engagement/tests/test_weight_search.py docs/video_engagement/design-choices.md
@@ -2002,11 +2068,11 @@ git commit -m "feat(video_engagement): offline weight_search script + placeholde
 - Consumes: `ws /video/{barterId}/{userId}` (Task 9, proxied per Task 10).
 - Produces: none consumed by later tasks — this is the last task.
 
-- [ ] **Step 1: Manual verification plan (no automated frontend test in this repo's conventions — none exist for `.jsx` files)**
+- [x] **Step 1: Manual verification plan (no automated frontend test in this repo's conventions — none exist for `.jsx` files)**
 
 After Step 2's change, verify manually: run `docker compose up --build`, open two browser tabs for the two session participants, start a session, open each tab's DevTools → Network → WS, confirm a connection to `/video/{barterId}/{userId}` with binary frames flowing, and confirm (via `docker compose logs -f video_engagement`) that windows are being processed every ~5s.
 
-- [ ] **Step 2: Add video capture + WS send**
+- [x] **Step 2: Add video capture + WS send**
 
 In `apps/frontend/src/screens/LiveSession.jsx`, add near the top with the other WS URL constants:
 
@@ -2053,7 +2119,9 @@ Find the existing cleanup/stop logic that clears `frameIntervalRef.current` and 
 Run: `docker compose up --build`
 Then follow the Step 1 verification plan. Confirm no console errors from the new WS connection and that `apps/video_engagement` logs show windows being processed.
 
-- [ ] **Step 4: Commit**
+> **LEFT OPEN — not verified.** The code change landed (`8a3a3f5`, `apps/frontend/src/screens/LiveSession.jsx`: `VIDEO_WS`, `videoWsRef`, `videoFrameIntervalRef`, WS open at `/video/{barterId}/{userId}`, 1 fps JPEG `toBlob` send, cleanup in all three teardown paths). What is missing is the manual run itself: nobody has recorded a `docker compose up --build` session with two participant tabs confirming binary frames on the `/video/...` WS and `video_engagement` logs flushing a window every ~5s. This is a live-pipeline check with a webcam, so it cannot be discharged from code inspection or CI — it needs a human at a browser. Gap: end-to-end frontend→`video_engagement` streaming is unproven in practice.
+
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/frontend/src/screens/LiveSession.jsx
