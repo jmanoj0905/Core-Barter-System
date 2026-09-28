@@ -22,11 +22,26 @@ const severityBg = {
   severe: 'bg-error-container',
 }
 
+// Fusion weighting currently applied by warning_engine (_recompute_and_log_fusion).
+// Provisional, not calibrated against any labelled engagement ground truth.
+const FUSION_W_SPEECH = 0.7
+const FUSION_W_VIDEO  = 0.3
+
+async function safeJson(res) {
+  try { return await res.json() } catch { return null }
+}
+
+const asArray = (v) => (Array.isArray(v) ? v : [])
+
+const pct = (v) => (typeof v === 'number' ? `${(v * 100).toFixed(0)}%` : '—')
+
 export default function PostSession({ barterId, onReset }) {
   const [verdict, setVerdict]     = useState(null)
   const [transcript, setTranscript] = useState([])
   const [windows, setWindows]     = useState([])
   const [escrows, setEscrows]     = useState([])
+  const [fusionHistory, setFusionHistory] = useState([])
+  const [videoWindows, setVideoWindows]   = useState([])
   const [loading, setLoading]     = useState(true)
   const [error, setError]         = useState('')
   const [tab, setTab]             = useState('verdict')
@@ -39,17 +54,24 @@ export default function PostSession({ barterId, onReset }) {
     try {
       await fetch(`${API}/verdict/${barterId}/generate`, { method: 'POST' })
       await fetch(`${API}/trust/${barterId}/update`,    { method: 'POST' })
-      const [vRes, tRes, wRes, eRes] = await Promise.all([
+      const [vRes, tRes, wRes, eRes, hRes, vidRes] = await Promise.all([
         fetch(`${API}/verdict/${barterId}`),
         fetch(`${API}/session/${barterId}/transcript`),
         fetch(`${API}/session/${barterId}/windows`),
         fetch(`${API}/escrow/${barterId}`),
+        fetch(`${API}/session/${barterId}/engagement/history`),
+        fetch(`${API}/session/${barterId}/video-engagement`),
       ])
       if (!vRes.ok) throw new Error(await vRes.text())
       setVerdict(await vRes.json())
       setTranscript(tRes.ok ? await tRes.json() : [])
       setWindows(wRes.ok   ? await wRes.json() : [])
       setEscrows(eRes.ok   ? await eRes.json() : [])
+      // Fusion data is optional: a session may have run without the video
+      // service, or the endpoints may 404 / return an error body. Never let
+      // that take down the verdict page.
+      setFusionHistory(hRes.ok   ? asArray(await safeJson(hRes))   : [])
+      setVideoWindows(vidRes.ok  ? asArray(await safeJson(vidRes)) : [])
     } catch (err) {
       setError(err.message)
     } finally {
@@ -101,6 +123,16 @@ export default function PostSession({ barterId, onReset }) {
   }
 
   const tabs = ['verdict', 'windows', 'transcript', 'engagement']
+
+  // ── Fused speech+video engagement (engagement_score_log / video_engagement_results) ──
+  const latestFusion   = fusionHistory.length ? fusionHistory[fusionHistory.length - 1] : null
+  // video drops out of fusion when the camera goes dark: warning_engine discards a
+  // video score older than VIDEO_SCORE_STALE_SECONDS (15s) and falls back to speech alone.
+  const dropoutEntries = fusionHistory.filter(
+    r => r.video_attention_score == null && r.speech_engagement_score != null
+  )
+  const latestIsSpeechOnly = !!latestFusion && latestFusion.video_attention_score == null
+  const latestIsVideoOnly  = !!latestFusion && latestFusion.speech_engagement_score == null
 
   // Escrow summary
   const teacherEscrow = escrows.find(e => e.user_id === 1)
@@ -405,9 +437,221 @@ export default function PostSession({ barterId, onReset }) {
 
               {/* Engagement tab */}
               {tab === 'engagement' && (
-                <div>
+                <div className="space-y-10">
+
+                  {/* ── Fused speech + video engagement ── */}
+                  <div>
+                    <h2 className="font-headline font-bold text-sm uppercase tracking-widest mb-4">
+                      Fused Engagement (Speech + Video)
+                    </h2>
+
+                    {!latestFusion ? (
+                      <p className="text-on-surface-variant text-sm">
+                        No fused engagement recorded for this session.
+                      </p>
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="border-4 border-on-background bg-primary-container p-5">
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-on-primary-container mb-2">
+                              Fused Score
+                            </div>
+                            <div className="text-4xl font-extrabold font-headline">
+                              {pct(latestFusion.fused_engagement_score)}
+                            </div>
+                            <div className="w-full bg-white/50 h-3 border-2 border-on-background mt-3">
+                              <div
+                                className="bg-primary h-full"
+                                style={{ width: `${Math.max(0, Math.min(1, latestFusion.fused_engagement_score || 0)) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          <div className="border border-outline-variant p-5">
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+                              Speech Component
+                            </div>
+                            <div className="text-3xl font-extrabold text-primary font-headline">
+                              {pct(latestFusion.speech_engagement_score)}
+                            </div>
+                            <div className="text-[10px] uppercase tracking-widest text-outline mt-2">
+                              weight {FUSION_W_SPEECH}
+                            </div>
+                          </div>
+                          <div className="border border-outline-variant p-5">
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+                              Video Component
+                            </div>
+                            <div className={`text-3xl font-extrabold font-headline ${latestIsSpeechOnly ? 'text-outline' : 'text-primary'}`}>
+                              {latestIsSpeechOnly ? 'dropped out' : pct(latestFusion.video_attention_score)}
+                            </div>
+                            <div className="text-[10px] uppercase tracking-widest text-outline mt-2">
+                              weight {FUSION_W_VIDEO}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Fusion weighting disclosure */}
+                        <div className="border-4 border-on-background bg-[#fef9c3] p-4 mt-4 flex items-start gap-3">
+                          <span className="material-symbols-outlined text-xl">science</span>
+                          <p className="text-xs leading-relaxed">
+                            <span className="font-headline font-bold uppercase tracking-widest">
+                              Provisional blend · {FUSION_W_SPEECH} speech / {FUSION_W_VIDEO} video
+                            </span>
+                            <br />
+                            These weights are a hand-picked starting point, not a calibrated or
+                            validated result. No labelled engagement ground truth has been fitted
+                            to them, so treat the fused number as indicative only.
+                          </p>
+                        </div>
+
+                        {/* Video dropout disclosure */}
+                        {(latestIsSpeechOnly || dropoutEntries.length > 0) && (
+                          <div className="border-4 border-on-background bg-secondary-container p-4 mt-4 flex items-start gap-3">
+                            <span className="material-symbols-outlined text-xl">videocam_off</span>
+                            <p className="text-xs leading-relaxed">
+                              <span className="font-headline font-bold uppercase tracking-widest">
+                                Video dropped out of fusion
+                              </span>
+                              <br />
+                              {dropoutEntries.length} of {fusionHistory.length} logged points carried
+                              no usable video signal (camera dark, or the last video score was older
+                              than the 15s staleness cutoff). For those points the score shown is
+                              speech-only and is <span className="font-bold">not</span> a fused value.
+                              {latestIsSpeechOnly && ' The latest point above is one of them.'}
+                            </p>
+                          </div>
+                        )}
+                        {latestIsVideoOnly && (
+                          <div className="border-4 border-on-background bg-secondary-container p-4 mt-4 flex items-start gap-3">
+                            <span className="material-symbols-outlined text-xl">mic_off</span>
+                            <p className="text-xs leading-relaxed">
+                              <span className="font-headline font-bold uppercase tracking-widest">
+                                Speech missing from fusion
+                              </span>
+                              <br />
+                              The latest logged point had no speech engagement score, so the value
+                              shown is video-only.
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {/* ── Engagement over time ── */}
+                  <div>
+                    <h2 className="font-headline font-bold text-sm uppercase tracking-widest mb-4">
+                      Engagement Over Time ({fusionHistory.length} points)
+                    </h2>
+                    {fusionHistory.length === 0 ? (
+                      <p className="text-on-surface-variant text-sm">
+                        No engagement history recorded for this session.
+                      </p>
+                    ) : (
+                      <div className="border border-outline-variant p-5">
+                        <div className="flex items-end gap-[2px] h-28 border-b-2 border-on-background">
+                          {fusionHistory.map((r, i) => {
+                            const v = Math.max(0, Math.min(1, r.fused_engagement_score || 0))
+                            const speechOnly = r.video_attention_score == null
+                            return (
+                              <div
+                                key={i}
+                                className={`flex-1 min-w-[3px] ${speechOnly ? 'bg-outline-variant' : 'bg-primary'}`}
+                                style={{ height: `${Math.max(v * 100, 2)}%` }}
+                                title={[
+                                  `#${i + 1} ${new Date(r.created_at).toLocaleTimeString()}`,
+                                  `fused ${pct(r.fused_engagement_score)}`,
+                                  `speech ${pct(r.speech_engagement_score)}`,
+                                  `video ${r.video_attention_score == null ? 'none (dropped out)' : pct(r.video_attention_score)}`,
+                                ].join(' · ')}
+                              />
+                            )
+                          })}
+                        </div>
+                        <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-outline mt-2">
+                          <span>{new Date(fusionHistory[0].created_at).toLocaleTimeString()}</span>
+                          <span>0–100% fused</span>
+                          <span>{new Date(fusionHistory[fusionHistory.length - 1].created_at).toLocaleTimeString()}</span>
+                        </div>
+                        <div className="flex gap-5 mt-3 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                          <span className="flex items-center gap-2">
+                            <span className="inline-block w-3 h-3 bg-primary border border-on-background" />
+                            speech + video fused
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <span className="inline-block w-3 h-3 bg-outline-variant border border-on-background" />
+                            speech only (video dropped out)
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ── Per-window video attention ── */}
+                  <div>
+                    <h2 className="font-headline font-bold text-sm uppercase tracking-widest mb-4">
+                      Video Attention Windows ({videoWindows.length})
+                    </h2>
+                    {videoWindows.length === 0 ? (
+                      <p className="text-on-surface-variant text-sm">
+                        No video engagement recorded for this session.
+                      </p>
+                    ) : (
+                      <div className="overflow-x-auto border border-outline-variant">
+                        <table className="w-full text-left">
+                          <thead className="bg-surface-container font-headline text-[10px] uppercase font-bold border-b-2 border-on-background">
+                            <tr>
+                              <th className="p-3">Window</th>
+                              <th className="p-3">User</th>
+                              <th className="p-3">Attention</th>
+                              <th className="p-3">Backend</th>
+                              <th className="p-3">Eyes Open</th>
+                              <th className="p-3">Head Dev.</th>
+                              <th className="p-3">Gaze Centered</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-outline-variant">
+                            {videoWindows.map((r, i) => {
+                              const sig = r.raw_signals || {}
+                              const num = (v) => (typeof v === 'number' ? v.toFixed(3) : '—')
+                              return (
+                                <tr key={i} className="hover:bg-surface-container-low transition-colors">
+                                  <td className="p-3 font-mono text-xs">
+                                    {r.window_start?.toFixed(1)}s–{r.window_end?.toFixed(1)}s
+                                  </td>
+                                  <td className="p-3 text-xs font-bold">#{r.user_id}</td>
+                                  <td className="p-3 text-xs font-bold text-primary">
+                                    {pct(r.video_attention_score)}
+                                  </td>
+                                  <td className="p-3">
+                                    <span className={`px-2 py-1 border border-on-background text-[10px] font-bold uppercase ${
+                                      r.backend_used === 'aws' ? 'bg-secondary-container' : 'bg-tertiary-container'
+                                    }`}>
+                                      {r.backend_used || 'unknown'}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 font-mono text-xs">{num(sig.eyes_open)}</td>
+                                  <td className="p-3 font-mono text-xs">{num(sig.head_deviation)}</td>
+                                  <td className="p-3 font-mono text-xs">{num(sig.gaze_centered)}</td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                    {videoWindows.length > 0 && (
+                      <p className="text-[10px] uppercase tracking-widest text-outline mt-2">
+                        Sub-signals are raw 0–1 values. Higher head deviation means the head is
+                        turned further from centre, so it lowers the attention score.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* ── Existing speech-only summary ── */}
+                  <div>
                   <h2 className="font-headline font-bold text-sm uppercase tracking-widest mb-4">
-                    Learner Engagement
+                    Learner Engagement (Speech Only)
                   </h2>
                   {!engagement ? (
                     <p className="text-on-surface-variant text-sm">No engagement data recorded.</p>
@@ -428,6 +672,8 @@ export default function PostSession({ barterId, onReset }) {
                       ))}
                     </div>
                   )}
+                  </div>
+
                 </div>
               )}
             </div>
