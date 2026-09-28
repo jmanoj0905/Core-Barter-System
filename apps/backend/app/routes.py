@@ -855,6 +855,7 @@ async def log_warning(req: WarningLogRequest, db: AsyncSession = Depends(get_db)
         severity=req.severity,
         message=req.reason,
         window_ids=req.window_ids,
+        advisory=req.advisory,
     )
     db.add(warning)
     await db.commit()

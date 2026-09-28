@@ -130,7 +130,7 @@ http_client: httpx.AsyncClient | None = None
 async def lifespan(app: FastAPI):
     global http_client
     _banner("Warning Engine  ·  Port 8003")
-    _info("Escalation ladder: 1→silent  2→mild  3–4→strong  5+→severe")
+    _info("Escalation ladder: 1→silent  2→strong  3+→severe")
     http_client = httpx.AsyncClient(timeout=5.0)
     _ok("Service online — waiting for window results")
     yield
@@ -247,6 +247,7 @@ async def run_warning_decision(
         "reason": reason,
         "window_ids": str(request.window_id),
         "timestamp": warning_entry["timestamp"],
+        "advisory": severity == "severe",
     })
 
     _warning(barter_id, severity, reason, state["consecutive_incorrect"])
