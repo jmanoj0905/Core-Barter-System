@@ -111,8 +111,10 @@ class Warning(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     # A severe warning no longer vetoes the verdict; this flags the warning as
     # advisory — a record for a later adjudicator to find, not a payout veto.
-    # NULL (on rows written before this column existed) must be treated the
-    # same as False by every reader.
+    # Rows written before this column existed read as 0, not NULL — SQLite
+    # backfills the DEFAULT on ADD COLUMN. NULL is still possible via other
+    # write paths (e.g. an explicit None insert), so every reader must treat
+    # both 0 and NULL the same: not advisory.
     advisory: Mapped[bool | None] = mapped_column(Boolean, default=False, nullable=True)
 
 
