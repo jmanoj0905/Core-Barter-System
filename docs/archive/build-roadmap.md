@@ -1,5 +1,12 @@
 # Core Barter POC — Build Roadmap
 
+> **Archived — historical snapshot, not current.** The original 8-stage build order for the POC;
+> all stages are complete. It predates `video_engagement` (port 8004) and the move from
+> PostgreSQL to SQLite. Kept as a record of how the system was built up.
+> For the current shape see [architecture.md](../architecture.md).
+
+---
+
 > Build order is based on dependencies. Each stage must work before moving to the next.
 > Estimated solo build time: **25–35 focused hours (~4–5 days)**
 

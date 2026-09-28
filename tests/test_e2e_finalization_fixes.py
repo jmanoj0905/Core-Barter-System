@@ -1,5 +1,5 @@
 """
-Regression tests for ISSUES.md findings 001, 002, 003, 005, 006, 007.
+Regression tests for docs/issues.md findings 001, 002, 003, 005, 006, 007.
 
 Covers the single server-controlled finalization path in confirm_session:
 verdict generated from actual topic evidence before settlement, settlement

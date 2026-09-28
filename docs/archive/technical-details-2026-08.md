@@ -1,5 +1,22 @@
 # Core Barter System -- Technical Documentation
 
+> **Archived — historical snapshot, not current.** Last substantive update 2026-08-08.
+> This was the long-form internals reference and much of its description of the *shapes* of things
+> (window buffering, warning escalation, trust and QA formulas, key data flows) still reads true,
+> but it predates several structural changes and should not be trusted on specifics:
+>
+> - §3, §8, §9 describe **PostgreSQL 16** — the system runs on SQLite via `aiosqlite`.
+> - §3, §4, §6 describe **faster-whisper** as the STT engine — STT is AWS Transcribe (`STT_BACKEND=aws`).
+> - §5 gives semantic thresholds of `0.55` / `0.35` — the calibrated values are `0.36` / `0.14`.
+> - The **`video_engagement` service (port 8004) is absent entirely**, as is engagement fusion.
+> - §8 describes deployment via the Vite dev server on `:5173` — deployment is the nginx container on 80/443.
+> - §9's schema predates the escrow tables (`wallets`, `escrows`, `credit_transactions`).
+>
+> For the current picture see [architecture.md](../architecture.md),
+> [development.md](../development.md) and [threshold-calibration.md](../threshold-calibration.md).
+
+---
+
 > A real-time audio conversation monitoring platform that enforces topic adherence
 > during barter/negotiation sessions using speech-to-text, semantic similarity
 > analysis, and escalating warning systems.

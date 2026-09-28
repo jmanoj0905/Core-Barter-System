@@ -1,5 +1,16 @@
 # Design Decisions — Core Barter System (Session Quality & Safety Monitor)
 
+> **Archived — historical snapshot, not current.** Last substantive update 2026-03-18.
+> Parts of this document have been overtaken by the implementation: it describes PostgreSQL
+> (the system runs on SQLite), `faster-whisper` with an OpenAI fallback (STT is AWS Transcribe),
+> and a four-service split (there are now five FastAPI services, including `video_engagement`).
+> §12 "Credits & Escrow" is superseded by
+> [specs/2026-08-26-resource-escrow-design.md](../superpowers/specs/2026-08-26-resource-escrow-design.md).
+> For the current picture see [architecture.md](../architecture.md) and
+> [development.md](../development.md). Kept for the rationale it records.
+
+---
+
 > This document records every major design choice, the alternatives considered, and the rationale for each decision. Written for capstone review preparation and codebase context.
 >
 > Last updated: 2026-03-18
