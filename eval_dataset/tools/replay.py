@@ -10,22 +10,14 @@ window after the last turn.
 This module does windowing only — no cosine, no embedding, no scoring.
 """
 
-import importlib.util
 from dataclasses import dataclass
-from pathlib import Path
 
 from eval_dataset.tools.script_parser import Script
-
-_WINDOWING_PATH = (
-    Path(__file__).resolve().parents[2] / "apps" / "semantic_analysis" / "windowing.py"
+from eval_dataset.tools.windowing_bridge import (
+    clean_text,
+    has_enough_content,
+    window_is_ready,
 )
-_spec = importlib.util.spec_from_file_location("_replay_windowing", _WINDOWING_PATH)
-_windowing = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_windowing)
-
-clean_text = _windowing.clean_text
-window_is_ready = _windowing.window_is_ready
-has_enough_content = _windowing.has_enough_content
 
 
 @dataclass(frozen=True)

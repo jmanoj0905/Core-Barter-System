@@ -10,21 +10,11 @@ This module does scoring only — no windowing, no mechanism (RHO/thresholds
 beyond the shared `classify`), no HTTP.
 """
 
-import importlib.util
 from dataclasses import dataclass
-from pathlib import Path
 
 from sentence_transformers import SentenceTransformer, util
 
-_WINDOWING_PATH = (
-    Path(__file__).resolve().parents[2] / "apps" / "semantic_analysis" / "windowing.py"
-)
-_spec = importlib.util.spec_from_file_location("_embed_windowing", _WINDOWING_PATH)
-_windowing = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_windowing)
-
-classify = _windowing.classify
-topic_text = _windowing.topic_text
+from eval_dataset.tools.windowing_bridge import classify, topic_text
 
 _MODEL_NAME = "all-MiniLM-L6-v2"
 _cached_model = None

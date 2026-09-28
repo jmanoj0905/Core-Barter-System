@@ -1,6 +1,3 @@
-import importlib.util
-from pathlib import Path
-
 import pytest
 
 pytest.importorskip(
@@ -10,16 +7,7 @@ pytest.importorskip(
 
 from eval_dataset.tools.embed_windows import WindowScore, score_windows
 from eval_dataset.tools.replay import ReplayWindow
-
-_WINDOWING_PATH = (
-    Path(__file__).resolve().parents[3] / "apps" / "semantic_analysis" / "windowing.py"
-)
-_spec = importlib.util.spec_from_file_location("_test_windowing", _WINDOWING_PATH)
-_windowing = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_windowing)
-
-classify = _windowing.classify
-topic_text = _windowing.topic_text
+from eval_dataset.tools.windowing_bridge import classify, topic_text
 
 
 def make_window(index, text, raw_text=None):

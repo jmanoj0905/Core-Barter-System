@@ -212,6 +212,15 @@ redoing anything else:
 Filling this leg needs an S3 bucket in this account plus the Transcribe spend;
 nothing in the corpus or the harness has to be rebuilt.
 
+**How to unblock it.** `eval_dataset/tools/transcribe.py` already reads the
+bucket from `AWS_S3_BUCKET` (the hard-coded `core-barter-audio-tmp` is only its
+default), so the leg needs no code change — point that variable at a bucket the
+run's credential owns, in the same region as the Transcribe calls, and run
+`rho_calibration.py --all-wer`. Polly is *not* a blocker: that permission is
+already granted (see the spec correction below). `timed_durations()` and
+`align_wer_runs()` are built, unit-tested and guarded against being fed
+synthetic durations, so the sweep can be filled in without redoing any of it.
+
 ## Verdict against each pre-registered criterion (spec §7.5)
 
 The four criteria were registered before the run. Each is resolved below on its
@@ -306,6 +315,15 @@ and capped at 0.80, and the distinction §7.1 treats as load-bearing does not
 exist anywhere in the range the grid covers. This is a correction to the spec's
 reasoning, not a defect in the implementation — the harness implements §7.1 as
 written.
+
+**If the mechanism is ever revisited, redesign this first.** The safeguard is
+the part of §7.1 the spec argues hardest for, and it buys nothing: whatever
+protection was intended against a digression raising its own ceiling is not
+present, at any swept `RHO`. A successor mechanism has to get that property
+from somewhere else — gating the update on the *gold* or predicted label, on a
+ceiling that decays, or on an `R` that is not a plain running maximum — or drop
+the claim. Re-running the grid with the guard as written will keep reproducing
+the unguarded result.
 
 ### M-B — there are two fold families, not three
 

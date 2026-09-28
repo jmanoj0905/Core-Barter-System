@@ -54,22 +54,13 @@ from eval_dataset.tools.replay import replay, synthetic_durations  # noqa: E402
 from eval_dataset.tools.script_parser import parse_script  # noqa: E402
 
 # Production constants, read from the service module so they cannot drift.
-_WINDOWING_PATH = _REPO_ROOT / "apps" / "semantic_analysis" / "windowing.py"
+# The load goes through the harness's single bridge rather than a local
+# importlib shim, so this module and `replay`/`embed_windows` share one loaded
+# copy of `windowing.py` instead of each executing their own.
+from eval_dataset.tools import windowing_bridge  # noqa: E402
 
-
-def _load_windowing():
-    import importlib.util
-
-    spec = importlib.util.spec_from_file_location("_rho_windowing", _WINDOWING_PATH)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-_windowing = _load_windowing()
-
-UPPER = _windowing.UPPER  # 0.36 — R's floor and starting value
-LOWER = _windowing.LOWER  # 0.14 — the flat control threshold
+UPPER = windowing_bridge.UPPER  # 0.36 — R's floor and starting value
+LOWER = windowing_bridge.LOWER  # 0.14 — the flat control threshold
 R_CAP = 0.80  # R is capped here; one of the three parameters in scope
 
 # RHO swept 0.20-0.80 at 0.01 inclusive. Built with integer arithmetic so the

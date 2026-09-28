@@ -317,6 +317,20 @@ Full detail: [rho_calibration_findings.md](./rho_calibration_findings.md).
    The `correct` / `weakly_correct` boundary is not worth training for while the
    warning engine ignores it.
 
+## Note on the harness's loader
+
+`apps/semantic_analysis` is a service directory, not an importable package, so
+the offline harness reaches production `windowing.py` through
+`importlib.util.spec_from_file_location`. That shim was copy-pasted at four
+call sites — `eval_dataset/tools/replay.py`, `embed_windows.py`,
+`tests/test_embed_windows.py` and `rho_calibration.py` — which loaded the file
+four independent times under four different module names. Harmless in practice,
+but squarely against the premise the work opens with: production and the
+harness share the logic *so they cannot diverge*, and four live copies is the
+shape in which they can. It is now loaded exactly once, in
+`eval_dataset/tools/windowing_bridge.py`, which every call site imports from;
+`tests/test_windowing_bridge.py` fails if a new shim appears.
+
 ## Note on version control
 
 As of commit `f5424d0`, `threshold_experiment.py`, all findings/design
