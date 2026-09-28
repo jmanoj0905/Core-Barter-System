@@ -21,7 +21,7 @@ The project is a capstone core prototype. Missing production features are distin
 
 **Priority:** High. **Evidence:** Reproduced.
 
-**Locations:** [confirmation and settlement](apps/backend/app/routes.py), `confirm_session`, around lines 291–315; [results screen](apps/frontend/src/screens/PostSession.jsx), `load`.
+**Locations:** [confirmation and settlement](../apps/backend/app/routes.py), `confirm_session`, around lines 291–315; [results screen](../apps/frontend/src/screens/PostSession.jsx), `load`.
 
 When the second participant confirms, `confirm_session` reads the current verdict and immediately calls `apply_settlement`. A missing verdict or a `PENDING` verdict maps to `qa_score = 0`. The frontend generates the final verdict afterward, when the results screen loads. The summary pipeline creates a pending verdict, not a final successful/partial verdict.
 
@@ -37,7 +37,7 @@ When the second participant confirms, `confirm_session` reads the current verdic
 
 **Priority:** High. **Evidence:** Reproduced.
 
-**Locations:** [PostSession.jsx](apps/frontend/src/screens/PostSession.jsx), `load`, around lines 43–44; [routes.py](apps/backend/app/routes.py), `update_trust`, around lines 808–841.
+**Locations:** [PostSession.jsx](../apps/frontend/src/screens/PostSession.jsx), `load`, around lines 43–44; [routes.py](../apps/backend/app/routes.py), `update_trust`, around lines 808–841.
 
 Every results load calls `/trust/{barter_id}/update`. The endpoint applies the trust formula again without checking whether that session has already affected trust. Both participants opening their own results naturally repeats the operation; the Retry button can also repeat it.
 
@@ -51,7 +51,7 @@ Every results load calls `/trust/{barter_id}/update`. The endpoint applies the t
 
 **Priority:** High. **Evidence:** Reproduced.
 
-**Location:** [routes.py](apps/backend/app/routes.py), `generate_verdict`, around lines 719–746.
+**Location:** [routes.py](../apps/backend/app/routes.py), `generate_verdict`, around lines 719–746.
 
 The verdict depends on elapsed duration, confirmation count, and the session's terminated status. It does not use topic correctness, warning history, or engagement results.
 
@@ -67,7 +67,7 @@ The verdict depends on elapsed duration, confirmation count, and the session's t
 
 **Priority:** High. **Evidence:** Code-confirmed.
 
-**Locations:** [warning engine](apps/warning_engine/main.py), `run_warning_decision` and `receive_safety_alert`; [LiveSession.jsx](apps/frontend/src/screens/LiveSession.jsx), warning WebSocket handler around line 98.
+**Locations:** [warning engine](../apps/warning_engine/main.py), `run_warning_decision` and `receive_safety_alert`; [LiveSession.jsx](../apps/frontend/src/screens/LiveSession.jsx), warning WebSocket handler around line 98.
 
 Three or more consecutive incorrect windows produce a severe warning, but the warning engine does not set `state["terminated"]` or call backend termination. A safety alert with `hard_block` likewise becomes a severe warning without server-side termination. The browser sets local termination state and calls `halt()`.
 
@@ -81,7 +81,7 @@ Three or more consecutive incorrect windows produce a severe warning, but the wa
 
 **Priority:** High. **Evidence:** Reproduced for locked escrow; code-confirmed for missing cleanup.
 
-**Locations:** [routes.py](apps/backend/app/routes.py), `terminate_session`; [LiveSession.jsx](apps/frontend/src/screens/LiveSession.jsx), `handleTerminate`.
+**Locations:** [routes.py](../apps/backend/app/routes.py), `terminate_session`; [LiveSession.jsx](../apps/frontend/src/screens/LiveSession.jsx), `handleTerminate`.
 
 The termination endpoint sets status and end time only. It does not settle/refund deposits, end downstream analysis, or broadcast termination to the peer. The frontend stops its own streams but does not navigate to results.
 
@@ -95,7 +95,7 @@ The termination endpoint sets status and end time only. It does not settle/refun
 
 **Priority:** High. **Evidence:** Reproduced.
 
-**Location:** [routes.py](apps/backend/app/routes.py), `confirm_session`, around lines 253–273.
+**Location:** [routes.py](../apps/backend/app/routes.py), `confirm_session`, around lines 253–273.
 
 The endpoint accepts a supplied user ID, checks only for an existing confirmation from that ID, and treats any two confirmation rows as both participants confirming. It does not check membership in the contract.
 
@@ -109,7 +109,7 @@ The endpoint accepts a supplied user ID, checks only for an existing confirmatio
 
 **Priority:** Medium. **Evidence:** Reproduced.
 
-**Locations:** [routes.py](apps/backend/app/routes.py), `lock_escrow_endpoint`; [escrow.py](apps/backend/app/escrow.py), `lock_escrow` and `apply_settlement`; [models.py](apps/backend/app/models.py), `Escrow`.
+**Locations:** [routes.py](../apps/backend/app/routes.py), `lock_escrow_endpoint`; [escrow.py](../apps/backend/app/escrow.py), `lock_escrow` and `apply_settlement`; [models.py](../apps/backend/app/models.py), `Escrow`.
 
 Each `/escrow/lock` call creates another escrow for each user. There is no unique constraint for session/user escrow ownership. Settlement builds a dictionary keyed by user ID, retaining only one of that user's locked records for the current call.
 
@@ -125,7 +125,7 @@ Each `/escrow/lock` call creates another escrow for each user. There is no uniqu
 
 **Priority:** Medium. **Evidence:** Reproduced.
 
-**Location:** [tests/conftest.py](tests/conftest.py), around lines 30–38 and warning-engine fixture paths.
+**Location:** [tests/conftest.py](../tests/conftest.py), around lines 30–38 and warning-engine fixture paths.
 
 Fixtures reference `ROOT/backend` and `ROOT/warning_engine`, but the services are under `ROOT/apps/`. Running `pytest tests --collect-only -q` fails with `ModuleNotFoundError: No module named 'app'` in the reviewed environment.
 
@@ -139,7 +139,7 @@ Fixtures reference `ROOT/backend` and `ROOT/warning_engine`, but the services ar
 
 **Priority:** High. **Evidence:** Code-confirmed ordering; race effects need integration validation.
 
-**Locations:** [routes.py](apps/backend/app/routes.py), `confirm_session`, around lines 276–315; [LiveSession.jsx](apps/frontend/src/screens/LiveSession.jsx), `both_confirmed` handler.
+**Locations:** [routes.py](../apps/backend/app/routes.py), `confirm_session`, around lines 276–315; [LiveSession.jsx](../apps/frontend/src/screens/LiveSession.jsx), `both_confirmed` handler.
 
 The backend broadcasts `both_confirmed` before committing the confirmation transaction, finishing audio analysis, or settling escrow. Both clients immediately leave the live view and start generating verdicts/updating trust.
 
@@ -151,7 +151,7 @@ The backend broadcasts `both_confirmed` before committing the confirmation trans
 
 **Priority:** High. **Evidence:** Code-confirmed.
 
-**Location:** [routes.py](apps/backend/app/routes.py), `confirm_session`, `terminate_session`, and `generate_verdict`.
+**Location:** [routes.py](../apps/backend/app/routes.py), `confirm_session`, `terminate_session`, and `generate_verdict`.
 
 Confirmation does not require an active session. It can complete a proposed session or overwrite a terminated session once two confirmations exist. Termination can overwrite an already completed session. Verdict generation can run while a session is active and uses the current time when no end time exists.
 
@@ -163,7 +163,7 @@ Confirmation does not require an active session. It can complete a proposed sess
 
 **Priority:** High for access outside a controlled demo. **Evidence:** Code-confirmed.
 
-**Locations:** [routes.py](apps/backend/app/routes.py), `/settlement/{barter_id}`, `/escrow/release`, `/warnings/log`, `/window/result`, and summary routes; [main.py](apps/backend/app/main.py); [nginx.conf](apps/frontend/nginx.conf).
+**Locations:** [routes.py](../apps/backend/app/routes.py), `/settlement/{barter_id}`, `/escrow/release`, `/warnings/log`, `/window/result`, and summary routes; [main.py](../apps/backend/app/main.py); [nginx.conf](../apps/frontend/nginx.conf).
 
 The reviewed routes have no authentication or authorization dependencies. Publicly proxied paths include internal evidence-writing and financial endpoints. A caller can supply a QA score directly to settlement or choose an escrow release operation. WebSockets also accept supplied session/user IDs without verifying membership.
 
@@ -175,7 +175,7 @@ The reviewed routes have no authentication or authorization dependencies. Public
 
 **Priority:** Medium. **Evidence:** Code-confirmed.
 
-**Locations:** [schemas.py](apps/backend/app/schemas.py), `EscrowReleaseRequest`; [escrow.py](apps/backend/app/escrow.py), `release_escrow`, around lines 108–114.
+**Locations:** [schemas.py](../apps/backend/app/schemas.py), `EscrowReleaseRequest`; [escrow.py](../apps/backend/app/escrow.py), `release_escrow`, around lines 108–114.
 
 `release_type` is an unrestricted string and `penalty_amount` has no range constraint. A penalty greater than the deposit produces a negative released amount and deducts additional available credits. An unknown release type performs no transition but can still return a successful endpoint response.
 
@@ -185,7 +185,7 @@ The reviewed routes have no authentication or authorization dependencies. Public
 
 **Priority:** Medium. **Evidence:** Code-confirmed.
 
-**Locations:** [routes.py](apps/backend/app/routes.py), `create_session`, `start_session`, `lock_escrow_endpoint`, and `update_trust`; [main.py](apps/backend/app/main.py), `signal_ws`; [PostSession.jsx](apps/frontend/src/screens/PostSession.jsx).
+**Locations:** [routes.py](../apps/backend/app/routes.py), `create_session`, `start_session`, `lock_escrow_endpoint`, and `update_trust`; [main.py](../apps/backend/app/main.py), `signal_ws`; [PostSession.jsx](../apps/frontend/src/screens/PostSession.jsx).
 
 Session creation hardcodes session participants as users 1 and 2 while accepting arbitrary teacher and learner IDs in the contract. Starting locks deposits for contract users, but manual escrow locking and trust updates use session users. Signaling routes to user 1 or 2, and the results screen hardcodes Alice as teacher and Bob as learner.
 
@@ -197,7 +197,7 @@ Session creation hardcodes session participants as users 1 and 2 while accepting
 
 **Priority:** Medium. **Evidence:** Code-confirmed.
 
-**Location:** [schemas.py](apps/backend/app/schemas.py), `SessionCreateRequest`.
+**Location:** [schemas.py](../apps/backend/app/schemas.py), `SessionCreateRequest`.
 
 Duration is any integer; topic and scope have no nonempty constraint; teacher and learner can be equal. No creation-time check ensures those users exist. Zero/negative durations trivially satisfy the duration check once a session starts.
 
@@ -207,7 +207,7 @@ Duration is any integer; topic and scope have no nonempty constraint; teacher an
 
 **Priority:** Medium. **Evidence:** Code-confirmed configuration; orphan confirmations reproduced in ISSUE-006.
 
-**Location:** [database.py](apps/backend/app/database.py).
+**Location:** [database.py](../apps/backend/app/database.py).
 
 The engine does not configure SQLite's `PRAGMA foreign_keys=ON` for connections. Declaring SQLAlchemy foreign keys alone does not enable SQLite enforcement. The isolated run accepted confirmations for nonexistent users.
 
@@ -217,7 +217,7 @@ The engine does not configure SQLite's `PRAGMA foreign_keys=ON` for connections.
 
 **Priority:** Medium for local development. **Evidence:** Reproduced.
 
-**Location:** [config.py](apps/backend/app/config.py), line 11.
+**Location:** [config.py](../apps/backend/app/config.py), line 11.
 
 Settings load `.env` while accepting only the backend's declared fields. Importing backend routes from the project root failed with `extra_forbidden` validation errors for audio/cloud configuration fields in the shared environment file.
 
@@ -229,7 +229,7 @@ This was observed in local execution, not the Docker environment-injection path.
 
 **Priority:** Low. **Evidence:** Reproduced tooling warning.
 
-**Location:** [pyproject.toml](pyproject.toml).
+**Location:** [pyproject.toml](../pyproject.toml).
 
 `name`, `version`, and `description` are under `[tool.uv]`, where the installed uv rejects them as unknown configuration fields. Commands continued with warnings in the reviewed environment; this was not a total execution blocker. Python compatibility is also unspecified.
 
@@ -239,7 +239,7 @@ This was observed in local execution, not the Docker environment-injection path.
 
 **Priority:** Medium. **Evidence:** Code-confirmed.
 
-**Locations:** [escrow.py](apps/backend/app/escrow.py), `apply_settlement`; [routes.py](apps/backend/app/routes.py), `confirm_session`, `settle_session`, and `update_trust`.
+**Locations:** [escrow.py](../apps/backend/app/escrow.py), `apply_settlement`; [routes.py](../apps/backend/app/routes.py), `confirm_session`, `settle_session`, and `update_trust`.
 
 Settlement calculates role-specific trust deltas. The explicit settlement endpoint applies them, while confirmation calls the helper without applying them. The results screen instead calls a different formula that updates both users equally and assumes a fixed satisfaction rating of 4/5.
 
@@ -251,7 +251,7 @@ Settlement calculates role-specific trust deltas. The explicit settlement endpoi
 
 **Priority:** Medium. **Evidence:** Code-confirmed.
 
-**Locations:** [warning engine](apps/warning_engine/main.py), `end_session`; [routes.py](apps/backend/app/routes.py), `receive_drift_summary`.
+**Locations:** [warning engine](../apps/warning_engine/main.py), `end_session`; [routes.py](../apps/backend/app/routes.py), `receive_drift_summary`.
 
 With zero windows, the warning engine reports `percent_incorrect = 0`. The backend converts this into `on_topic_percentage = 100 - percent_incorrect`, yielding 100% despite no analyzed evidence.
 
@@ -261,7 +261,7 @@ With zero windows, the warning engine reports `percent_incorrect = 0`. The backe
 
 **Priority:** Low. **Evidence:** Code-confirmed.
 
-**Locations:** [PostSession.jsx](apps/frontend/src/screens/PostSession.jsx), Session Summary duration; [routes.py](apps/backend/app/routes.py), `get_verdict`.
+**Locations:** [PostSession.jsx](../apps/frontend/src/screens/PostSession.jsx), Session Summary duration; [routes.py](../apps/backend/app/routes.py), `get_verdict`.
 
 The UI reads `verdict.actual_duration_seconds`, but the endpoint never returns that field, so the duration displays a dash.
 
@@ -269,9 +269,9 @@ The UI reads `verdict.actual_duration_seconds`, but the endpoint never returns t
 
 ### ISSUE-021 — Architecture documentation disagrees with the implementation
 
-**Priority:** Low. **Evidence:** Code-confirmed.
+**Priority:** Low. **Evidence:** Code-confirmed. **Status:** Mostly resolved 2026-09-28 (docs cleanup).
 
-**Locations:** [ARCHITECTURE.md](ARCHITECTURE.md), [CLAUDE.md](CLAUDE.md), [docker-compose.yml](docker-compose.yml).
+**Locations:** [docs/architecture.md](architecture.md), [CLAUDE.md](../CLAUDE.md), [docker-compose.yml](../docker-compose.yml).
 
 Architecture documentation describes PostgreSQL and a Whisper-centered pipeline, while Compose configures SQLite and defaults STT to AWS. Window-duration descriptions disagree, and service inventories omit the video-engagement service in places.
 
@@ -279,13 +279,21 @@ Architecture documentation describes PostgreSQL and a Whisper-centered pipeline,
 
 **Fix direction:** Document the current default deployment, distinguish optional STT backends, and keep service diagrams and timing descriptions aligned with configuration.
 
+**Resolution (2026-09-28):** `docs/architecture.md` and `CLAUDE.md` were corrected — service
+inventory now includes `video_engagement` (8004), the data-flow and sequence diagrams show the
+actual pipeline rather than a backend-orchestrated one, timings are the real 5s segment / ~25s
+window, and thresholds are the calibrated `0.36` / `0.14`. The PostgreSQL- and Whisper-era
+documents moved to `docs/archive/` behind explicit "not current" banners. **Still open:**
+`.env.example` and `start.sh` remain PostgreSQL-based and are not usable as written; test
+fixtures were not audited for outdated database assumptions.
+
 ## Concerns requiring targeted validation
 
 ### ISSUE-022 — Finalization holds a SQLite write transaction across service callbacks
 
 **Priority:** High if confirmed. **Evidence:** Needs integration validation.
 
-**Locations:** [routes.py](apps/backend/app/routes.py), `confirm_session`; [audio pipeline](apps/audio_pipeline/main.py), `end_session`; [semantic analysis](apps/semantic_analysis/main.py), `end_session`.
+**Locations:** [routes.py](../apps/backend/app/routes.py), `confirm_session`; [audio pipeline](../apps/audio_pipeline/main.py), `end_session`; [semantic analysis](../apps/semantic_analysis/main.py), `end_session`.
 
 Confirmation flushes a database write, then awaits audio shutdown before committing. Audio/semantic/warning shutdown calls back into backend routes that also write to SQLite. Those callbacks can wait for the original transaction's write lock while the original request waits for downstream completion. The backend gives the audio call five seconds and suppresses exceptions.
 
@@ -297,7 +305,7 @@ Confirmation flushes a database write, then awaits audio shutdown before committ
 
 **Priority:** Medium. **Evidence:** Needs concurrency validation.
 
-**Location:** [audio pipeline](apps/audio_pipeline/main.py), `audio_ws` and `end_session`.
+**Location:** [audio pipeline](../apps/audio_pipeline/main.py), `audio_ws` and `end_session`.
 
 Normal threshold processing, WebSocket disconnect, and the end endpoint all access/process the same mutable buffer without an ownership lock. Processing awaits external calls. The end endpoint deletes dictionary entries while the WebSocket retains a local buffer reference; it does not itself close that socket.
 
@@ -309,7 +317,7 @@ Normal threshold processing, WebSocket disconnect, and the end endpoint all acce
 
 **Priority:** Medium. **Evidence:** Needs media-level validation.
 
-**Location:** [audio pipeline](apps/audio_pipeline/main.py), `audio_ws`, `reset_buffer`, and `process_buffer`.
+**Location:** [audio pipeline](../apps/audio_pipeline/main.py), `audio_ws`, `reset_buffer`, and `process_buffer`.
 
 The first entire MediaRecorder blob is retained as `header_chunk` and prepended to every later segment. That blob can contain audio as well as a WebM header. Disconnect also processes a buffer containing only this retained blob. Duration is measured using wall time and reset after transcription, even though incoming audio can queue during transcription.
 
@@ -321,7 +329,7 @@ The first entire MediaRecorder blob is retained as `header_chunk` and prepended 
 
 **Priority:** Medium. **Evidence:** Code-confirmed failure handling; recovery impact needs integration validation.
 
-**Locations:** [audio pipeline](apps/audio_pipeline/main.py), `post_segment` and `process_buffer`; [warning engine](apps/warning_engine/main.py), `post_to_backend` and `end_session`; [routes.py](apps/backend/app/routes.py), service notifications.
+**Locations:** [audio pipeline](../apps/audio_pipeline/main.py), `post_segment` and `process_buffer`; [warning engine](../apps/warning_engine/main.py), `post_to_backend` and `end_session`; [routes.py](../apps/backend/app/routes.py), service notifications.
 
 Several HTTP failures are logged/suppressed without retry. Some writes do not check HTTP status. Audio resets its buffer after processing returns even when downstream delivery failed. Warning shutdown deletes local state after its summary-post helper returns, including after that helper catches a failure.
 
@@ -333,7 +341,7 @@ Several HTTP failures are logged/suppressed without retry. Some writes do not ch
 
 **Priority:** Medium. **Evidence:** Needs concurrency validation.
 
-**Locations:** [routes.py](apps/backend/app/routes.py), start/confirmation/trust routes; [escrow.py](apps/backend/app/escrow.py); [models.py](apps/backend/app/models.py).
+**Locations:** [routes.py](../apps/backend/app/routes.py), start/confirmation/trust routes; [escrow.py](../apps/backend/app/escrow.py); [models.py](../apps/backend/app/models.py).
 
 Several operations first read state and then mutate it. Confirmation lacks a session/user uniqueness constraint, escrow lacks one too, and balance updates use read-modify-write objects. Sequential duplicate protection does not establish correctness for concurrent requests.
 
@@ -345,7 +353,7 @@ Several operations first read state and then mutate it. Confirmation lacks a ses
 
 **Priority:** Medium beyond a single uninterrupted demo. **Evidence:** Code-confirmed architecture; recovery behavior untested.
 
-**Locations:** Module-level dictionaries in [audio pipeline](apps/audio_pipeline/main.py), [semantic analysis](apps/semantic_analysis/main.py), and [warning engine](apps/warning_engine/main.py).
+**Locations:** Module-level dictionaries in [audio pipeline](../apps/audio_pipeline/main.py), [semantic analysis](../apps/semantic_analysis/main.py), and [warning engine](../apps/warning_engine/main.py).
 
 Audio buffers, warning counters, semantic windows, and engagement accumulators live in process memory. Restarting a service loses that state. Multiple workers would maintain separate copies. Semantic contract fetching can restore a contract but does not restore the full prior monitoring history.
 

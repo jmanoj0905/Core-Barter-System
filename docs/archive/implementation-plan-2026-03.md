@@ -1,5 +1,14 @@
 # Implementation Plan — Core Barter System
 
+> **Archived — historical snapshot, not current.** Last substantive update 2026-03-18.
+> A point-in-time plan written against
+> [design-decisions-2026-03.md](design-decisions-2026-03.md); phases D–J were not executed as
+> written and the file-level guidance no longer matches the tree. For current work see
+> [issues.md](../issues.md) and the plans under
+> [superpowers/plans/](../superpowers/plans/).
+
+---
+
 > Actionable, file-level implementation guide. Maps every design decision to specific code changes.
 >
 > **Scope**: This repo (core-barter-system) builds the Session Quality Monitor + Session Safety Monitor POC.
