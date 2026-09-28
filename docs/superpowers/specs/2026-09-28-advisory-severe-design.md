@@ -175,12 +175,27 @@ Table-driven cases, in `apps/backend/tests/`:
 | severe present, 35% on-topic | `DISPUTE` | sustained drift still disputes |
 | no severe, 35% on-topic | `DISPUTE` | the percentage band is untouched |
 | no severe, 55% on-topic | `PARTIAL` | band boundaries unmoved |
-| `has_evidence=False` (zero windows) | never `SUCCESSFUL` via the topic path | ISSUE-019 must not regress |
+| `has_evidence=False` (zero windows), duration+confirmation pass | `SUCCESSFUL` — unchanged | pins current behaviour; see note below |
+| `has_evidence=False`, neither pass | `DISPUTE` | missing evidence never *manufactures* a pass |
 | `terminated=True` | `DISPUTE` | termination still dominates |
 
 Plus: `_evaluate_topic_quality` returns `severe_warning_count` as an integer
 count and no longer returns `has_severe_warning`; and the `advisory` column is
 created idempotently by the startup path when run twice against one database.
+
+**A note on ISSUE-019, corrected during planning.** An earlier draft of this
+section claimed a zero-window session can never reach `SUCCESSFUL`. It can:
+`topic_ok_for_success` is `not has_evidence or pct >= 70`, so a session with no
+windows at all but a passing duration and both confirmations returns
+`SUCCESSFUL` today. Verified directly against `_decide_verdict_type`.
+
+What ISSUE-019 actually guarantees is the other direction — `topic_failed`
+requires `has_evidence`, so missing evidence can never manufacture a `DISPUTE`,
+and the zero-window `on_topic_percentage` of 0.0 is never read as a failure.
+**Half A changes neither direction**, and the tests above pin both so that it
+cannot start to. Whether a session with no monitoring evidence should be able to
+settle at `qa_score 1.0` is a real question, but it is a pre-existing policy
+question and it is not this spec's to answer.
 
 ## 6. Falsification criteria
 
@@ -190,7 +205,7 @@ design is wrong and must not ship.
 | # | Criterion |
 |---|---|
 | F1 | Any session with `on_topic_percentage < 40` stops reaching `DISPUTE` |
-| F2 | A session with zero windows reaches `SUCCESSFUL` through the topic path (ISSUE-019 regression) |
+| F2 | The zero-window path changes verdict in either direction (it must behave exactly as it does today) |
 | F3 | Dataset-A false digression count changes at all — it must be **identical**, since `semantic_analysis/main.py` is untouched |
 | F4 | `apply_settlement` behaviour changes for any given `qa_score` |
 | F5 | A `severe` warning stops being written, displayed, or broadcast in-session |
