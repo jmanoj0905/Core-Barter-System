@@ -96,8 +96,16 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
         // Show notification that the other user confirmed
         setWarnings(prev => [{ ...data, severity: 'mild' }, ...prev])
       } else {
+        // A severe warning is recorded and displayed like any other, but it
+        // must NOT tear the session down. It used to call setTerminated(true)
+        // + halt(), which hid both "Mark Complete" and "Terminate" for BOTH
+        // participants (the /warnings/log broadcast reaches the whole room),
+        // so nobody could confirm, apply_settlement never ran, and the escrow
+        // stayed locked forever. The severe warning is priced at settlement
+        // now, not enforced in the client. Explicit termination still exists —
+        // see handleTerminate, which POSTs /session/{id}/terminate so the
+        // server agrees the session is over.
         setWarnings(prev => [data, ...prev])
-        if (data.severity === 'severe') { setTerminated(true); halt() }
       }
     }
     ws.onerror = () => { if (!opened) setError('Warning connection failed — is the backend running?') }

@@ -29,6 +29,7 @@ _EXPECTED_COLUMNS: tuple[tuple[str, str, str], ...] = (
     ("window_results", "human_label", "VARCHAR(20)"),
     ("window_results", "labeled_by_user_id", "INTEGER REFERENCES users(id)"),
     ("window_results", "labeled_at", "DATETIME"),
+    ("warnings", "advisory", "BOOLEAN DEFAULT 0"),
 )
 
 

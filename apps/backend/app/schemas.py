@@ -40,6 +40,7 @@ class WarningLogRequest(BaseModel):
     reason: str
     window_ids: str = ""
     timestamp: str = ""
+    advisory: bool = False
 
 
 class FrameCheckRequest(BaseModel):

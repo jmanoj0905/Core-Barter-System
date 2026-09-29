@@ -59,7 +59,7 @@ def _trust(barter_id, u1_before, u1_after, u2_before, u2_after):
     )
 
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -133,7 +133,10 @@ async def _evaluate_topic_quality(db: AsyncSession, barter_id: int) -> dict:
     """Read actual monitoring evidence for this session directly from the
     window/warning tables, instead of trusting the verdict's cached
     on_topic_percentage (which can be stale or, with zero windows, wrongly
-    read as 100% — ISSUE-019)."""
+    read as 100% — ISSUE-019). Reports how many NON-ADVISORY severe warnings
+    fired: drift-severe warnings are written advisory and never price the
+    session, while safety-severe warnings (a toxicity/NSFW hard block) are
+    written non-advisory and still veto the payout."""
     windows_result = await db.execute(
         select(WindowResult).where(WindowResult.barter_session_id == barter_id)
     )
@@ -143,17 +146,27 @@ async def _evaluate_topic_quality(db: AsyncSession, barter_id: int) -> dict:
     on_topic = sum(1 for w in windows if w.classification in ("correct", "weakly_correct"))
     on_topic_percentage = round(100.0 * on_topic / total, 2) if has_evidence else 0.0
 
-    severe_result = await db.execute(
-        select(Warning)
-        .where(Warning.barter_session_id == barter_id, Warning.severity == "severe")
-        .limit(1)
+    # `advisory` holds 1, 0 or NULL: SQLite backfilled 0 onto rows that predate
+    # the column, and NULL is still reachable through other write paths. Both 0
+    # and NULL mean not-advisory (see the comment on Warning.advisory), so the
+    # filter must COALESCE first — `Warning.advisory == False` would silently
+    # drop the NULL rows under SQL three-valued logic, and each dropped row is
+    # a safety warning that would stop costing the session anything.
+    severe_count_result = await db.execute(
+        select(func.count())
+        .select_from(Warning)
+        .where(
+            Warning.barter_session_id == barter_id,
+            Warning.severity == "severe",
+            func.coalesce(Warning.advisory, 0) == 0,
+        )
     )
-    has_severe_warning = severe_result.scalar_one_or_none() is not None
+    non_advisory_severe_count = severe_count_result.scalar_one()
 
     return {
         "has_evidence": has_evidence,
         "on_topic_percentage": on_topic_percentage,
-        "has_severe_warning": has_severe_warning,
+        "non_advisory_severe_count": non_advisory_severe_count,
     }
 
 
@@ -162,13 +175,23 @@ def _decide_verdict_type(
 ) -> str:
     """Documented quality policy (ISSUE-003): topic monitoring evidence can
     veto an otherwise-complete session, and never counts missing evidence as
-    proof of good behavior (ISSUE-019)."""
+    proof of good behavior (ISSUE-019). Sustained drift disputes; an advisory
+    (drift) severe warning does not veto, but a non-advisory one — a
+    toxicity/NSFW hard block — still does.
+
+    The non-advisory veto is deliberately NOT gated on `has_evidence`:
+    /safety/alert writes no WindowResult, so a hard-blocked session can carry
+    no window evidence at all, and gating it would let that session escape.
+    A non-advisory severe warning IS evidence, so this does not weaken
+    ISSUE-019, which is about missing evidence never manufacturing a
+    DISPUTE."""
     if terminated:
         return "DISPUTE"
 
-    topic_failed = topic["has_evidence"] and (
-        topic["on_topic_percentage"] < 40 or topic["has_severe_warning"]
-    )
+    if topic["non_advisory_severe_count"] > 0:
+        return "DISPUTE"
+
+    topic_failed = topic["has_evidence"] and topic["on_topic_percentage"] < 40
     if topic_failed:
         return "DISPUTE"
 
@@ -855,6 +878,7 @@ async def log_warning(req: WarningLogRequest, db: AsyncSession = Depends(get_db)
         severity=req.severity,
         message=req.reason,
         window_ids=req.window_ids,
+        advisory=req.advisory,
     )
     db.add(warning)
     await db.commit()
