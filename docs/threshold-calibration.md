@@ -253,11 +253,20 @@ The documents are as clear about this as about what was fitted.
    also evidence the corpus *cannot* isolate gaze: a pure-gaze weighting still
    scores AUC 0.9207 on the head-pose split, because the eye-corner landmarks
    compress as the head turns.
+   Per-user baselines partially address the head-pose confound by removing
+   each user's resting offset, but the sub-signals remain correlated and gaze
+   still has no ground truth; a gaze pilot study is future work.
 3. **Domain gap is the headline caveat on the video threshold.** The head-pose
    imagery is studio-lit against a neutral background and the eye-state split is
    AI-generated, so `0.6123` is a starting point validated on public data, not
    on this rig's webcam, lighting, framing or compression.
    `collect_attention_frames.py` exists to close that with a short capture.
+   Per-user calibration now personalizes the neutral point for `head_deviation`
+   and `gaze_centered` within a session (MediaPipe path), which mitigates
+   per-user framing and camera-position offsets. It does not close the gap in
+   the *global* fit: the weights and `0.6123` were still fitted on public
+   data, and the effect of calibration is not yet measured
+   (`evaluate_calibration.py` results have not been produced).
 4. **The two video splits are not independent evidence for one threshold.** Each
    speaks to one sub-signal, so the pooled threshold is a compromise between
    two distributions that would never co-occur in a single session.

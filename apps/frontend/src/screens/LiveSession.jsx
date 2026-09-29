@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import GazeCalibration from './GazeCalibration'
 
 const API        = ''
 const WS         = location.protocol === 'https:' ? 'wss' : 'ws'
@@ -48,6 +49,10 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
   const [isVideoOff, setIsVideoOff]       = useState(false)
   const [isRemoteMuted, setIsRemoteMuted] = useState(false)
   const [isRemoteHidden, setIsRemoteHidden] = useState(false)
+  const [calibrating, setCalibrating]     = useState(false)
+  const [calibrationCooldownUntil, setCalibrationCooldownUntil] = useState(null)
+  const [calibrationNote, setCalibrationNote] = useState('')
+  const [nowTick, setNowTick]             = useState(Date.now())
 
   const mrRef           = useRef(null)
   const audioWsRef      = useRef(null)
@@ -236,6 +241,33 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
     setIsRemoteHidden(h => !h)
   }
 
+  const handleCalibrationDone = useCallback((result) => {
+    setCalibrating(false)
+    if (result.calibrated) {
+      setCalibrationNote('Calibrated')
+      setCalibrationCooldownUntil(Date.now() + 120 * 1000)
+    } else {
+      setCalibrationNote('Skipped \u2014 using defaults')
+      if (result.reason === 'recalibration_limit_reached' && result.retry_after_seconds) {
+        setCalibrationCooldownUntil(Date.now() + result.retry_after_seconds * 1000)
+      }
+    }
+  }, [])
+
+  // Tick once per second while a cooldown is active so the button countdown updates.
+  useEffect(() => {
+    if (!calibrationCooldownUntil || Date.now() >= calibrationCooldownUntil) return
+    setNowTick(Date.now())
+    const id = setInterval(() => {
+      setNowTick(Date.now())
+      if (Date.now() >= calibrationCooldownUntil) clearInterval(id)
+    }, 1000)
+    return () => clearInterval(id)
+  }, [calibrationCooldownUntil])
+
+  const cooldownLeft = calibrationCooldownUntil
+    ? Math.max(0, Math.ceil((calibrationCooldownUntil - nowTick) / 1000)) : 0
+
   async function handleStart() {
     setError('')
     try {
@@ -251,6 +283,8 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
         localVideoElRef.current.play().catch(() => {})
       }
       setupWebRTC(stream)
+      setCalibrationNote('')
+      setCalibrating(true)
 
       const ws = new WebSocket(`${AUDIO_WS}/audio/${barterId}/${userId}`)
       audioWsRef.current = ws
@@ -604,6 +638,24 @@ export default function LiveSession({ barterId, agreedMinutes, userId, onComplet
           {/* Actions */}
           {started && !terminated && (
             <>
+              {calibrating && localVideoElRef.current && (
+                <GazeCalibration
+                  videoEl={localVideoElRef.current}
+                  barterId={barterId}
+                  userId={userId}
+                  onDone={handleCalibrationDone}
+                />
+              )}
+              {!calibrating && calibrationNote && (
+                <p className="text-xs font-bold text-on-surface-variant text-center mt-2">{calibrationNote}</p>
+              )}
+              <button
+                className="w-full mt-2 py-3 bg-white border-4 border-on-background font-headline font-black uppercase tracking-widest text-xs neo-shadow hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => { setCalibrationNote(''); setCalibrating(true) }}
+                disabled={calibrating || cooldownLeft > 0}
+              >
+                {cooldownLeft > 0 ? `Recalibrate (${cooldownLeft}s)` : 'Recalibrate'}
+              </button>
               <button
                 className="w-full mt-2 py-4 bg-on-background text-white font-headline font-black uppercase tracking-widest text-sm neo-shadow hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 onClick={handleConfirm}

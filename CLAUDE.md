@@ -50,7 +50,7 @@ owns the database and the warning fan-out to the browser.
 
 ## Database
 
-SQLite with 9 tables: Users, Barter Sessions, Session Contracts, Window Results, Warnings Log, Verdicts, Confirmations, Wallets, Escrows, Credit Transactions.
+SQLite with 14 tables: Users, Barter Sessions, Session Contracts, Transcript Segments, Window Results, Video Engagement Results, Engagement Score Log, Calibration Logs, Warnings Log, Verdicts, Confirmations, Wallets, Escrows, Credit Transactions.
 
 ## Running the Services
 

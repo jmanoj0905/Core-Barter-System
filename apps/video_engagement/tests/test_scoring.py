@@ -1,6 +1,10 @@
 import pytest
 from scoring import (
     DEFAULT_WEIGHTS,
+    _LEFT_CHEEK,
+    _RIGHT_CHEEK,
+    _deviation_from_baseline,
+    raw_ratios_from_landmarks,
     sub_signals_from_mediapipe_landmarks,
     sub_signals_from_rekognition_face_detail,
     video_attention_score,
@@ -112,3 +116,75 @@ def test_attentive_threshold_sits_between_the_class_means():
     means = json.loads(results_path.read_text(encoding="utf-8"))["chosen"]["mean_score_per_label"]
     inattentive = [v for k, v in means.items() if k != "attentive"]
     assert max(inattentive) < ATTENTIVE_SCORE_THRESHOLD < means["attentive"]
+
+
+def _off_center_landmarks():
+    # Open eyes, nose and irises deliberately off-center so ratios != 0.5.
+    return {
+        33: (0.30, 0.40), 160: (0.32, 0.36), 158: (0.34, 0.36),
+        133: (0.36, 0.40), 153: (0.34, 0.44), 144: (0.32, 0.44),
+        362: (0.60, 0.40), 385: (0.62, 0.36), 387: (0.64, 0.36),
+        263: (0.66, 0.40), 373: (0.64, 0.44), 380: (0.62, 0.44),
+        1: (0.52, 0.42), 234: (0.28, 0.42), 454: (0.68, 0.42),
+        468: (0.64, 0.42), 473: (0.31, 0.42),
+    }
+
+
+def test_deviation_from_baseline_at_baseline_is_zero():
+    assert _deviation_from_baseline(0.5, 0.5) == 0.0
+
+
+def test_deviation_from_baseline_matches_old_formula_when_baseline_is_half():
+    for x in (0.0, 0.2, 0.5, 0.8, 1.0, 1.3, -0.4):
+        assert _deviation_from_baseline(x, 0.5) == max(0.0, min(1.0, abs(x - 0.5) * 2.0))
+
+
+def test_deviation_from_baseline_asymmetric_off_center_baseline():
+    # baseline 0.2: max_dev = max(0.2, 0.8) = 0.8
+    assert _deviation_from_baseline(1.0, 0.2) == pytest.approx(1.0)
+    assert _deviation_from_baseline(0.2, 0.2) == 0.0
+    assert _deviation_from_baseline(0.6, 0.2) == pytest.approx(0.5)
+
+
+def test_sub_signals_no_baseline_matches_default_baseline():
+    landmarks = _off_center_landmarks()
+    assert sub_signals_from_mediapipe_landmarks(landmarks) == sub_signals_from_mediapipe_landmarks(
+        landmarks, baseline={"head_ratio": 0.5, "gaze_ratio": 0.5}
+    )
+
+
+def test_sub_signals_default_baseline_matches_pre_calibration_formula():
+    landmarks = _off_center_landmarks()
+    result = sub_signals_from_mediapipe_landmarks(landmarks)
+    ratios = raw_ratios_from_landmarks(landmarks)
+    assert result["head_deviation"] == max(0.0, min(1.0, abs(ratios["head_ratio"] - 0.5) * 2.0))
+    assert result["gaze_centered"] == max(
+        0.0, min(1.0, 1.0 - abs(ratios["gaze_ratio"] - 0.5) * 2.0)
+    )
+    assert result["head_deviation"] > 0.0
+    assert result["gaze_centered"] < 1.0
+
+
+def test_sub_signals_personalized_baseline_shifts_neutral_point():
+    landmarks = _off_center_landmarks()
+    ratios = raw_ratios_from_landmarks(landmarks)
+    result = sub_signals_from_mediapipe_landmarks(
+        landmarks, baseline={"head_ratio": ratios["head_ratio"], "gaze_ratio": ratios["gaze_ratio"]}
+    )
+    assert result["head_deviation"] == pytest.approx(0.0)
+    assert result["gaze_centered"] == pytest.approx(1.0)
+
+
+def test_raw_ratios_degenerate_span_returns_none_head_ratio():
+    landmarks = _off_center_landmarks()
+    landmarks[_LEFT_CHEEK] = landmarks[_RIGHT_CHEEK]  # force span == 0
+    assert raw_ratios_from_landmarks(landmarks)["head_ratio"] is None
+
+
+def test_sub_signals_degenerate_span_forces_max_head_deviation_regardless_of_baseline():
+    landmarks = _off_center_landmarks()
+    landmarks[_LEFT_CHEEK] = landmarks[_RIGHT_CHEEK]
+    result = sub_signals_from_mediapipe_landmarks(
+        landmarks, baseline={"head_ratio": 0.9, "gaze_ratio": 0.5}
+    )
+    assert result["head_deviation"] == 1.0

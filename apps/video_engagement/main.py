@@ -38,6 +38,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
+import scoring
 from scoring import (
     DEFAULT_WEIGHTS,
     sub_signals_from_mediapipe_landmarks,
@@ -67,8 +68,8 @@ def _landmarks_from_mediapipe_result(result, width: int, height: int) -> dict[in
     return {i: (lm.x * width, lm.y * height) for i, lm in enumerate(face.landmark)}
 
 
-def process_frame_local(frame_bytes: bytes) -> dict | None:
-    """Decode a JPEG frame, run MediaPipe Face Mesh, return sub-signals or None."""
+def _landmarks_from_frame_bytes(frame_bytes: bytes) -> dict[int, tuple[float, float]] | None:
+    """Decode a JPEG frame and run MediaPipe Face Mesh; return pixel landmarks or None."""
     arr = np.frombuffer(frame_bytes, dtype=np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if img is None:
@@ -78,8 +79,15 @@ def process_frame_local(frame_bytes: bytes) -> dict | None:
     if not result.multi_face_landmarks:
         return None
     height, width = img.shape[:2]
-    landmarks = _landmarks_from_mediapipe_result(result, width, height)
-    return sub_signals_from_mediapipe_landmarks(landmarks)
+    return _landmarks_from_mediapipe_result(result, width, height)
+
+
+def process_frame_local(frame_bytes: bytes, baseline: dict | None = None) -> dict | None:
+    """Decode a JPEG frame, run MediaPipe Face Mesh, return sub-signals or None."""
+    landmarks = _landmarks_from_frame_bytes(frame_bytes)
+    if landmarks is None:
+        return None
+    return sub_signals_from_mediapipe_landmarks(landmarks, baseline)
 
 
 def _rekognition_client():
@@ -122,7 +130,7 @@ async def health():
 
 import time
 
-from fastapi import HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import File, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
@@ -132,7 +140,12 @@ BUFFER_THRESHOLD_SECONDS = 5.0
 _VALID_VIDEO_BACKENDS = {"local", "aws", "both"}
 current_video_backend: str = os.getenv("VIDEO_BACKEND", "local")
 
+CALIBRATION_COOLDOWN_SECONDS = 120.0
+CALIBRATION_MIN_FACE_FRAMES = 3
+
 buffers: dict[tuple[int, int], dict] = {}
+# (barter_id, user_id) -> {"head_ratio", "gaze_ratio", "recalibration_count", "last_calibrated_at"}
+calibration_baselines: dict[tuple[int, int], dict] = {}
 
 
 def _new_buffer() -> dict:
@@ -191,9 +204,16 @@ async def process_buffer(barter_id: int, user_id: int, buf: dict, backend: str):
     window_start = buf["wall_start"]
     window_end = time.time()
 
+    stored = calibration_baselines.get((barter_id, user_id))
+    baseline = (
+        {"head_ratio": stored["head_ratio"], "gaze_ratio": stored["gaze_ratio"]}
+        if stored else None
+    )
+
     if backend in ("local", "both"):
         try:
-            detected = [s for s in (process_frame_local(f) for f in frames) if s is not None]
+            detected = [s for s in (process_frame_local(f, baseline=baseline) for f in frames)
+                        if s is not None]
             avg = None
             if detected:
                 avg = {
@@ -212,6 +232,85 @@ async def process_buffer(barter_id: int, user_id: int, buf: dict, backend: str):
         sub_signals = process_frame_aws(mid_frame)
         if sub_signals is not None:
             await _score_and_post(barter_id, user_id, window_start, window_end, sub_signals, "aws")
+
+
+def _compute_calibration_baseline(frames: list[bytes]) -> dict | None:
+    """Average raw head/gaze ratios over frames with a usable face; None if too few."""
+    ratios = []
+    for frame in frames:
+        landmarks = _landmarks_from_frame_bytes(frame)
+        if landmarks is None:
+            continue
+        r = scoring.raw_ratios_from_landmarks(landmarks)
+        if r["head_ratio"] is None:
+            continue
+        ratios.append(r)
+    if len(ratios) < CALIBRATION_MIN_FACE_FRAMES:
+        return None
+    return {
+        "head_ratio": sum(r["head_ratio"] for r in ratios) / len(ratios),
+        "gaze_ratio": sum(r["gaze_ratio"] for r in ratios) / len(ratios),
+        "frames_used": len(ratios),
+    }
+
+
+async def _post_calibration_log(barter_id: int, user_id: int, outcome: str,
+                                old_baseline: dict | None, new_baseline: dict | None,
+                                recalibration_count: int):
+    """Best-effort audit POST; never raises."""
+    try:
+        payload = {
+            "user_id": user_id,
+            "outcome": outcome,
+            "old_baseline_head_ratio": old_baseline["head_ratio"] if old_baseline else None,
+            "old_baseline_gaze_ratio": old_baseline["gaze_ratio"] if old_baseline else None,
+            "new_baseline_head_ratio": new_baseline["head_ratio"] if new_baseline else None,
+            "new_baseline_gaze_ratio": new_baseline["gaze_ratio"] if new_baseline else None,
+            "recalibration_count": recalibration_count,
+        }
+        await http_client.post(
+            f"{BACKEND_URL}/session/{barter_id}/video-engagement/calibration-log", json=payload
+        )
+    except Exception as e:
+        logger.error("Failed to POST calibration-log to backend: %s", e)
+
+
+@app.post("/video/{barter_id}/{user_id}/calibrate")
+async def calibrate(barter_id: int, user_id: int, frames: list[UploadFile] = File(...)):
+    key = (barter_id, user_id)
+    existing = calibration_baselines.get(key)
+    now = time.time()
+    recalibration_count = existing["recalibration_count"] if existing else 0
+
+    if existing is not None:
+        elapsed = now - existing["last_calibrated_at"]
+        if elapsed < CALIBRATION_COOLDOWN_SECONDS:
+            # Floor at 0.1 so a near-boundary call never reports a 0.0 wait.
+            retry_after = max(0.1, round(CALIBRATION_COOLDOWN_SECONDS - elapsed, 1))
+            await _post_calibration_log(barter_id, user_id, "recalibration_limit_reached",
+                                        existing, None, recalibration_count)
+            return {"calibrated": False, "reason": "recalibration_limit_reached",
+                    "retry_after_seconds": retry_after}
+
+    frame_bytes = [await f.read() for f in frames]
+    baseline = _compute_calibration_baseline(frame_bytes)
+    if baseline is None:
+        await _post_calibration_log(barter_id, user_id, "insufficient_face_detections",
+                                    existing, None, recalibration_count)
+        return {"calibrated": False, "reason": "insufficient_face_detections"}
+
+    new_count = recalibration_count + 1 if existing else 0
+    calibration_baselines[key] = {
+        "head_ratio": baseline["head_ratio"], "gaze_ratio": baseline["gaze_ratio"],
+        "recalibration_count": new_count, "last_calibrated_at": now,
+    }
+    await _post_calibration_log(barter_id, user_id, "calibrated",
+                                existing, calibration_baselines[key], new_count)
+    return {
+        "calibrated": True, "baseline_head_ratio": baseline["head_ratio"],
+        "baseline_gaze_ratio": baseline["gaze_ratio"], "frames_used": baseline["frames_used"],
+        "recalibration_count": new_count,
+    }
 
 
 def reset_buffer(buf: dict):
@@ -242,6 +341,7 @@ async def video_ws(barter_id: int, user_id: int, ws: WebSocket):
             await process_buffer(barter_id, user_id, buf, current_video_backend)
         if key in buffers:
             del buffers[key]
+        calibration_baselines.pop(key, None)
 
 
 @app.post("/session/{barter_id}/end")
@@ -253,4 +353,7 @@ async def end_session(barter_id: int):
         if buf["frames"]:
             await process_buffer(barter_id, user_id, buf, current_video_backend)
         del buffers[key]
+    # Calibration can happen before (or without) a video WebSocket, so clean it up by barter_id.
+    for key in [k for k in calibration_baselines if k[0] == barter_id]:
+        calibration_baselines.pop(key, None)
     return {"status": "ended", "barter_id": barter_id}

@@ -170,6 +170,16 @@ class VideoEngagementRequest(BaseModel):
     raw_signals: dict
 
 
+class CalibrationLogRequest(BaseModel):
+    user_id: int
+    outcome: str
+    old_baseline_head_ratio: float | None = None
+    old_baseline_gaze_ratio: float | None = None
+    new_baseline_head_ratio: float | None = None
+    new_baseline_gaze_ratio: float | None = None
+    recalibration_count: int
+
+
 class EngagementLogRequest(BaseModel):
     user_id: int | None = None
     speech_engagement_score: float | None = None
