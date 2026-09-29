@@ -308,6 +308,53 @@ post-session verdict, or a video-side escalation rule mirroring the
 consecutive-off-topic logic in `warning_engine`. Any such consumer should read
 the constant, not re-type 0.6123.
 
+## Per-user calibration layer
+
+Per-user calibration sits **on top of** the fitted global weights and threshold,
+not instead of them. The fitted formula (`0.55 / 0.40 / 0.05`, threshold
+`0.6123`) is unchanged; what changes is the neutral point two of its inputs are
+measured against.
+
+- **What is personalized.** `head_deviation` and `gaze_centered` were measured
+  from a fixed neutral point of 0.5. Each user now has a baseline captured at
+  the start of a session, and both sub-signals are measured from that instead.
+  `eyes_open` is not personalized.
+- **Normalization.** `_deviation_from_baseline` divides the deviation by
+  `max(b, 1 - b)` for baseline `b`, so the result still spans 0..1 wherever the
+  baseline sits.
+- **No re-fit needed.** The default baseline (0.5) reproduces the old output
+  exactly, so the fitted weights and `0.6123` remain valid as fitted.
+  Personalization changes what "centered" means as an input to the same
+  formula; it does not move the formula.
+- **MediaPipe path only.** The Rekognition path is not personalized (see the
+  local-vs-aws section below).
+- **Lifecycle.** Baselines are in-memory per `(barter_id, user_id)`, cleared on
+  WebSocket disconnect and on session end. Calibration needs at least 3 face
+  frames, and recalibration has a 120 s cooldown. It fails open: if calibration
+  cannot run, scoring continues with the default baseline.
+- **Endpoint.** `POST /video/{barter_id}/{user_id}/calibrate` on
+  `video_engagement`.
+- **Audit log.** Every attempt, successful or not, is logged to the backend
+  `calibration_logs` table via `POST` / `GET`
+  `/session/{barter_id}/video-engagement/calibration-log`.
+
+**Evaluation.** `apps/video_engagement/evaluate_calibration.py` compares
+scoring with and without a per-user baseline:
+
+```bash
+venv/bin/python evaluate_calibration.py --corpus datasets/head_pose_image_database
+```
+
+It writes `evaluation-results.json` into the corpus directory by default.
+**Results have not been produced yet**, so no numbers are reported here; this
+section will cite them once the script has been run.
+
+**What this does not fix.** The global public-dataset domain gap remains: the
+weights and threshold were still fitted on studio-lit public imagery. Only the
+per-session neutral point is personalized. A gaze pilot study (a user looking
+away with the head forward) is future work; `w_gaze` remains a floor, not a
+measurement.
+
 ## Known limitations
 
 **Domain gap — the headline caveat.** Public dataset imagery does not match
@@ -336,7 +383,8 @@ committed.
 head-forward/eyes-aside annotations (Columbia Gaze is behind an e-mail form).
 `w_gaze = 0.05` is a floor, not a measurement, and the corpus contains no
 `gaze_off` frames at all. The webcam path above is the cheapest way to close
-this gap.
+this gap. Per-user calibration (above) personalizes its neutral point but does
+not give it ground truth.
 
 **No `absent` frames in the public corpus**, so the no-detection path is
 exercised only by the webcam tool and by unit tests.
