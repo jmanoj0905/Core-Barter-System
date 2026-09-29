@@ -112,9 +112,12 @@ class Warning(Base):
     # A severe warning no longer vetoes the verdict; this flags the warning as
     # advisory — a record for a later adjudicator to find, not a payout veto.
     # Rows written before this column existed read as 0, not NULL — SQLite
-    # backfills the DEFAULT on ADD COLUMN. NULL is still possible via other
-    # write paths (e.g. an explicit None insert), so every reader must treat
-    # both 0 and NULL the same: not advisory.
+    # backfills the DEFAULT on ADD COLUMN. An explicit `Warning(advisory=None)`
+    # insert through the ORM also stores 0, not NULL — the column default
+    # wins. NULL is still possible via writers that bypass the ORM default
+    # (e.g. raw SQL, a manual UPDATE, or another service writing the table
+    # directly), so every reader must treat both 0 and NULL the same: not
+    # advisory.
     advisory: Mapped[bool | None] = mapped_column(Boolean, default=False, nullable=True)
 
 

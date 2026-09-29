@@ -238,6 +238,19 @@ pinned by a test so it is known rather than discovered. The exposure ends when
 every `warning_engine` instance is on the new build; historical rows remain
 affected only if such a session is settled after the deploy.
 
+**Deploy the backend before `warning_engine`, not the other way around.**
+Engine-first has the new engine compute `advisory: true` and post it to an old
+backend, whose `WarningLogRequest` has no such field — Pydantic's
+`extra="ignore"` drops it silently, with no 422, into a table that does not
+even have the `advisory` column yet. When the new backend later starts,
+`ADD COLUMN ... DEFAULT 0` backfills those rows to `0`, so they veto, and the
+correctly-computed flag is unrecoverable. Backend-first destroys nothing,
+because in that gap no flag was ever computed in the first place — the old
+engine sends no `advisory` key, the row persists as `0`, and it vetoes the
+same way, but no information is lost. Only under backend-first is the claim
+above — that the exposure ends when every `warning_engine` instance is
+upgraded — actually true.
+
 ## 4. Corrections to the prior design document
 
 ### 4.1 The warning counter is already span-local
@@ -303,7 +316,7 @@ design is wrong and must not ship.
 | # | Criterion |
 |---|---|
 | F1 | Any session with `on_topic_percentage < 40` stops reaching `DISPUTE` |
-| F2 | The zero-window path changes verdict in either direction (it must behave exactly as it does today) |
+| F2 | The zero-window path changes verdict in either direction, absent a non-advisory severe warning (it must behave exactly as it does today). (Clarified: F2 protects the pre-existing zero-window behaviour when there is no hard block. It does not protect the zero-window session that carries a non-advisory `severe` warning — `/safety/alert` writes no `WindowResult`, so gating the new veto on `has_evidence` would let a hard-blocked session escape entirely. That case deliberately now returns `DISPUTE` instead of `SUCCESSFUL`, per §3.5, and is pinned by `test_non_advisory_severe_vetoes_without_window_evidence`.) |
 | F3 | Dataset-A false digression count changes at all — it must be **identical**, since `semantic_analysis/main.py` is untouched |
 | F4 | `apply_settlement` behaviour changes for any given `qa_score` |
 | F5 | A `severe` warning stops being written, displayed, or broadcast in-session. (Clarified: F5 protects the *record and the display*. It does not protect the client-side session teardown that `LiveSession.jsx:100` used to perform, which §3.2 removes — that was enforcement, not display, and it stranded the escrow.) |
