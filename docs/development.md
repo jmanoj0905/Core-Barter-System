@@ -66,7 +66,9 @@ Set these in a root `.env` file or in the `environment:` block of `docker-compos
 | `MISTRAL_API_KEY` | — | `backend`, `audio_pipeline` |
 | `VIDEO_BACKEND` | `local` | `video_engagement` |
 | `VIDEO_WEIGHT_EYES` / `_HEAD` / `_GAZE` | `0.55` / `0.4` / `0.05` | `video_engagement` |
-| `ENGAGEMENT_FUSION_W_SPEECH` / `_W_VIDEO` | `0.7` / `0.3` | `warning_engine` |
+| `FUSION_WEIGHT_SPEECH` | `3.4486188047224937` | `warning_engine` |
+| `FUSION_WEIGHT_VIDEO` | `3.9024996131627105` | `warning_engine` |
+| `FUSION_BIAS` | `-2.4287558170454084` | `warning_engine` |
 | `DATABASE_URL` | `sqlite+aiosqlite:////data/barter.db` | `backend` |
 
 The weight defaults are fitted values, not guesses — see
