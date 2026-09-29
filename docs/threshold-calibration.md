@@ -11,6 +11,7 @@ been replaced by fitted values, by the same method, recorded in two places:
 |---|---|---|
 | Semantic cosine `UPPER` / `LOWER` | `0.36` / `0.14` | [`apps/semantic_analysis/ground_truth/design_decisions.md`](../apps/semantic_analysis/ground_truth/design_decisions.md) (D1–D3), [`threshold_experiment_findings.md`](../apps/semantic_analysis/ground_truth/threshold_experiment_findings.md) |
 | Video attention threshold + sub-signal weights | `0.6123`; `(0.55, 0.40, 0.05)` | [`docs/video_engagement/design-choices.md`](./video_engagement/design-choices.md) |
+| Engagement fusion weights | `a=3.4486188047224937`, `b=3.9024996131627105`, `bias=-2.4287558170454084` | [`apps/warning_engine/ground_truth/fit_fusion_weights.py`](../apps/warning_engine/ground_truth/fit_fusion_weights.py), `fusion_corpus.csv` |
 
 This report describes the shared method, then what is specific to each, then
 what remains uncalibrated. It is a summary of those documents, not a
@@ -175,14 +176,55 @@ than "unmeasured". The floor costs 0.0004 mean AUC.
 
 ---
 
+## Engagement fusion weights: sigmoid-logistic model
+
+**From fixed heuristic to fitted function.** The warning engine previously blended
+speech and video engagement with fixed constants: `ENGAGEMENT_FUSION_W_SPEECH=0.7`
+and `ENGAGEMENT_FUSION_W_VIDEO=0.3`. This section replaces those constants with
+a fitted sigmoid-logistic model, trained on synthesized paired speech and video
+engagement data.
+
+**The model.** A logistic function of the form `sigmoid(a * speech_score + b * video_score + bias)`,
+where `a`, `b`, and `bias` are the fitted coefficients. The model produces a probability
+in [0, 1] that a fusion window is on-topic, fusing the raw engagement scores from
+`semantic_analysis` (speech) and `video_engagement` (video) without requiring manual
+weight tuning.
+
+**Data and fit.** Fitted on 900 synthetic paired-signal examples (300 correct, 300 weakly_correct,
+300 incorrect), split by topic group — 720 fit, 180 held out. The script
+`apps/warning_engine/ground_truth/fit_fusion_weights.py` performs a grid search
+over logistic parameter space, optimizing for held-out AUC.
+
+**Results on the held-out split.**
+| Metric | Fitted sigmoid-logistic | Fixed `0.7/0.3` baseline |
+|---|---:|---:|
+| AUC | **0.997151** | 0.980057 |
+| Accuracy | **0.950000** | 0.850000 |
+
+The fitted model improves both AUC (by 1.7%) and accuracy (by 10%) over the fixed baseline on the
+same held-out split.
+
+**Stated limits.** The entire fit is on synthesized data: `fusion_corpus.csv` is generated
+by the synthetic corpus builder in `apps/semantic_analysis/ground_truth/`, pairing synthetic
+speech scores with simulated video attention. No real speech+video session data exists yet, so
+this fit cannot validate against actual user behaviour. Task 4 built a self-training extension
+(`apps/warning_engine/ground_truth/semi_supervised_fusion_fit.py`) to improve the model with
+unlabeled data, validated only on a synthetic unlabeled stand-in (`unlabeled_stand_in.csv`),
+not yet run against real session logs. The fitted coefficients are a starting point; production
+use should gather paired engagement traces from live sessions and refit.
+
+---
+
 ## What is not calibrated
 
 The documents are as clear about this as about what was fitted.
 
-1. **The fusion weights are still guesses.** `ENGAGEMENT_FUSION_W_SPEECH=0.7` /
-   `ENGAGEMENT_FUSION_W_VIDEO=0.3` in `apps/warning_engine/main.py` are
-   engineering estimates. Nothing in either calibration speaks to them, and
-   fitting them needs paired speech+video session data that does not exist yet.
+1. **The fusion weights are fitted on synthetic data only.** The sigmoid-logistic
+   model (see "Engagement fusion weights" above) replaces the old `0.7`/`0.3` heuristic
+   with fitted coefficients, but is trained entirely on synthesized speech and video pairs.
+   No paired real speech+video session data exists yet, so the fit cannot validate against
+   actual user behaviour. The coefficients are a starting point; production use should
+   gather engagement traces from live sessions and refit.
 2. **`gaze_centered` has no ground truth.** Columbia Gaze is the only candidate
    with head-forward/eyes-aside annotations and its download is gated behind an
    email form. There are no `gaze_off` frames in the corpus at all. There is
