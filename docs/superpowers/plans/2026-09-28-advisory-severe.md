@@ -24,7 +24,7 @@
 Input classes the spec implies but does not give a task of their own. Each has a test assigned to the task owning the code.
 
 1. **Rolling deploy — old `warning_engine` posts `/warnings/log` with no `advisory` field.** Must persist as not-advisory, never 422. (Task 4)
-2. **Legacy rows — `warnings.advisory` is NULL on every row written before this change.** Reads must treat NULL as not-advisory and must not crash the verdict path. (Task 3)
+2. **Legacy rows — `warnings.advisory` reads as `0`, not NULL, on rows written before this change.** SQLite backfills the DEFAULT on `ADD COLUMN ... DEFAULT 0`, so pre-existing rows hold `0`; NULL remains reachable through other write paths. Reads must treat **both `0` and NULL** as not-advisory and must not crash the verdict path. (Task 3) *(Corrected during execution — an earlier draft of this line claimed NULL; `models.py`'s comment on the column has always been right.)*
 3. **Exact band boundaries — `on_topic_percentage` of exactly 40.0 and exactly 70.0.** The bands must not shift by a floating-point hair while the clause next to them is edited. (Task 1)
 4. **Zero windows.** Both directions must be unchanged: a zero-window session with duration and confirmations passing returns `SUCCESSFUL` today, and one with neither returns `DISPUTE`. Removing the severe clause must move neither. (Task 1)
 5. **A severe warning must still reach the WebSocket.** Spec F5 — the fix changes what a warning *costs*, not whether it is seen. (Task 4)
@@ -172,7 +172,7 @@ git commit -m "refactor: report severe warning count instead of a veto flag"
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
-- Produces: `Warning.advisory: Mapped[bool | None]`, nullable, DDL `BOOLEAN DEFAULT 0`. Readers must treat NULL as not-advisory.
+- Produces: `Warning.advisory: Mapped[bool | None]`, nullable, DDL `BOOLEAN DEFAULT 0`. Readers must treat **both `0` and NULL** as not-advisory.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -202,7 +202,9 @@ def test_adding_the_column_is_idempotent(legacy_engine):
     assert "warnings.advisory" not in added_again
 
 def test_pre_existing_warning_rows_read_as_not_advisory(legacy_engine):
-    # Review Focus 2: every row written before this change has NULL here.
+    # Review Focus 2: rows written before this change read as 0 here (SQLite
+    # backfills the DEFAULT), and NULL is still reachable through other write
+    # paths. The assertion is falsiness, which covers both.
     with legacy_engine.begin() as conn:
         conn.execute(text(
             "INSERT INTO warnings (barter_session_id, severity, message) "
@@ -321,5 +323,5 @@ git commit -m "feat: mark severe warnings advisory; fix stale ladder banner"
 ## Done when
 
 - [ ] Both suites green: `apps/backend/venv/bin/python -m pytest apps/backend/tests apps/warning_engine/tests -q`
-- [ ] `grep -rn "has_severe_warning" apps/` returns nothing.
+- [ ] `grep -rn "has_severe_warning" apps/ | grep -v tests/` returns nothing. The criterion is **no production reference remains**; the literal unfiltered grep still matches `tests/test_verdict_policy.py`'s brief-mandated `assert "has_severe_warning" not in result`, which is the check itself and must stay.
 - [ ] `apps/semantic_analysis/main.py` and `apps/backend/app/escrow.py` are untouched in `git diff --stat` (spec F3, F4).

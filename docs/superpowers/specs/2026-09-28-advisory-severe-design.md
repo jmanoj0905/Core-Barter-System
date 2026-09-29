@@ -102,14 +102,42 @@ model call.
 `has_severe_warning` occurs exactly three times in production code
 (`routes.py:151`, `:156`, `:170`) — all three inside the two functions below.
 Nothing else reads it: no other backend caller, no test, and no frontend code.
-The frontend renders warning severity from the `warnings` rows themselves
-(`LiveSession.jsx:19`, `PostSession.jsx:22`), so severe warnings keep
-displaying unchanged, which is what F5 protects.
+
+**Corrected after implementation — the frontend inventory in this section was
+wrong.** An earlier draft claimed the frontend only *renders* warning severity
+from the `warnings` rows (`LiveSession.jsx:19`'s `severityBg` map,
+`PostSession.jsx:22`), and concluded that severe warnings keep displaying
+unchanged with no frontend change needed. The rendering claim is true, but the
+inventory missed a kill-switch: `LiveSession.jsx:100` read
+`if (data.severity === 'severe') { setTerminated(true); halt() }`. `halt()` is
+pure client-side teardown and does not POST `/session/{id}/terminate`, so the
+server-side `terminated` flag stayed `False` and the settlement fix was not
+undone — but `{started && !terminated && ...}` (`:597`) gates both "Mark
+Complete" and "Terminate", and the `/warnings/log` broadcast reaches the whole
+barter room. Both participants therefore lost every button after ~15 seconds of
+drift, `confirm_session` could never run, `apply_settlement` never ran, and the
+escrow stayed **locked indefinitely** — stranded rather than slashed, which is
+arguably worse for the teacher than the `DISPUTE` this spec removes.
+
+This branch therefore **deletes that client-side halt**.
+`setWarnings(prev => [data, ...prev])` is untouched, so the warning is still
+recorded and displayed exactly as before, which is what F5 protects; only the
+teardown goes. `handleTerminate` (`:343-346`), the explicit Terminate button
+that POSTs `/session/{id}/terminate` and is acknowledged by the server, is left
+alone as the one legitimate termination path.
+
+The halt could not be kept for safety-originated severe warnings alone: the
+`/warnings/log` broadcast payload is deliberately
+`{warning_id, barter_id, severity, reason, window_ids, timestamp}` with no
+`advisory` key (a plan constraint, pinned by a test asserting `"advisory" not in
+payload`), so the client cannot tell a drift-severe from a safety-severe.
+Safety enforcement lives in the settlement path instead — see §3.5.
 
 | File | Change |
 |---|---|
-| `apps/backend/app/routes.py` `_evaluate_topic_quality` (:132-157) | stop computing `has_severe_warning`; return `severe_warning_count: int` in its place — retained for display and for Half B |
-| `apps/backend/app/routes.py` `_decide_verdict_type` (:160-182) | delete `or topic["has_severe_warning"]` from the `topic_failed` clause. Signature unchanged. The `< 40` and `>= 70` bands are **not** touched |
+| `apps/backend/app/routes.py` `_evaluate_topic_quality` (:132-157) | stop computing `has_severe_warning`; return `non_advisory_severe_count: int` in its place — severe warnings that are **not** marked advisory, i.e. safety hard blocks. See §3.5 |
+| `apps/backend/app/routes.py` `_decide_verdict_type` (:160-182) | delete `or topic["has_severe_warning"]` from the `topic_failed` clause; add a separate veto on `non_advisory_severe_count > 0` (§3.5). Signature unchanged. The `< 40` and `>= 70` bands are **not** touched |
+| `apps/frontend/src/screens/LiveSession.jsx` (:100) | delete the client-side `setTerminated(true); halt()` on a severe warning. The warning is still recorded and displayed. See the correction above |
 | `apps/warning_engine/main.py` `run_warning_decision` (:178-260) | include `advisory: True` in the `/warnings/log` payload for `severe` rows. Ladder copy and thresholds unchanged |
 | `apps/warning_engine/main.py` lifespan banner (:133) | fix the stale startup line, which advertises `1→silent 2→mild 3–4→strong 5+→severe`. The actual ladder is `1→silent 2→strong 3+→severe`. No `mild` tier has ever existed |
 | `apps/backend/app/escrow.py` | **none.** `apply_settlement` already keys off `qa_score` |
@@ -136,7 +164,12 @@ Nothing else. `SpanAdjudication`, `WindowResult.credited_by_span_id`,
 
 ### 3.4 The verdict policy consequence
 
-Until Half B lands, **the on-topic percentage is the only penalty mechanism.**
+**Corrected by §3.5:** for *drift*, the on-topic percentage is the only penalty
+mechanism until Half B lands; a non-advisory (safety) severe warning still
+vetoes. The rest of this section is about drift and stands as written.
+
+Until Half B lands, **the on-topic percentage is the only penalty mechanism for
+drift.**
 Sustained drift still disputes, because it drives the percentage below 40.
 Moderate drift softens.
 
@@ -151,6 +184,59 @@ That is a real, temporary loosening of enforcement, accepted deliberately. It is
 the price of refusing to ship a fitted constant, and it is reversed when Half B
 restores a calibrated penalty path. **A spec that reported only the five would
 be hiding the seven.**
+
+### 3.5 Safety-severe warnings keep their payout consequence
+
+**Added after implementation, correcting an omission in §3.4.** "The on-topic
+percentage is the only penalty mechanism" was true as first implemented, and
+that was a mistake, not the design.
+
+`severe` has two sources, and only one of them is drift.
+`apps/warning_engine/main.py:311-312` emits `severity = "severe"` when a
+toxicity/NSFW `hard_block` is set (`apps/audio_pipeline/main.py:329`). Verified:
+nothing sets `session.status` on a hard block, and `/safety/alert` writes no
+`WindowResult`, so `on_topic_percentage` is untouched by it. The old
+`has_severe_warning` veto did not distinguish source, so a hard block used to
+force `DISPUTE` → `qa_score 0.0`. Deleting the veto outright therefore removed
+the **only** payout consequence for NSFW content: a hard-blocked session with
+good on-topic numbers would settle `SUCCESSFUL` → `qa_score 1.0` → full escrow
+released. That was never intended.
+
+The veto is therefore restored, keyed on **non-advisory** severe warnings:
+
+- `run_warning_decision` writes drift-severe rows with `advisory=True`, so they
+  are excluded from the count and never veto. The §2 bug stays fixed.
+- `/safety/alert` writes its severe rows non-advisory, so they are counted and
+  do veto.
+
+Two properties of the implementation are load-bearing:
+
+1. **Both `0` and NULL count as not-advisory.** SQLite backfilled `0` onto rows
+   that predate the column, and NULL is still reachable through write paths
+   outside the ORM. The count filter is
+   `func.coalesce(Warning.advisory, 0) == 0`; a plain `Warning.advisory ==
+   False` would silently drop the NULL rows under SQL three-valued logic, and
+   every dropped row is a safety warning that would stop costing anything.
+2. **The veto is not gated on `has_evidence`.** `/safety/alert` writes no
+   `WindowResult`, so a hard-blocked session can carry no window evidence at
+   all; gating the veto would let exactly that session escape. This does not
+   weaken ISSUE-019, which is about *missing* evidence never manufacturing a
+   `DISPUTE` — a non-advisory severe warning is evidence.
+
+This also makes the `advisory` column load-bearing at settlement rather than
+write-only until Half B.
+
+**Known, accepted consequence of the rolling deploy.** During a rolling deploy,
+an old `warning_engine` posts drift-severe warnings with no `advisory` field;
+they persist as `0`, are therefore non-advisory, and will veto — reproducing the
+§2 bug for the duration of that window. Every drift-severe row already in the
+database from before this branch behaves the same way. After the fact there is
+no way to distinguish those rows from safety-severe ones, and a heuristic
+(reason-string sniffing, timestamp windows) would be worse than the bounded
+exposure it tried to remove. The behaviour is accepted rather than solved, and
+pinned by a test so it is known rather than discovered. The exposure ends when
+every `warning_engine` instance is on the new build; historical rows remain
+affected only if such a session is settled after the deploy.
 
 ## 4. Corrections to the prior design document
 
@@ -171,17 +257,29 @@ Table-driven cases, in `apps/backend/tests/`:
 
 | Case | Expected | Guards |
 |---|---|---|
-| severe present, 85% on-topic, duration+confirmation pass | `SUCCESSFUL` | the bug in §2 |
-| severe present, 35% on-topic | `DISPUTE` | sustained drift still disputes |
+| advisory severe present, 85% on-topic, duration+confirmation pass | `SUCCESSFUL` | the bug in §2 |
+| advisory severe present, 35% on-topic | `DISPUTE` | sustained drift still disputes |
+| non-advisory severe present, 95% on-topic | `DISPUTE` | §3.5 — a safety hard block keeps its teeth |
+| non-advisory severe, `has_evidence=False` | `DISPUTE` | §3.5 — the veto is not gated on window evidence |
+| NULL `advisory` severe row, 100% on-topic | `DISPUTE` | §3.5 — NULL reads as not-advisory |
 | no severe, 35% on-topic | `DISPUTE` | the percentage band is untouched |
-| no severe, 55% on-topic | `PARTIAL` | band boundaries unmoved |
+| no severe, 40.0% on-topic | `PARTIAL` | band boundaries unmoved |
 | `has_evidence=False` (zero windows), duration+confirmation pass | `SUCCESSFUL` — unchanged | pins current behaviour; see note below |
 | `has_evidence=False`, neither pass | `DISPUTE` | missing evidence never *manufactures* a pass |
 | `terminated=True` | `DISPUTE` | termination still dominates |
 
-Plus: `_evaluate_topic_quality` returns `severe_warning_count` as an integer
-count and no longer returns `has_severe_warning`; and the `advisory` column is
-created idempotently by the startup path when run twice against one database.
+**Substitution, recorded during implementation.** The fourth row above asked
+for `no severe, 55% → PARTIAL`. The implementation used `40.0 → PARTIAL`
+instead: it is the strictly stronger case, because it sits exactly on the band
+boundary the neighbouring clause is being edited around, where 55% would pass
+even if the boundary moved by a point. The table has been updated to match the
+test rather than left contradicting it.
+
+Plus: `_evaluate_topic_quality` returns `non_advisory_severe_count` as an
+integer count and no longer returns `has_severe_warning` (nor the interim
+`severe_warning_count`, which stopped saying what it counted); and the
+`advisory` column is created idempotently by the startup path when run twice
+against one database.
 
 **A note on ISSUE-019, corrected during planning.** An earlier draft of this
 section claimed a zero-window session can never reach `SUCCESSFUL`. It can:
@@ -208,7 +306,7 @@ design is wrong and must not ship.
 | F2 | The zero-window path changes verdict in either direction (it must behave exactly as it does today) |
 | F3 | Dataset-A false digression count changes at all — it must be **identical**, since `semantic_analysis/main.py` is untouched |
 | F4 | `apply_settlement` behaviour changes for any given `qa_score` |
-| F5 | A `severe` warning stops being written, displayed, or broadcast in-session |
+| F5 | A `severe` warning stops being written, displayed, or broadcast in-session. (Clarified: F5 protects the *record and the display*. It does not protect the client-side session teardown that `LiveSession.jsx:100` used to perform, which §3.2 removes — that was enforcement, not display, and it stranded the escrow.) |
 
 F3 and F5 are the load-bearing ones: Half A must change *what a warning costs*,
 and nothing about *when a warning fires* or how it is shown.
