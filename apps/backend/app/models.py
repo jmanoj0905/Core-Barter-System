@@ -72,6 +72,12 @@ class WindowResult(Base):
     human_label: Mapped[str | None] = mapped_column(String(20), nullable=True)
     labeled_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     labeled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Audit trail: True when semantic_analysis's meaning-reversal check forced
+    # this window to `incorrect` (or found a reversal in an already-incorrect
+    # one). Deliberately tri-state: NULL means "predates the check / unknown",
+    # distinct from False ("checked, no reversal"). No column DEFAULT, so
+    # ADD COLUMN leaves legacy rows NULL rather than backfilling a false 0.
+    meaning_reversal_detected: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
 
 class VideoEngagementResult(Base):

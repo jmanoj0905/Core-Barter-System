@@ -641,6 +641,7 @@ async def log_window_result(req: WindowResultRequest, db: AsyncSession = Depends
         classification=req.classification,
         cosine_similarity=req.similarity_score,
         text_content=req.text_preview,
+        meaning_reversal_detected=req.meaning_reversal_detected,
     )
     db.add(window)
     await db.commit()
@@ -675,6 +676,8 @@ async def get_windows(barter_id: int, db: AsyncSession = Depends(get_db)):
             "text_preview": w.text_content,
             "created_at": w.created_at.isoformat(),
             "human_label": w.human_label,
+            # None = row predates the reversal check (unknown), not False.
+            "meaning_reversal_detected": w.meaning_reversal_detected,
         }
         for w in windows
     ]

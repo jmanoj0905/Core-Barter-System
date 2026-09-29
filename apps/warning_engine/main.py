@@ -69,6 +69,7 @@ class WindowResultRequest(BaseModel):
     timestamp_start: float = 0.0
     timestamp_end: float = 0.0
     text_preview: str = ""
+    meaning_reversal_detected: bool = False
 
 
 class SafetyAlertRequest(BaseModel):
@@ -211,6 +212,7 @@ async def run_warning_decision(
         "text_preview": request.text_preview,
         "timestamp_start": request.timestamp_start,
         "timestamp_end": request.timestamp_end,
+        "meaning_reversal_detected": request.meaning_reversal_detected,
     }
 
     # Determine warning severity based on consecutive off-topic count

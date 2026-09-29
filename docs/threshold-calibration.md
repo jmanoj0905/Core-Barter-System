@@ -273,6 +273,14 @@ The documents are as clear about this as about what was fitted.
    `video_engagement_results` and `engagement_score_log` are empty. It is also
    the weaker experiment, since the speech engagement score is a proxy rather
    than a label of visual attention.
+8. **The cosine gate does not encode polarity.** "I will pay you" and "I will
+   not pay you" share nearly all their words, and cosine similarity does not
+   encode polarity, so an on-topic reversal can pass the similarity threshold
+   (not measured here). The lexicon-based reversal check
+   (`apps/semantic_analysis/reversal_detection.py`) partially covers this; on a
+   small synthetic corpus it scores precision 0.41 / recall 0.65 and fails on
+   double negation. See
+   [reversal_detection_findings.md](../apps/semantic_analysis/ground_truth/reversal_detection_findings.md).
 
 Separately, and not a calibration issue: the weights were fitted on MediaPipe
 sub-signals only. The Rekognition path derives `gaze_centered` from yaw alone,
