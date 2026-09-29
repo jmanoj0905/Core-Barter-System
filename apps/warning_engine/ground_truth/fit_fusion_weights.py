@@ -44,15 +44,29 @@ def split_by_scenario(
 
 
 def roc_auc(scores: list[float], labels: list[int]) -> float:
-    pairs = sorted(zip(scores, labels))
+    pairs = sorted(zip(scores, labels), key=lambda x: x[0])
     pos = sum(labels)
     neg = len(labels) - pos
     if pos == 0 or neg == 0:
         return 0.5
+
+    # Handle tied scores with mid-rank averaging
     rank_sum = 0.0
-    for rank, (_, label) in enumerate(pairs, start=1):
-        if label == 1:
-            rank_sum += rank
+    i = 0
+    while i < len(pairs):
+        score = pairs[i][0]
+        # Find all pairs with the same score
+        j = i
+        while j < len(pairs) and pairs[j][0] == score:
+            j += 1
+        # Ranks span from i+1 to j (1-indexed)
+        # Average rank is (i + 1 + j) / 2
+        avg_rank = (i + 1 + j) / 2.0
+        for k in range(i, j):
+            if pairs[k][1] == 1:
+                rank_sum += avg_rank
+        i = j
+
     auc = (rank_sum - pos * (pos + 1) / 2) / (pos * neg)
     return auc
 

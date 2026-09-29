@@ -40,6 +40,12 @@ def test_roc_auc_perfect_separation_is_one():
     assert roc_auc(scores=[0.9, 0.8, 0.2, 0.1], labels=[1, 1, 0, 0]) == pytest.approx(1.0)
 
 
+def test_roc_auc_handles_tied_scores_with_mid_rank_averaging():
+    # All scores are identical (0.5), so ranks should average to 2.5
+    # With 2 positives and 2 negatives, random ordering gives AUC = 0.5
+    assert roc_auc(scores=[0.5, 0.5, 0.5, 0.5], labels=[1, 0, 1, 0]) == pytest.approx(0.5)
+
+
 def test_accuracy_at_threshold():
     acc = accuracy_at_threshold(scores=[0.9, 0.4, 0.6, 0.1], labels=[1, 0, 1, 0], threshold=0.5)
     assert acc == 1.0
