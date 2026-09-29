@@ -29,6 +29,8 @@ _EXPECTED_COLUMNS: tuple[tuple[str, str, str], ...] = (
     ("window_results", "human_label", "VARCHAR(20)"),
     ("window_results", "labeled_by_user_id", "INTEGER REFERENCES users(id)"),
     ("window_results", "labeled_at", "DATETIME"),
+    # No DEFAULT on purpose: legacy rows stay NULL ("predates the check").
+    ("window_results", "meaning_reversal_detected", "BOOLEAN"),
     ("warnings", "advisory", "BOOLEAN DEFAULT 0"),
 )
 
