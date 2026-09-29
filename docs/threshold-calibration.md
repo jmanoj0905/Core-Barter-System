@@ -298,6 +298,42 @@ one mid-window frame where `local` averages the whole window.
 
 ---
 
+## Safety context-gating: hard-block severity vs. topic relevance
+
+`warning_engine`'s text-toxicity path (`receive_safety_alert`, fed by
+`audio_pipeline`'s Mistral Moderation call) used to set `severity = "severe"`
+for every `hard_block` alert regardless of what the session was actually
+discussing. That over-flags legitimate sensitive discussion — e.g. a barter
+session negotiating an overdue debt trips the moderation API's financial-threat
+category on-topic. `receive_safety_alert` now downgrades `severe` to `strong`
+when the session's `last_classification` (set on every window result) is
+`"correct"` or `"weakly_correct"`; `"incorrect"`, `None` (no window classified
+yet), and no session at all all keep today's `severe` behavior — no evidence,
+no downgrade. Non-`hard_block` alerts (`strong`) are unaffected in every case:
+
+| `hard_block` | `last_classification` | Severity |
+|---|---|---|
+| `False` | any | `strong` (unchanged) |
+| `True` | `"correct"` or `"weakly_correct"` | `strong` (downgraded from `severe`) |
+| `True` | `"incorrect"` | `severe` (unchanged) |
+| `True` | `None` / no session | `severe` (unchanged) |
+
+**Scope limitation — most recent window, not same-span.** `audio_pipeline`
+transcribes and posts a toxicity alert per 5-second segment; `semantic_analysis`
+classifies ~25-second accumulated windows on a separate cadence, and nothing
+in the pipeline correlates a specific flagged segment to a specific window.
+The gate reads the session's *most recent* window classification as a general
+"what was this session's topical state around this time" signal — it does not
+verify that the flagged segment and that window cover the same span of speech.
+A tighter same-span alignment would need segment-to-window correlation that
+does not exist today.
+
+This is a deterministic rule over three discrete inputs (`hard_block` ×
+`last_classification`), so its test coverage is exhaustive-case coverage of
+the table above, not a statistically evaluated model.
+
+---
+
 ## Reproducing either fit
 
 ```bash
