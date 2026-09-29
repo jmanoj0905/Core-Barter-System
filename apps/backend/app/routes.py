@@ -67,6 +67,7 @@ from app.config import settings
 from app.database import get_db
 from app.models import (
     BarterSession,
+    CalibrationLog,
     Confirmation,
     EngagementScoreLog,
     SessionContract,
@@ -78,6 +79,7 @@ from app.models import (
     WindowResult,
 )
 from app.schemas import (
+    CalibrationLogRequest,
     ConfirmRequest,
     DriftSummaryRequest,
     EngagementLogRequest,
@@ -752,6 +754,47 @@ async def list_video_engagement(barter_id: int, db: AsyncSession = Depends(get_d
             "created_at": r.created_at.isoformat(),
         }
         for r in rows
+    ]
+
+
+@router.post("/session/{barter_id}/video-engagement/calibration-log")
+async def store_calibration_log(
+    barter_id: int, req: CalibrationLogRequest, db: AsyncSession = Depends(get_db)
+):
+    row = CalibrationLog(
+        barter_session_id=barter_id,
+        user_id=req.user_id,
+        outcome=req.outcome,
+        old_baseline_head_ratio=req.old_baseline_head_ratio,
+        old_baseline_gaze_ratio=req.old_baseline_gaze_ratio,
+        new_baseline_head_ratio=req.new_baseline_head_ratio,
+        new_baseline_gaze_ratio=req.new_baseline_gaze_ratio,
+        recalibration_count=req.recalibration_count,
+    )
+    db.add(row)
+    await db.commit()
+    return {"status": "stored", "id": row.id}
+
+
+@router.get("/session/{barter_id}/video-engagement/calibration-log")
+async def list_calibration_log(barter_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(CalibrationLog)
+        .where(CalibrationLog.barter_session_id == barter_id)
+        .order_by(CalibrationLog.created_at, CalibrationLog.id)
+    )
+    return [
+        {
+            "user_id": r.user_id,
+            "outcome": r.outcome,
+            "old_baseline_head_ratio": r.old_baseline_head_ratio,
+            "old_baseline_gaze_ratio": r.old_baseline_gaze_ratio,
+            "new_baseline_head_ratio": r.new_baseline_head_ratio,
+            "new_baseline_gaze_ratio": r.new_baseline_gaze_ratio,
+            "recalibration_count": r.recalibration_count,
+            "created_at": r.created_at.isoformat(),
+        }
+        for r in result.scalars().all()
     ]
 
 

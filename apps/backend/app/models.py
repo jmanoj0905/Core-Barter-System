@@ -100,6 +100,21 @@ class EngagementScoreLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class CalibrationLog(Base):
+    __tablename__ = "calibration_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    barter_session_id: Mapped[int] = mapped_column(ForeignKey("barter_sessions.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    outcome: Mapped[str] = mapped_column(String(40), nullable=False)
+    old_baseline_head_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    old_baseline_gaze_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    new_baseline_head_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    new_baseline_gaze_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    recalibration_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Warning(Base):
     __tablename__ = "warnings"
 
