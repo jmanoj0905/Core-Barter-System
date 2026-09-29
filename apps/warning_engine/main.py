@@ -122,6 +122,7 @@ def _new_state() -> dict:
         "speech_engagement_score": None,
         "video_attention_score": None,
         "video_attention_score_at": None,
+        "last_classification": None,
     }
 
 
@@ -191,6 +192,7 @@ async def run_warning_decision(
 
     # Update counters
     state["total_windows"] += 1
+    state["last_classification"] = request.classification
 
     if request.classification == "incorrect":
         state["consecutive_incorrect"] += 1
@@ -316,7 +318,9 @@ async def receive_safety_alert(request: SafetyAlertRequest):
     """Receive safety alerts (toxicity/NSFW) — immediate strong or severe warning."""
     barter_id = request.barter_id
     hard_block = request.details.get("hard_block", False)
-    severity = "severe" if hard_block else "strong"
+    state = sessions.get(barter_id, {})
+    on_topic_confirmed = state.get("last_classification") in ("correct", "weakly_correct")
+    severity = "strong" if hard_block and on_topic_confirmed else ("severe" if hard_block else "strong")
     categories = request.details.get("categories", {})
     cat_names = ", ".join(categories.keys()) if categories else request.warning_type
 
@@ -324,7 +328,6 @@ async def receive_safety_alert(request: SafetyAlertRequest):
 
     # Record in session state if it exists
     if barter_id in sessions:
-        state = sessions[barter_id]
         warning_entry = {
             "severity": severity,
             "reason": reason,
