@@ -101,7 +101,10 @@ graph TB
     - 2 windows: Strong warning
     - 3+ windows: Severe warning
   - Fuse the speech engagement score from `semantic_analysis` with the video attention score from
-    `video_engagement` (`ENGAGEMENT_FUSION_W_SPEECH` / `ENGAGEMENT_FUSION_W_VIDEO`)
+    `video_engagement` via a sigmoid-logistic model,
+    `sigmoid(FUSION_WEIGHT_SPEECH · speech + FUSION_WEIGHT_VIDEO · video + FUSION_BIAS)`, with
+    weights fitted by logistic regression rather than fixed by hand — see
+    [threshold-calibration.md](threshold-calibration.md)
   - Log warnings and window rows to the backend via REST (no independent database of its own —
     session state is in-process, see [Known Limitations](#known-limitations))
 
@@ -112,6 +115,9 @@ graph TB
   - Receive video frames from the frontend over WebSocket (nginx `/video/`)
   - Compute `video_attention_score` from weighted sub-signals
     (`VIDEO_WEIGHT_EYES` 0.55 / `VIDEO_WEIGHT_HEAD` 0.40 / `VIDEO_WEIGHT_GAZE` 0.05)
+  - Capture a per-user neutral baseline (`POST /video/{barter_id}/{user_id}/calibrate`) used by
+    the head-deviation and gaze sub-signals; attempts are audit-logged to the backend
+    (`POST`/`GET /session/{barter_id}/video-engagement/calibration-log`)
   - POST raw results to the backend for storage and to `warning_engine` for fusion
 - **Weights and rationale**: [video_engagement/design-choices.md](video_engagement/design-choices.md)
 
@@ -128,6 +134,7 @@ graph TB
   - `wallets` - User wallets
   - `escrows` - Escrow records
   - `credit_transactions` - Transaction history
+  - `calibration_logs` - Per-user video calibration attempts (audit)
 
 ## Data Flow
 

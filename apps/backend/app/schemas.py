@@ -66,6 +66,8 @@ class WindowResultRequest(BaseModel):
     text_preview: str = ""
     timestamp_start: float = 0.0
     timestamp_end: float = 0.0
+    # Absent from older senders (rolling deploy) -> False, never a 422.
+    meaning_reversal_detected: bool = False
 
 
 class WindowFeedbackRequest(BaseModel):
@@ -166,6 +168,16 @@ class VideoEngagementRequest(BaseModel):
     video_attention_score: float
     backend_used: str
     raw_signals: dict
+
+
+class CalibrationLogRequest(BaseModel):
+    user_id: int
+    outcome: str
+    old_baseline_head_ratio: float | None = None
+    old_baseline_gaze_ratio: float | None = None
+    new_baseline_head_ratio: float | None = None
+    new_baseline_gaze_ratio: float | None = None
+    recalibration_count: int
 
 
 class EngagementLogRequest(BaseModel):

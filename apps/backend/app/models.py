@@ -72,6 +72,12 @@ class WindowResult(Base):
     human_label: Mapped[str | None] = mapped_column(String(20), nullable=True)
     labeled_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     labeled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Audit trail: True when semantic_analysis's meaning-reversal check forced
+    # this window to `incorrect` (or found a reversal in an already-incorrect
+    # one). Deliberately tri-state: NULL means "predates the check / unknown",
+    # distinct from False ("checked, no reversal"). No column DEFAULT, so
+    # ADD COLUMN leaves legacy rows NULL rather than backfilling a false 0.
+    meaning_reversal_detected: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
 
 class VideoEngagementResult(Base):
@@ -97,6 +103,21 @@ class EngagementScoreLog(Base):
     speech_engagement_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     video_attention_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     fused_engagement_score: Mapped[float] = mapped_column(Float, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class CalibrationLog(Base):
+    __tablename__ = "calibration_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    barter_session_id: Mapped[int] = mapped_column(ForeignKey("barter_sessions.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    outcome: Mapped[str] = mapped_column(String(40), nullable=False)
+    old_baseline_head_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    old_baseline_gaze_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    new_baseline_head_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    new_baseline_gaze_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    recalibration_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

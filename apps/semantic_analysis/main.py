@@ -27,12 +27,13 @@ _CLASS_COLOR = {
     "out_of_scope":   f"{_M}⊘ OUT OF SCOPE  {_NC}",
 }
 
-def _window(barter_id, window_id, classification, similarity, preview):
+def _window(barter_id, window_id, classification, similarity, preview, reversal=False):
     label = _CLASS_COLOR.get(classification, classification)
     bar_len = int(similarity * 20)
     bar = f"{_G}{'█' * bar_len}{_DIM}{'░' * (20 - bar_len)}{_NC}"
     print(f"\n  {_BOLD}[Barter {barter_id}  Window #{window_id}]{_NC}", flush=True)
-    print(f"  {label}  sim={_BOLD}{similarity:.3f}{_NC}  [{bar}]", flush=True)
+    flag = f"  {_R}{_BOLD}⚠ REVERSAL{_NC}" if reversal else ""
+    print(f"  {label}  sim={_BOLD}{similarity:.3f}{_NC}  [{bar}]{flag}", flush=True)
     print(f"  {_DIM}\"{preview[:80]}…\"{_NC}", flush=True)
 
 def _engagement(barter_id, score, ratio_pct, questions, acks):
@@ -47,6 +48,7 @@ import os
 WARNING_ENGINE_URL = os.getenv("WARNING_ENGINE_URL", "http://localhost:8003")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
+from reversal_detection import detect_meaning_reversal
 from windowing import (
     UPPER,
     LOWER,
@@ -287,7 +289,8 @@ async def post_engagement_update(barter_id: int, user_id: int, score: float):
 
 async def post_window_result(barter_id: int, window_id: int, classification: str,
                               similarity: float,
-                              ts_start: float, ts_end: float, text_preview: str):
+                              ts_start: float, ts_end: float, text_preview: str,
+                              meaning_reversal_detected: bool = False):
     payload = {
         "barter_id": barter_id,
         "window_id": window_id,
@@ -296,6 +299,7 @@ async def post_window_result(barter_id: int, window_id: int, classification: str
         "timestamp_start": ts_start,
         "timestamp_end": ts_end,
         "text_preview": text_preview[:200],
+        "meaning_reversal_detected": meaning_reversal_detected,
     }
     try:
         resp = await http_client.post(f"{WARNING_ENGINE_URL}/window/result", json=payload)
@@ -346,7 +350,15 @@ async def process_window(barter_id: int, buf: dict, contract: dict):
     similarity = cosine_sim(window_embedding, contract["topic_embedding"])
 
     classification = classify(similarity)
-    _window(barter_id, window_id, classification, similarity, combined_text)
+    # A commitment negated in the same sentence ("I will not pay") is a
+    # contradiction of the agreed terms even when it is topically on-subject,
+    # which cosine similarity cannot see. Plain assignment, so it is idempotent
+    # when cosine already said incorrect.
+    meaning_reversal_detected = detect_meaning_reversal(cleaned)
+    if meaning_reversal_detected:
+        classification = "incorrect"
+    _window(barter_id, window_id, classification, similarity, combined_text,
+            meaning_reversal_detected)
 
     await post_window_result(
         barter_id=barter_id,
@@ -356,6 +368,7 @@ async def process_window(barter_id: int, buf: dict, contract: dict):
         ts_start=ts_start,
         ts_end=ts_end,
         text_preview=combined_text,
+        meaning_reversal_detected=meaning_reversal_detected,
     )
 
 

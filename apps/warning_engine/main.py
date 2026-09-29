@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import math
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -37,13 +38,17 @@ logger = logging.getLogger("warning-engine")
 import os
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
-# Fusion weights — experimental placeholders, picked properly by
-# apps/video_engagement/weight_search.py and recorded in
-# docs/video_engagement/design-choices.md. Speech starts as the
-# majority signal since it is already tuned; video is a minority
-# signal until validated against it.
-ENGAGEMENT_FUSION_W_SPEECH = float(os.getenv("ENGAGEMENT_FUSION_W_SPEECH", "0.7"))
-ENGAGEMENT_FUSION_W_VIDEO = float(os.getenv("ENGAGEMENT_FUSION_W_VIDEO", "0.3"))
+# Fusion weights — fitted via logistic regression against a synthetic
+# corpus (see .superpowers/sdd/2026-09-29-fusion-weight-fitting Task 2).
+FUSION_WEIGHT_SPEECH = float(os.getenv("FUSION_WEIGHT_SPEECH", "3.4486188047224937"))
+FUSION_WEIGHT_VIDEO = float(os.getenv("FUSION_WEIGHT_VIDEO", "3.9024996131627105"))
+FUSION_BIAS = float(os.getenv("FUSION_BIAS", "-2.4287558170454084"))
+
+
+def _sigmoid(x: float) -> float:
+    if x < -700:
+        return 0.0
+    return 1.0 / (1.0 + math.exp(-x))
 
 # A video score with no fresh update in this many seconds is treated as
 # stale/absent for fusion purposes (3 windows at the 5s buffer threshold
@@ -64,6 +69,7 @@ class WindowResultRequest(BaseModel):
     timestamp_start: float = 0.0
     timestamp_end: float = 0.0
     text_preview: str = ""
+    meaning_reversal_detected: bool = False
 
 
 class SafetyAlertRequest(BaseModel):
@@ -206,6 +212,7 @@ async def run_warning_decision(
         "text_preview": request.text_preview,
         "timestamp_start": request.timestamp_start,
         "timestamp_end": request.timestamp_end,
+        "meaning_reversal_detected": request.meaning_reversal_detected,
     }
 
     # Determine warning severity based on consecutive off-topic count
@@ -376,7 +383,7 @@ async def _recompute_and_log_fusion(barter_id: int, state: dict):
     if speech is None and video is None:
         return
     if speech is not None and video is not None:
-        fused = ENGAGEMENT_FUSION_W_SPEECH * speech + ENGAGEMENT_FUSION_W_VIDEO * video
+        fused = _sigmoid(FUSION_WEIGHT_SPEECH * speech + FUSION_WEIGHT_VIDEO * video + FUSION_BIAS)
     else:
         fused = speech if speech is not None else video
     fused = round(fused, 4)

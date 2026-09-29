@@ -50,13 +50,29 @@ async def test_fusion_combines_speech_and_video_for_learner(warning_client):
     })
     assert resp.status_code == 200
 
-    # w_speech=0.7, w_video=0.3 defaults -> 0.7*0.6 + 0.3*0.8 = 0.66
+    expected = we_main._sigmoid(
+        we_main.FUSION_WEIGHT_SPEECH * 0.6 + we_main.FUSION_WEIGHT_VIDEO * 0.8 + we_main.FUSION_BIAS
+    )
     logged_calls = [c for c in mock_http.post.call_args_list if c.args[0].endswith("/engagement-log")]
     assert len(logged_calls) == 2  # one log on the speech-only update, one on the combined update
     payload = logged_calls[-1].kwargs["json"]
-    assert payload["fused_engagement_score"] == pytest.approx(0.66, abs=1e-6)
+    assert payload["fused_engagement_score"] == pytest.approx(expected, abs=1e-4)
     assert payload["speech_engagement_score"] == 0.6
     assert payload["video_attention_score"] == 0.8
+
+
+@pytest.mark.asyncio
+async def test_fusion_fallback_paths_never_apply_sigmoid(warning_client):
+    # Global Constraints: single-score fallback returns the raw score, not
+    # a sigmoid-transformed value — this is the most likely regression from
+    # touching _recompute_and_log_fusion for the two-score branch.
+    client, mock_http, we_main = warning_client
+    await client.post("/session/1/init", json={"teacher_user_id": 1, "learner_user_id": 2})
+    await client.post("/engagement/update", json={
+        "barter_id": 1, "user_id": 2, "engagement_score": 0.55,
+    })
+    logged_call = [c for c in mock_http.post.call_args_list if c.args[0].endswith("/engagement-log")]
+    assert logged_call[0].kwargs["json"]["fused_engagement_score"] == 0.55
 
 
 @pytest.mark.asyncio

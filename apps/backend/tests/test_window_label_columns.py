@@ -68,7 +68,9 @@ def test_backfill_adds_every_label_column(legacy_engine):
     with legacy_engine.begin() as conn:
         added = _add_missing_columns(conn)
         assert _columns(conn) >= set(LABEL_COLUMNS)
-    assert sorted(added) == sorted(f"window_results.{c}" for c in LABEL_COLUMNS)
+    # Later columns (e.g. meaning_reversal_detected) are backfilled too; this
+    # test only pins that every label column is among those added.
+    assert set(f"window_results.{c}" for c in LABEL_COLUMNS) <= set(added)
 
 
 def test_backfill_is_idempotent(legacy_engine):
