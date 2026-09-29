@@ -56,24 +56,29 @@ def _eye_aspect_ratio(landmarks: dict[int, tuple[float, float]], eye: dict[str, 
     return vertical / horizontal
 
 
-def sub_signals_from_mediapipe_landmarks(
-    landmarks: dict[int, tuple[float, float]],
-) -> dict[str, float]:
-    """Map raw Face Mesh landmarks to the three formula sub-signals, each 0-1."""
-    right_ear = _eye_aspect_ratio(landmarks, _RIGHT_EYE)
-    left_ear = _eye_aspect_ratio(landmarks, _LEFT_EYE)
-    avg_ear = (right_ear + left_ear) / 2.0
-    eyes_open = _clamp01((avg_ear - _EAR_CLOSED) / (_EAR_OPEN - _EAR_CLOSED))
+def _deviation_from_baseline(value: float, baseline: float) -> float:
+    """Distance of `value` from `baseline`, scaled to 0-1 by the farthest reachable point.
 
+    With baseline 0.5 this is exactly abs(value - 0.5) * 2.0, clamped.
+    """
+    max_dev = max(baseline, 1.0 - baseline)
+    if max_dev == 0:
+        return 0.0
+    return _clamp01(abs(value - baseline) / max_dev)
+
+
+def raw_ratios_from_landmarks(
+    landmarks: dict[int, tuple[float, float]],
+) -> dict[str, float | None]:
+    """Raw head/gaze ratios (each ~0-1, 0.5 = centered) before any baseline is applied.
+
+    head_ratio is None when the cheek span is zero (degenerate face).
+    """
     nose = landmarks[_NOSE_TIP]
     left_cheek = landmarks[_LEFT_CHEEK]
     right_cheek = landmarks[_RIGHT_CHEEK]
     span = right_cheek[0] - left_cheek[0]
-    if span == 0:
-        head_deviation = 1.0
-    else:
-        ratio = (nose[0] - left_cheek[0]) / span
-        head_deviation = _clamp01(abs(ratio - 0.5) * 2.0)
+    head_ratio = None if span == 0 else (nose[0] - left_cheek[0]) / span
 
     def _gaze_ratio(iris_key: int, eye: dict[str, int]) -> float:
         iris = landmarks[iris_key]
@@ -85,8 +90,31 @@ def sub_signals_from_mediapipe_landmarks(
 
     left_gaze = _gaze_ratio(_LEFT_IRIS_CENTER, _LEFT_EYE)
     right_gaze = _gaze_ratio(_RIGHT_IRIS_CENTER, _RIGHT_EYE)
-    avg_gaze_ratio = (left_gaze + right_gaze) / 2.0
-    gaze_centered = _clamp01(1.0 - abs(avg_gaze_ratio - 0.5) * 2.0)
+    return {"head_ratio": head_ratio, "gaze_ratio": (left_gaze + right_gaze) / 2.0}
+
+
+def sub_signals_from_mediapipe_landmarks(
+    landmarks: dict[int, tuple[float, float]],
+    baseline: dict[str, float] | None = None,
+) -> dict[str, float]:
+    """Map raw Face Mesh landmarks to the three formula sub-signals, each 0-1.
+
+    `baseline` recenters the head/gaze neutral point (default 0.5 / 0.5).
+    """
+    if baseline is None:
+        baseline = {"head_ratio": 0.5, "gaze_ratio": 0.5}
+
+    right_ear = _eye_aspect_ratio(landmarks, _RIGHT_EYE)
+    left_ear = _eye_aspect_ratio(landmarks, _LEFT_EYE)
+    avg_ear = (right_ear + left_ear) / 2.0
+    eyes_open = _clamp01((avg_ear - _EAR_CLOSED) / (_EAR_OPEN - _EAR_CLOSED))
+
+    ratios = raw_ratios_from_landmarks(landmarks)
+    if ratios["head_ratio"] is None:
+        head_deviation = 1.0
+    else:
+        head_deviation = _deviation_from_baseline(ratios["head_ratio"], baseline["head_ratio"])
+    gaze_centered = 1.0 - _deviation_from_baseline(ratios["gaze_ratio"], baseline["gaze_ratio"])
 
     return {
         "eyes_open": eyes_open,
