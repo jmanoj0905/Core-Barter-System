@@ -5,10 +5,16 @@ measured on public data.** Fitted 2026-09-26 on 2,295 labeled frames from two
 openly-licensed public datasets and checked on 977 held-out frames from
 subjects and shards the fit never saw.
 
-Still **not** experimentally chosen: the fusion weights
-`ENGAGEMENT_FUSION_W_SPEECH=0.7` / `ENGAGEMENT_FUSION_W_VIDEO=0.3` in
-`apps/warning_engine/main.py`. Those remain engineering guesses and are a
-separate open calibration — nothing in this document speaks to them.
+The fusion weights that blend this video score with the speech engagement
+score — `FUSION_WEIGHT_SPEECH`, `FUSION_WEIGHT_VIDEO`, and `FUSION_BIAS` in
+`apps/warning_engine/main.py` — were **also** fitted, via logistic regression
+on a synthetic corpus (`apps/warning_engine/ground_truth/`), rather than being
+engineering guesses; see the "Fusion weight fitting" section of
+[threshold-calibration.md](../threshold-calibration.md) for that fit's method
+and numbers. That corpus is synthetic, not drawn from the production capture
+distribution discussed above, so it is a separate open question from — and
+does not close — the domain-gap caveats this document raises for the video
+sub-signal weights themselves.
 
 | Quantity | Value | Where it lives |
 |---|---|---|

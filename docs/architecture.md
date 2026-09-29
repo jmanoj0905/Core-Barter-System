@@ -101,7 +101,10 @@ graph TB
     - 2 windows: Strong warning
     - 3+ windows: Severe warning
   - Fuse the speech engagement score from `semantic_analysis` with the video attention score from
-    `video_engagement` (`ENGAGEMENT_FUSION_W_SPEECH` / `ENGAGEMENT_FUSION_W_VIDEO`)
+    `video_engagement` via a sigmoid-logistic model,
+    `sigmoid(FUSION_WEIGHT_SPEECH · speech + FUSION_WEIGHT_VIDEO · video + FUSION_BIAS)`, with
+    weights fitted by logistic regression rather than fixed by hand — see
+    [threshold-calibration.md](threshold-calibration.md)
   - Log warnings and window rows to the backend via REST (no independent database of its own —
     session state is in-process, see [Known Limitations](#known-limitations))
 
